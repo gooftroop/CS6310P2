@@ -6,18 +6,16 @@ import java.util.List;
 
 public final class GridCell implements Cell<GridCell> {
 	
-	public static final double AVG = 4.0;
+	public static final float AVG = 4;
 	
 	public final int x, y;
 	
 	private boolean visited;
-	private double currTemp, newTemp;
-	
-	private final boolean isEdge;
+	private float currTemp, newTemp;
 	
 	private GridCell top = null, bottom = null, left = null, right = null;
 	
-	public GridCell(double temp, boolean isEdge, int x, int y) {
+	public GridCell(float temp, int x, int y) {
 		
 		if (temp > Double.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
@@ -28,12 +26,11 @@ public final class GridCell implements Cell<GridCell> {
 		
 		this.setTemp(temp);
 		this.visited = false;
-		this.isEdge = isEdge;
 	}
 	
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, double temp, boolean isEdge, int x, int y) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y) {
 		
-		this(temp, isEdge, x, y);
+		this(temp, x, y);
 		
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -90,19 +87,19 @@ public final class GridCell implements Cell<GridCell> {
 	}
 	
 	@Override
-	public double getTemp() {
-		return new Double(this.currTemp);
+	public float getTemp() {
+		return this.currTemp;
 	}
 	
 	@Override
-	public void setTemp(double temp) {
+	public void setTemp(float temp) {
 		this.currTemp = temp;
 	}
 	
 	@Override
 	public float calculateTemp() {
 		this.newTemp = (this.top.getTemp() + this.bottom.getTemp() + this.right.getTemp() + this.left.getTemp()) / AVG;
-		return (float) this.newTemp - (float) this.currTemp;
+		return this.newTemp - this.currTemp;
 	}
 	
 	@Override
@@ -117,13 +114,13 @@ public final class GridCell implements Cell<GridCell> {
 	}
 	
 	@Override
-	public Iterator<GridCell> getChildren(boolean unvisited) {
+	public Iterator<GridCell> getChildren(boolean visited) {
 		List<GridCell> ret = new ArrayList<GridCell>();
 		
-		if (!this.top.isEdge 	&& this.top.visited == unvisited) 		ret.add(this.top);
-		if (!this.bottom.isEdge && this.bottom.visited == unvisited) 	ret.add(this.bottom);
-		if (!this.left.isEdge 	&& this.left.visited == unvisited) 		ret.add(this.left);
-		if (!this.right.isEdge 	&& this.right.visited == unvisited) 	ret.add(this.right);
+		if (this.top != null 	&& this.top.visited == visited) 	ret.add(this.top);
+		if (this.bottom != null && this.bottom.visited == visited) 	ret.add(this.bottom);
+		if (this.left != null 	&& this.left.visited == visited) 	ret.add(this.left);
+		if (this.right != null 	&& this.right.visited == visited) 	ret.add(this.right);
 		
 		return ret.iterator();
 	}

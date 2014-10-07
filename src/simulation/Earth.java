@@ -68,7 +68,7 @@ public final class Earth {
 		 
 		int spacing = (MAX_DEGREES / this.gs);
 		
-		// North Pole
+		// South Pole
 		GridCell next = null, curr = this.prime;
 		for (x = 0; x < spacing; x++) {
 			
@@ -85,60 +85,60 @@ public final class Earth {
 		curr.setLeft(this.prime);
 		
 		// Create each grid row, with the exception of the south pole
-		GridCell top = this.prime.getLeft(), left = null;
+		GridCell bottom = this.prime.getLeft(), left = null;
 		for (y = 1; y < spacing - 1; y++) {
 			
-			if (top.getBottom() != null) { 
-				curr = top.getBottom();
+			if (bottom.getTop() != null) { 
+				curr = bottom.getTop();
 				curr.setTemp(INITIAL_TEMP);
 			} else {
-				curr = new GridCell(top, null, null, null, INITIAL_TEMP, 0, y);
-				top.setBottom(curr);
+				curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y);
+				bottom.setTop(curr);
 			}
 			
 			for (x = 1; x < spacing; x++) {
 				
 				if (curr.getLeft() != null) curr.getLeft().setTemp(INITIAL_TEMP);
 				else {
-					next = new GridCell(top, null, null, curr, INITIAL_TEMP, x, y);
+					next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y);
 					curr.setLeft(next);
 				}
 				
-				top = top.getLeft();
+				bottom = bottom.getLeft();
 				curr = curr.getLeft();
 			}
 			
-			left = top.getBottom(); // This should be the first cell we created
+			left = bottom.getTop(); // This should be the first cell we created
 			
 			// Stitch the grid row together
 			curr.setLeft(left);
 			left.setRight(curr);
-			top = left;
+			bottom = left;
 			
 		}
 		
-		if (top.getBottom() != null) { 
-			curr = top.getBottom();
+		if (bottom.getTop() != null) { 
+			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
 		} else {
-			curr = new GridCell(top, null, null, null, INITIAL_TEMP, 0, y);
-			top.setBottom(curr);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y);
+			bottom.setTop(curr);
 		}
 		
-		// South Pole
+		// North Pole
 		for (x = 1; x < MAX_DEGREES / this.gs; x++) {
 			
 			if (curr.getLeft() != null) { 
 				curr.getLeft().setTemp(INITIAL_TEMP);
 			} else {
-				next = new GridCell(top, null, null, curr, INITIAL_TEMP, x, y);
+				next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y);
 				curr.setLeft(next);
 			}
 			curr = curr.getLeft();
-			top = top.getLeft();
+			bottom = bottom.getLeft();
 		}
 		
-		left = top.getBottom(); // This should be the first cell we created
+		left = bottom.getTop(); // This should be the first cell we created
 		
 		// Stitch the grid row together
 		curr.setLeft(left);

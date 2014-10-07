@@ -53,7 +53,7 @@ public final class Earth {
 		sun = SUN_START_POS;
 		
 		if (this.prime != null) this.prime.setTemp(INITIAL_TEMP);
-		else this.prime = new GridCell(INITIAL_TEMP, x, y);
+		else this.prime = new GridCell(INITIAL_TEMP, x, y, lat, longitude);
 		this.prime.setTop(null);
 
 		/*
@@ -65,6 +65,7 @@ public final class Earth {
 		 */
 		
 		// TODO We still need to set lat/long...any other attributes? for each cell
+		// TODO This all could probably be condensed, modularized, and optimized. Do this if time allows.
 		 
 		int spacing = (MAX_DEGREES / this.gs);
 		
@@ -72,9 +73,12 @@ public final class Earth {
 		GridCell next = null, curr = this.prime;
 		for (x = 0; x < spacing; x++) {
 			
-			if (curr.getLeft() != null) curr.getLeft().setTemp(INITIAL_TEMP);
-			else {
-				next = new GridCell(null, null, null, curr, INITIAL_TEMP, x, y);
+			if (curr.getLeft() != null) { 
+				GridCell l = curr.getLeft();
+				l.setTemp(INITIAL_TEMP);
+				l.setGridProps(x, y, lat, longitude);
+			} else {
+				next = new GridCell(null, null, null, curr, INITIAL_TEMP, x, y, lat, longitude);
 				curr.setLeft(next);
 			}
 			curr = curr.getLeft();
@@ -91,16 +95,20 @@ public final class Earth {
 			if (bottom.getTop() != null) { 
 				curr = bottom.getTop();
 				curr.setTemp(INITIAL_TEMP);
+				curr.setGridProps(x, y, lat, longitude);
 			} else {
-				curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y);
+				curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, lat, longitude);
 				bottom.setTop(curr);
 			}
 			
 			for (x = 1; x < spacing; x++) {
 				
-				if (curr.getLeft() != null) curr.getLeft().setTemp(INITIAL_TEMP);
-				else {
-					next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y);
+				if (curr.getLeft() != null) { 
+					GridCell l = curr.getLeft();
+					l.setTemp(INITIAL_TEMP);
+					l.setGridProps(x, y, lat, longitude);
+				} else {
+					next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, lat, longitude);
 					curr.setLeft(next);
 				}
 				
@@ -120,8 +128,9 @@ public final class Earth {
 		if (bottom.getTop() != null) { 
 			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
+			curr.setGridProps(x, y, lat, longitude);
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, lat, longitude);
 			bottom.setTop(curr);
 		}
 		
@@ -129,9 +138,11 @@ public final class Earth {
 		for (x = 1; x < MAX_DEGREES / this.gs; x++) {
 			
 			if (curr.getLeft() != null) { 
-				curr.getLeft().setTemp(INITIAL_TEMP);
+				GridCell l = curr.getLeft();
+				l.setTemp(INITIAL_TEMP);
+				l.setGridProps(x, y, lat, longitude);
 			} else {
-				next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y);
+				next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, lat, longitude);
 				curr.setLeft(next);
 			}
 			curr = curr.getLeft();

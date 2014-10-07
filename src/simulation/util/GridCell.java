@@ -8,14 +8,14 @@ public final class GridCell implements Cell<GridCell> {
 	
 	public static final float AVG = 4;
 	
-	public final int x, y;
+	public int x, y, lat, longi;
 	
 	private boolean visited;
 	private float currTemp, newTemp;
 	
 	private GridCell top = null, bottom = null, left = null, right = null;
 	
-	public GridCell(float temp, int x, int y) {
+	public GridCell(float temp, int x, int y, int lat, int longi) {
 		
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
@@ -24,13 +24,16 @@ public final class GridCell implements Cell<GridCell> {
 		this.x = x;
 		this.y = y;
 		
+		this.lat = lat;
+		this.longi = longi;
+		
 		this.setTemp(temp);
 		this.visited = false;
 	}
 	
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int lat, int longi) {
 		
-		this(temp, x, y);
+		this(temp, x, y, lat, longi);
 		
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -96,6 +99,29 @@ public final class GridCell implements Cell<GridCell> {
 		
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		this.currTemp = temp;
+	}
+	
+	public void setGridProps(int x, int y, int lat, int longi) {
+		this.setX(x);
+		this.setY(y);
+		this.setLat(lat);
+		this.setLongi(longi);
+	}
+	
+	public void setLat(int lat) {
+		this.lat = lat;
+	}
+	
+	public void setLongi(int longi) {
+		this.longi = longi;
+	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
+	
+	public void setY(int y) {
+		this. y = y;
 	}
 	
 	@Override

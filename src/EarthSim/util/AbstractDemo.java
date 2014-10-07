@@ -1,4 +1,4 @@
-package EarthSim;
+package EarthSim.util;
 
 import java.util.Hashtable;
 

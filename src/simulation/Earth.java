@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import simulation.util.GridCell;
+
 public final class Earth {
 	
 	// These two *were* found in an abstract class, but moved up here in case 
@@ -39,34 +41,49 @@ public final class Earth {
 
 	public void initializePlate() {
 		
-		int x = 0, y = 0;
+		int y = 0, x = 0;
 		
-		this.root = new GridCell(INITIAL_TEMP, x, y);
+		if (this.root != null) this.root.setTemp(INITIAL_TEMP);
+		else this.root = new GridCell(INITIAL_TEMP, x, y);
 		
-		
-	}
-	
-	private GridCell createPlate(int x, int y) {
-		
-		if (x > this.width || y > this.height) return null;
-		
-		// how to deal with stuff existing?
-		
-		GridCell curr = new GridCell(this.INITIAL_TEMP, x, y);
-		
-		GridCell n = this.createPlate(x, y + 1);
-		curr.setBottom(n);
-		n.setTop(curr);
-		
-		n = this.createPlate(x, y);
-		curr.setRight(n);
-		n.setLeft(curr);
-		
-		n = this.createPlate(x, y);
-		curr.setLeft(n);
-		n.setRight(curr);
-		
-		return curr;
+		GridCell top = null, left = null, bottom = null, curr = root;
+		for (; y < this.height; y++) {
+			
+			x = 0;
+			
+			if (curr.getRight() != null) curr.getRight().setTemp(INITIAL_TEMP);
+			else  {
+				curr.setRight(new GridCell(INITIAL_TEMP, x, y));
+				curr.getRight().setLeft(curr);
+			}
+			
+			left = curr.getLeft();
+			top = curr.getRight();
+			
+			for (x = 1; x < this.width; x++) {
+				
+				if (curr.getBottom() != null) { 
+					curr.getBottom().setTemp(INITIAL_TEMP);
+					if (x == this.width - 1) curr.setRight(null);
+				} else  {
+					bottom = new GridCell(INITIAL_TEMP, x, y); 
+					curr.setBottom(bottom);
+					bottom.setTop(curr);
+					
+					if (left != null) {
+						left = left.getBottom();
+						left.setRight(bottom);
+					}
+					
+					bottom.setLeft(left);
+				}
+				
+				curr = curr.getBottom();
+			}
+			
+			curr.setBottom(null);
+			curr = top;
+		}
 	}
 	
 	public void run() {

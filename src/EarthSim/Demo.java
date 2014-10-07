@@ -2,6 +2,9 @@ package EarthSim;
 
 import java.awt.EventQueue;
 
+import EarthSim.gui.EarthSim;
+import EarthSim.util.AbstractDemo;
+
 public class Demo extends AbstractDemo {
 
 	public static void main(String[] args) {
@@ -17,8 +20,8 @@ public class Demo extends AbstractDemo {
 	}
 	
 	protected static void configureOpts() {
-		options.put("-d", "");
-		options.put("-l", "");
+		options.put("-s", "");
+		options.put("-p", "");
 		options.put("-r", "");
 		options.put("-t", "");
 		options.put("-b", "");

@@ -1,4 +1,4 @@
-package simulation;
+package simulation.util;
 
 import java.util.Iterator;
 

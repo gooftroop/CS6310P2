@@ -1,4 +1,4 @@
-package simulation;
+package simulation.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +17,7 @@ public final class GridCell implements Cell<GridCell> {
 	
 	public GridCell(float temp, int x, int y) {
 		
-		if (temp > Double.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
+		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 		
@@ -93,6 +93,8 @@ public final class GridCell implements Cell<GridCell> {
 	
 	@Override
 	public void setTemp(float temp) {
+		
+		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		this.currTemp = temp;
 	}
 	

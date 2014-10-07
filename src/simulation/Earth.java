@@ -46,43 +46,46 @@ public final class Earth {
 		if (this.root != null) this.root.setTemp(INITIAL_TEMP);
 		else this.root = new GridCell(INITIAL_TEMP, x, y);
 		
-		GridCell top = null, left = null, bottom = null, curr = root;
-		for (; y < this.height; y++) {
+		GridCell top = null, left = null, right = null, bottom = null, anchor = null, curr = root;
+		for (; x < this.width; x++) {
 			
-			x = 0;
+			y = 0;
 			
 			if (curr.getRight() != null) curr.getRight().setTemp(INITIAL_TEMP);
-			else  {
-				curr.setRight(new GridCell(INITIAL_TEMP, x, y));
-				curr.getRight().setLeft(curr);
-			}
+			else curr.setRight(new GridCell(null, null, curr, null, INITIAL_TEMP, x, y));
 			
+			anchor = curr;
 			left = curr.getLeft();
 			top = curr.getRight();
 			
-			for (x = 1; x < this.width; x++) {
+			for (y = 1; x < this.height; y++) {
 				
-				if (curr.getBottom() != null) { 
-					curr.getBottom().setTemp(INITIAL_TEMP);
-					if (x == this.width - 1) curr.setRight(null);
-				} else  {
-					bottom = new GridCell(INITIAL_TEMP, x, y); 
-					curr.setBottom(bottom);
-					bottom.setTop(curr);
+				if (curr.getBottom() != null) curr.getBottom().setTemp(INITIAL_TEMP);
+				else  {
 					
-					if (left != null) {
+					if (x != 0) {
 						left = left.getBottom();
+						bottom = new GridCell(curr, null, left, null, INITIAL_TEMP, x, y); 
 						left.setRight(bottom);
-					}
+					} else bottom = new GridCell(curr, null, null, null, INITIAL_TEMP, x, y); 
 					
-					bottom.setLeft(left);
+					curr.setBottom(bottom);
 				}
 				
-				curr = curr.getBottom();
+				if (x == this.width - 1) {
+					// right can never be null - otherwise we have an issue
+					right = right.getBottom();
+					curr.setRight(right);
+					right.setLeft(curr);
+				}
+				
+				curr = bottom;
 			}
 			
-			curr.setBottom(null);
+			curr.setBottom(anchor);
+			anchor.setTop(curr);
 			curr = top;
+			right = this.root;
 		}
 	}
 	

@@ -9,25 +9,24 @@ import simulation.util.GridCell;
 
 public final class Earth implements RunnableSim {
 	
-	private final float INITIAL_TEMP = 288;
+	public static final double CIRCUMFERENCE 	= 4.003014 * Math.pow(10, 7);
+	public static final double SURFACE_AREA 	= 5.10072 * Math.pow(10, 14);
 	
-	private final int DEFAULT_DEGREES = 15;
-	private final int DEFAULT_SPEED = 1; // minute
-	private final int MAX_DEGREES = 180;
-	private final int MAX_SPEED = 1440;
-	private final int SUN_START_POS = 0;
+	private static final float INITIAL_TEMP 	= 288;
 	
-	private final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
+	private static final int DEFAULT_DEGREES 	= 15;
+	private static final int DEFAULT_SPEED 		= 1; // minutes
+	private static final int MAX_DEGREES 		= 180;
+	private static final int MAX_SPEED 			= 1440;
+	private static final int SUN_START_POS 		= 0;
 	
-	private GridCell prime = null;
+	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 	
-	private int sun;
-	private int speed = DEFAULT_SPEED;
-	private int gs = DEFAULT_DEGREES;
+	private static int currentStep, width, height, sun;
 	
-	public Earth() {
-		/* Empty */
-	}
+	private static GridCell prime 	= null;
+	private static int speed 		= DEFAULT_SPEED;
+	private int gs 					= DEFAULT_DEGREES;
 	
 	public void configure(int gs, int speed) {
 		
@@ -52,43 +51,33 @@ public final class Earth implements RunnableSim {
 		
 		// do a reset
 		sun = SUN_START_POS;
+		currentStep = 0;
 		
-		if (this.prime != null) this.prime.setTemp(INITIAL_TEMP);
-		else this.prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(), this.getLongitude());
-		this.prime.setTop(null);
-
-		/*
-		 * ok, so we start at the prime meridian (long. 0) and at the north pole (+90).
-		 * we construct the globe by working our way down from +90 to -90, and westward,
-		 * from 0 to 180.
-		 * 
-		 * The cells around each poles will have a bottom, left, and right, but no top (they are triangles)
-		 */
-		
-		// TODO We still need to set lat/long...any other attributes? for each cell
-		// TODO This all could probably be condensed, modularized, and optimized. Do this if time allows.
+		if (prime != null) prime.setTemp(INITIAL_TEMP);
+		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x));
+		prime.setTop(null);
 		 
-		int x_spacing = (2 * MAX_DEGREES / this.gs);
-		int y_spacing = (MAX_DEGREES / this.gs);
+		width = (2 * MAX_DEGREES / this.gs);	// rows
+		height = (MAX_DEGREES / this.gs);		// cols
 		
 		// South Pole
-		GridCell next = null, curr = this.prime;
-		for (x = 0; x < x_spacing; x++) {
+		GridCell next = null, curr = prime;
+		for (x = 0; x < width; x++) {
 			
 			this.createRowCell(curr, next, null, x, y);
 			curr = curr.getLeft();
 		}
 		
 		// Stitch the grid row together
-		this.prime.setRight(curr);
-		curr.setLeft(this.prime);
+		prime.setRight(curr);
+		curr.setLeft(prime);
 		
 		// Create each grid row, with the exception of the south pole
-		GridCell bottom = this.prime.getLeft(), left = null;
-		for (y = 1; y < y_spacing - 1; y++) {
+		GridCell bottom = prime.getLeft(), left = null;
+		for (y = 1; y < height - 1; y++) {
 			
 			this.createNextRow(bottom, curr, y);
-			this.createRow(curr, next, bottom, left, x_spacing, y);
+			this.createRow(curr, next, bottom, left, y);
 			bottom = left;
 			
 		}
@@ -96,12 +85,16 @@ public final class Earth implements RunnableSim {
 		this.createNextRow(bottom, curr, y);
 		
 		// North Pole
-		this.createRow(curr, next, bottom, left, x_spacing, y);
+		this.createRow(curr, next, bottom, left, y);
 	}
 	
-	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int spacing, int y) {
+	public GridCell getGrid() {
+		return prime;
+	}
+	
+	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {
 		
-		for (int x = 1; x < spacing; x++) {
+		for (int x = 1; x < width; x++) {
 			
 			this.createRowCell(curr, next, bottom, x, y);
 			bottom = bottom.getLeft();
@@ -120,9 +113,9 @@ public final class Earth implements RunnableSim {
 		if (curr.getLeft() != null) { 
 			GridCell l = curr.getLeft();
 			l.setTemp(INITIAL_TEMP);
-			l.setGridProps(x, y, this.getLatitude(), this.getLongitude());
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x));
 		} else {
-			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(), this.getLongitude());
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x));
 			curr.setLeft(next);
 		}
 	}
@@ -132,19 +125,19 @@ public final class Earth implements RunnableSim {
 		if (bottom.getTop() != null) { 
 			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
-			curr.setGridProps(0, y, this.getLatitude(), this.getLongitude());
+			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0));
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(), this.getLongitude());
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0));
 			bottom.setTop(curr);
 		}
 	}
 	
-	private int getLatitude() {
-		return 0; // TODO
+	private int getLatitude(int y) {
+		return (y - (height / 2)) * this.gs;
 	}
 	
-	private int getLongitude() {
-		return 0; // TODO
+	private int getLongitude(int x) {
+		return x < (width / 2) ? -(x + 1) * this.gs : (MAX_DEGREES * 2) - (x + 1) * this.gs;
 	}
 	
 	public void run() {
@@ -152,10 +145,14 @@ public final class Earth implements RunnableSim {
 		Queue<GridCell> bfs = new LinkedList<GridCell>();
 		Queue<GridCell> calcd = new LinkedList<GridCell>();
 		
+		currentStep++;
+		
+		// TODO update sun
+		
 		while(true) {
 			
-			bfs.add(this.prime);
-			this.prime.visited(true);
+			bfs.add(prime);
+			prime.visited(true);
 			
 			while(!bfs.isEmpty()) {
 				

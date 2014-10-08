@@ -1,7 +1,7 @@
 package tests;
 
-import util.GridDisplayPane.ColormapVisualizer;
 import view.EarthDisplay;
+import view.util.ColormapVisualizer;
 
 import java.util.*;
 

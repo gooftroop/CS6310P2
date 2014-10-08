@@ -1,9 +1,9 @@
-package util.GridDisplayPane;
+package view.util;
 
 import java.awt.*;
 
 /**
- * Abstract class for different heat visualization algorithms.
+ * Interface for different heat visualization algorithms.
  */
 public interface ColorGenerator {
 

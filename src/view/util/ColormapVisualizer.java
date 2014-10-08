@@ -1,4 +1,4 @@
-package util.GridDisplayPane;
+package view.util;
 
 import java.awt.*;
 

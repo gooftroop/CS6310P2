@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import concurrent.RunnableSim;
 import simulation.util.GridCell;
 
-public final class Earth {
+public final class Earth implements RunnableSim {
 	
 	private final float INITIAL_TEMP = 288;
 	

@@ -22,13 +22,13 @@ public final class Earth implements RunnableSim {
 	
 	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 	
-	private static int currentStep, width, height, sun;
+	private static int currentStep, width, height, sunPosition;
 	
 	private static GridCell prime 	= null;
 	private static int speed 		= DEFAULT_SPEED;
 	private int gs 					= DEFAULT_DEGREES;
 	
-	public void configure(int gs, int speed) {
+	public void configure(int gs, int s) {
 		
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
@@ -36,7 +36,7 @@ public final class Earth implements RunnableSim {
 		if (speed <= 0 || speed > MAX_SPEED)
 			throw new IllegalArgumentException("Invalid speed setting");
 		
-		this.speed = speed;
+		speed = s;
 		
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
@@ -50,7 +50,7 @@ public final class Earth implements RunnableSim {
 		int x = 0, y = 0;
 		
 		// do a reset
-		sun = SUN_START_POS;
+		sunPosition = SUN_START_POS;
 		currentStep = 0;
 		
 		if (prime != null) prime.setTemp(INITIAL_TEMP);
@@ -92,7 +92,64 @@ public final class Earth implements RunnableSim {
 		return prime;
 	}
 	
-	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {
+	public int getWidth() {
+		return new Integer(width);
+	}
+	
+	public int getHeight() {
+		return new Integer(height);
+	}
+	
+	public int getSunPosition() {
+		return new Integer(sunPosition);
+	}
+	
+	public void run() {
+		
+		Queue<GridCell> bfs = new LinkedList<GridCell>();
+		Queue<GridCell> calcd = new LinkedList<GridCell>();
+		
+		currentStep++;
+		
+		int t = speed * currentStep;
+		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
+		sunPosition = (width * (rotationalAngle / 360) + (width / 2) % width);
+		
+		while(true) {
+			
+			bfs.add(prime);
+			prime.visited(true);
+			
+			while(!bfs.isEmpty()) {
+				
+				GridCell point = bfs.remove();
+				calcd.add(point);
+				
+				// TODO This needs testing. Should work though.
+				GridCell c = calcd.peek();
+				if (c != null) {
+					Iterator<GridCell> itr = c.getChildren(false);
+					if (!itr.hasNext()) {
+						c.visited(false);
+						c.swapTemp();
+						calcd.poll();
+					}
+				}
+				// done TODO
+				
+				GridCell child = null;
+				Iterator<GridCell> itr = point.getChildren(false);
+				while(itr.hasNext()) {
+					child = itr.next();
+					child.visited(true);
+					child.calculateTemp();
+					bfs.add(child);
+				}
+			}
+		}
+	}
+	
+private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {
 		
 		for (int x = 1; x < width; x++) {
 			
@@ -137,49 +194,6 @@ public final class Earth implements RunnableSim {
 	}
 	
 	private int getLongitude(int x) {
-		return x < (width / 2) ? -(x + 1) * this.gs : (MAX_DEGREES * 2) - (x + 1) * this.gs;
-	}
-	
-	public void run() {
-		
-		Queue<GridCell> bfs = new LinkedList<GridCell>();
-		Queue<GridCell> calcd = new LinkedList<GridCell>();
-		
-		currentStep++;
-		
-		// TODO update sun
-		
-		while(true) {
-			
-			bfs.add(prime);
-			prime.visited(true);
-			
-			while(!bfs.isEmpty()) {
-				
-				GridCell point = bfs.remove();
-				calcd.add(point);
-				
-				// TODO This needs testing. Should work though.
-				GridCell c = calcd.peek();
-				if (c != null) {
-					Iterator<GridCell> itr = c.getChildren(false);
-					if (!itr.hasNext()) {
-						c.visited(false);
-						c.swapTemp();
-						calcd.poll();
-					}
-				}
-				// done TODO
-				
-				GridCell child = null;
-				Iterator<GridCell> itr = point.getChildren(false);
-				while(itr.hasNext()) {
-					child = itr.next();
-					child.visited(true);
-					child.calculateTemp();
-					bfs.add(child);
-				}
-			}
-		}
+		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
 	}
 }

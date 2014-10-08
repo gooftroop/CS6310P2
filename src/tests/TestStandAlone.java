@@ -1,6 +1,7 @@
-package EarthSim.view;
+package tests;
 
 import util.GridDisplayPane.ColormapVisualizer;
+import view.EarthDisplay;
 
 import java.util.*;
 

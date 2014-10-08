@@ -1,4 +1,4 @@
-package EarthSim.view;
+package tests;
 
 import util.GridDisplayPane.GridDisplayable;
 

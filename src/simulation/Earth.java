@@ -53,7 +53,7 @@ public final class Earth {
 		sun = SUN_START_POS;
 		
 		if (this.prime != null) this.prime.setTemp(INITIAL_TEMP);
-		else this.prime = new GridCell(INITIAL_TEMP, x, y, lat, longitude);
+		else this.prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(), this.getLongitude());
 		this.prime.setTop(null);
 
 		/*
@@ -73,14 +73,7 @@ public final class Earth {
 		GridCell next = null, curr = this.prime;
 		for (x = 0; x < spacing; x++) {
 			
-			if (curr.getLeft() != null) { 
-				GridCell l = curr.getLeft();
-				l.setTemp(INITIAL_TEMP);
-				l.setGridProps(x, y, lat, longitude);
-			} else {
-				next = new GridCell(null, null, null, curr, INITIAL_TEMP, x, y, lat, longitude);
-				curr.setLeft(next);
-			}
+			this.createRowCell(curr, next, null, x, y);
 			curr = curr.getLeft();
 		}
 		
@@ -92,61 +85,25 @@ public final class Earth {
 		GridCell bottom = this.prime.getLeft(), left = null;
 		for (y = 1; y < spacing - 1; y++) {
 			
-			if (bottom.getTop() != null) { 
-				curr = bottom.getTop();
-				curr.setTemp(INITIAL_TEMP);
-				curr.setGridProps(x, y, lat, longitude);
-			} else {
-				curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, lat, longitude);
-				bottom.setTop(curr);
-			}
-			
-			for (x = 1; x < spacing; x++) {
-				
-				if (curr.getLeft() != null) { 
-					GridCell l = curr.getLeft();
-					l.setTemp(INITIAL_TEMP);
-					l.setGridProps(x, y, lat, longitude);
-				} else {
-					next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, lat, longitude);
-					curr.setLeft(next);
-				}
-				
-				bottom = bottom.getLeft();
-				curr = curr.getLeft();
-			}
-			
-			left = bottom.getTop(); // This should be the first cell we created
-			
-			// Stitch the grid row together
-			curr.setLeft(left);
-			left.setRight(curr);
+			this.createNextRow(bottom, curr, y);
+			this.createRow(curr, next, bottom, left, spacing, y);
 			bottom = left;
 			
 		}
 		
-		if (bottom.getTop() != null) { 
-			curr = bottom.getTop();
-			curr.setTemp(INITIAL_TEMP);
-			curr.setGridProps(x, y, lat, longitude);
-		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, lat, longitude);
-			bottom.setTop(curr);
-		}
+		this.createNextRow(bottom, curr, y);
 		
 		// North Pole
-		for (x = 1; x < MAX_DEGREES / this.gs; x++) {
+		this.createRow(curr, next, bottom, left, spacing, y);
+	}
+	
+	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int spacing, int y) {
+		
+		for (int x = 1; x < spacing; x++) {
 			
-			if (curr.getLeft() != null) { 
-				GridCell l = curr.getLeft();
-				l.setTemp(INITIAL_TEMP);
-				l.setGridProps(x, y, lat, longitude);
-			} else {
-				next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, lat, longitude);
-				curr.setLeft(next);
-			}
-			curr = curr.getLeft();
+			this.createRowCell(curr, next, bottom, x, y);
 			bottom = bottom.getLeft();
+			curr = curr.getLeft();
 		}
 		
 		left = bottom.getTop(); // This should be the first cell we created
@@ -154,6 +111,38 @@ public final class Earth {
 		// Stitch the grid row together
 		curr.setLeft(left);
 		left.setRight(curr);
+	}
+	
+	private void createRowCell(GridCell curr, GridCell next, GridCell bottom, int x, int y) {
+		
+		if (curr.getLeft() != null) { 
+			GridCell l = curr.getLeft();
+			l.setTemp(INITIAL_TEMP);
+			l.setGridProps(x, y, this.getLatitude(), this.getLongitude());
+		} else {
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(), this.getLongitude());
+			curr.setLeft(next);
+		}
+	}
+	
+	private void createNextRow(GridCell bottom, GridCell curr, int y) {
+		
+		if (bottom.getTop() != null) { 
+			curr = bottom.getTop();
+			curr.setTemp(INITIAL_TEMP);
+			curr.setGridProps(0, y, this.getLatitude(), this.getLongitude());
+		} else {
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(), this.getLongitude());
+			bottom.setTop(curr);
+		}
+	}
+	
+	private int getLatitude() {
+		return 0; // TODO
+	}
+	
+	private int getLongitude() {
+		return 0; // TODO
 	}
 	
 	public void run() {

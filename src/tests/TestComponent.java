@@ -1,4 +1,9 @@
-package util.messaging;
+package tests;
+
+import tests.util.ConcreteMsg;
+import tests.util.ConcreteMsg2;
+import messaging.Message;
+import messaging.Publisher;
 
 public class TestComponent extends ComponentBase {
 	Publisher publisher = Publisher.getInstance();

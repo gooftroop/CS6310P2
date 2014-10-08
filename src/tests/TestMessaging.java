@@ -1,4 +1,4 @@
-package util.messaging;
+package tests;
 
 public class TestMessaging {
 

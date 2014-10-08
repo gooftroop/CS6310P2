@@ -8,6 +8,7 @@ import java.util.*;
 public class TestStandAlone {
 
 	public static void main(String[] args) {
+		
 		Boolean SHOW_RUN_STATS = false;
 		Boolean ANIMATE = false;
 		String COLORMAP = "bone"; // jet/hot/cool/autumn/bone (check
@@ -40,6 +41,7 @@ public class TestStandAlone {
 }
 
 class UpdateTask extends TimerTask {
+	
 	EarthDisplay view;
 	int rowOffset;
 	int colOffset;

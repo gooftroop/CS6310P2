@@ -68,11 +68,12 @@ public final class Earth implements RunnableSim {
 		// TODO We still need to set lat/long...any other attributes? for each cell
 		// TODO This all could probably be condensed, modularized, and optimized. Do this if time allows.
 		 
-		int spacing = (MAX_DEGREES / this.gs);
+		int x_spacing = (2 * MAX_DEGREES / this.gs);
+		int y_spacing = (MAX_DEGREES / this.gs);
 		
 		// South Pole
 		GridCell next = null, curr = this.prime;
-		for (x = 0; x < spacing; x++) {
+		for (x = 0; x < x_spacing; x++) {
 			
 			this.createRowCell(curr, next, null, x, y);
 			curr = curr.getLeft();
@@ -84,10 +85,10 @@ public final class Earth implements RunnableSim {
 		
 		// Create each grid row, with the exception of the south pole
 		GridCell bottom = this.prime.getLeft(), left = null;
-		for (y = 1; y < spacing - 1; y++) {
+		for (y = 1; y < y_spacing - 1; y++) {
 			
 			this.createNextRow(bottom, curr, y);
-			this.createRow(curr, next, bottom, left, spacing, y);
+			this.createRow(curr, next, bottom, left, x_spacing, y);
 			bottom = left;
 			
 		}
@@ -95,7 +96,7 @@ public final class Earth implements RunnableSim {
 		this.createNextRow(bottom, curr, y);
 		
 		// North Pole
-		this.createRow(curr, next, bottom, left, spacing, y);
+		this.createRow(curr, next, bottom, left, x_spacing, y);
 	}
 	
 	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int spacing, int y) {

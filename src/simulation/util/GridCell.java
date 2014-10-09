@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import simulation.Earth;
+
 public final class GridCell implements Cell<GridCell> {
 	
 	public static final float AVG = 4;
@@ -14,6 +16,9 @@ public final class GridCell implements Cell<GridCell> {
 	private float currTemp, newTemp;
 	
 	private GridCell top = null, bottom = null, left = null, right = null;
+	
+	// Cell properties
+	private float surfarea;
 	
 	public GridCell(float temp, int x, int y, int lat, int longi) {
 		
@@ -156,5 +161,10 @@ public final class GridCell implements Cell<GridCell> {
 	public float calculateTemp() {
 		// Unused
 		return 0;
+	}
+	
+	private float calSurfaceArea() {
+		double lv = Earth.CIRCUMFERENCE * ;
+		double lb = Math.cos(Math.toRadians(50));
 	}
 }

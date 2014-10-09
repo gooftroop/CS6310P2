@@ -5,7 +5,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import concurrent.RunnableSim;
+import simulation.util.EarthCell;
 import simulation.util.GridCell;
+import util.Grid;
+import util.IGrid;
 
 public final class Earth implements RunnableSim {
 	
@@ -104,16 +107,19 @@ public final class Earth implements RunnableSim {
 		return new Integer(sunPosition);
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
 		
-		Queue<GridCell> bfs = new LinkedList<GridCell>();
-		Queue<GridCell> calcd = new LinkedList<GridCell>();
+		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
+		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
 		
 		currentStep++;
 		
 		int t = speed * currentStep;
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
 		sunPosition = (width * (rotationalAngle / 360) + (width / 2) % width);
+		
+		IGrid grid = new Grid(sunPosition, width, height);
 		
 		while(true) {
 			
@@ -122,13 +128,13 @@ public final class Earth implements RunnableSim {
 			
 			while(!bfs.isEmpty()) {
 				
-				GridCell point = bfs.remove();
+				EarthCell point = bfs.remove();
 				calcd.add(point);
 				
 				// TODO This needs testing. Should work though.
-				GridCell c = calcd.peek();
+				EarthCell c = calcd.peek();
 				if (c != null) {
-					Iterator<GridCell> itr = c.getChildren(false);
+					Iterator<EarthCell> itr = c.getChildren(false);
 					if (!itr.hasNext()) {
 						c.visited(false);
 						c.swapTemp();
@@ -137,19 +143,19 @@ public final class Earth implements RunnableSim {
 				}
 				// done TODO
 				
-				GridCell child = null;
-				Iterator<GridCell> itr = point.getChildren(false);
+				EarthCell child = null;
+				Iterator<EarthCell> itr = point.getChildren(false);
 				while(itr.hasNext()) {
 					child = itr.next();
 					child.visited(true);
-					child.calculateTemp();
+					grid.setTemperature(child.getX(), child.getY(), child.calculateTemp());
 					bfs.add(child);
 				}
 			}
 		}
 	}
 	
-private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {
+	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {
 		
 		for (int x = 1; x < width; x++) {
 			

@@ -2,6 +2,8 @@ package util;
 
 public interface IGrid {
 	
+	public void setTemperature(int x, int y, float temp);
+	
 	public float getTemperature(int x, int y);
 	
 	public int getSunPosition();

@@ -1,22 +1,40 @@
 package util;
 
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Grid implements IGrid {
-	
+
 	// Used to transport the temps in the buffer
 	private final int sunPosition, width, height;
-	
+
+	// We use a TreeMap to not consume a contiguous amount of memory. It's
+	// backed by a Red/Black Tree, so we get pretty decent access times
+	private final Map<Integer, Float> grid;
+
 	public Grid(int sunPosition, int width, int height) {
-		
+
 		this.sunPosition = sunPosition;
 		this.width = width;
-		this. height = height;
+		this.height = height;
+
+		grid = new TreeMap<Integer, Float>();
+	}
+
+	@Override
+	public void setTemperature(int x, int y, float temp) {
+		if (y >= height || x >= width || x < 0 || y < 0)
+			throw new IllegalArgumentException("index (" + x + ", " + y + ") out of bounds");
+
+		grid.put(y * width + x, temp);
 	}
 
 	@Override
 	public float getTemperature(int x, int y) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (y >= height || x >= width || x < 0 || y < 0)
+			throw new IllegalArgumentException("index (" + x + ", " + y + ") out of bounds");
+		
+		return grid.get(y * width + x);
 	}
 
 	@Override

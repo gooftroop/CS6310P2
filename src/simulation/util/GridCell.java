@@ -8,28 +8,28 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	public static final float AVG = 4;
 	
-	public int x, y, lat, longi;
+	public int x, y, latitude, longitude, p;
 	
 	private boolean visited;
 	private float currTemp, newTemp;
 	
 	private GridCell top = null, bottom = null, left = null, right = null;
 	
-	public GridCell(float temp, int x, int y, int lat, int longi) {
+	public GridCell(float temp, int x, int y, int latitude, int longitude, int p) {
 		
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 		
-		this.setGridProps(x, y, lat, longi);
+		this.setGridProps(x, y, latitude, longitude, p);
 		
 		this.setTemp(temp);
 		this.visited = false;
 	}
 	
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int lat, int longi) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int p) {
 		
-		this(temp, x, y, lat, longi);
+		this(temp, x, y, latitude, longitude, p);
 		
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -98,24 +98,25 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	@Override
-	public void setGridProps(int x, int y, int lat, int longi) {
+	public void setGridProps(int x, int y, int latitude, int longitude, int p) {
 		
+		this.setPorportion(p);
 		this.setX(x);
 		this.setY(y);
-		this.setLatitude(lat);
-		this.setLongitude(longi);
+		this.setLatitude(latitude);
+		this.setLongitude(longitude);
 		
 		// calc lengths, area, etc. 
 	}
 	
 	@Override
-	public void setLatitude(int lat) {
-		this.lat = lat;
+	public void setLatitude(int latitude) {
+		this.latitude = latitude;
 	}
 	
 	@Override
-	public void setLongitude(int longi) {
-		this.longi = longi;
+	public void setLongitude(int longitude) {
+		this.longitude = longitude;
 	}
 	
 	@Override
@@ -174,11 +175,21 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	@Override
 	public int getLatitude() {
-		return this.lat;
+		return this.latitude;
 	}
 
 	@Override
 	public int getLongitude() {
-		return this.longi;
+		return this.longitude;
+	}
+
+	@Override
+	public void setPorportion(int p) {
+		this.p = p;
+	}
+
+	@Override
+	public int getPorportion() {
+		return this.p;
 	}
 }

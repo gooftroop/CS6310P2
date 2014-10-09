@@ -6,7 +6,7 @@ import java.util.List;
 
 import simulation.Earth;
 
-public final class GridCell implements Cell<GridCell> {
+public final class GridCell implements EarthCell<GridCell> {
 	
 	public static final float AVG = 4;
 	
@@ -17,8 +17,8 @@ public final class GridCell implements Cell<GridCell> {
 	
 	private GridCell top = null, bottom = null, left = null, right = null;
 	
-	// Cell properties
-	private float surfarea;
+	// Cell properties: surface area, perimeter
+	private float surfarea, pm;
 	
 	public GridCell(float temp, int x, int y, int lat, int longi) {
 		
@@ -26,11 +26,7 @@ public final class GridCell implements Cell<GridCell> {
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 		
-		this.x = x;
-		this.y = y;
-		
-		this.lat = lat;
-		this.longi = longi;
+		this.setGridProps(x, y, lat, longi);
 		
 		this.setTemp(temp);
 		this.visited = false;
@@ -106,25 +102,33 @@ public final class GridCell implements Cell<GridCell> {
 		this.currTemp = temp;
 	}
 	
+	@Override
 	public void setGridProps(int x, int y, int lat, int longi) {
+		
 		this.setX(x);
 		this.setY(y);
-		this.setLat(lat);
-		this.setLongi(longi);
+		this.setLatitude(lat);
+		this.setLongitude(longi);
+		
+		// calc lengths, area, etc. 
 	}
 	
-	public void setLat(int lat) {
+	@Override
+	public void setLatitude(int lat) {
 		this.lat = lat;
 	}
 	
-	public void setLongi(int longi) {
+	@Override
+	public void setLongitude(int longi) {
 		this.longi = longi;
 	}
 	
+	@Override
 	public void setX(int x) {
 		this.x = x;
 	}
 	
+	@Override
 	public void setY(int y) {
 		this. y = y;
 	}
@@ -162,9 +166,36 @@ public final class GridCell implements Cell<GridCell> {
 		// Unused
 		return 0;
 	}
-	
+
+
+	@Override
+	public int getX() {
+		return this.x;
+	}
+
+	@Override
+	public int getY() {
+		return this.y;
+	}
+
+	@Override
+	public int getLatitude() {
+		return this.lat;
+	}
+
+	@Override
+	public int getLongitude() {
+		return this.longi;
+	}
+
 	private float calSurfaceArea() {
-		double lv = Earth.CIRCUMFERENCE * ;
-		double lb = Math.cos(Math.toRadians(50));
+		//double lv = Earth.CIRCUMFERENCE * ;
+		double lv = Earth.CIRCUMFERENCE;
+		double lb = Math.cos(Math.toRadians(lat));
+		double lt = Math.cos(Math.toRadians(lat + gs));
+		
+		this.pm = (float) (lt + lb + 2 * lv);
+		
+		this.surfarea =  1 / 2 * (lt + lb) * h;
 	}
 }

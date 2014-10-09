@@ -125,9 +125,8 @@ public final class GridCell implements Cell<GridCell> {
 	}
 	
 	@Override
-	public float calculateTemp() {
-		this.newTemp = (this.top.getTemp() + this.bottom.getTemp() + this.right.getTemp() + this.left.getTemp()) / AVG;
-		return this.newTemp - this.currTemp;
+	public float calculateTemp(int time) {
+		return 0; // new temp
 	}
 	
 	@Override
@@ -151,5 +150,11 @@ public final class GridCell implements Cell<GridCell> {
 		if (this.right != null 	&& this.right.visited == visited) 	ret.add(this.right);
 		
 		return ret.iterator();
+	}
+
+	@Override
+	public float calculateTemp() {
+		// Unused
+		return 0;
 	}
 }

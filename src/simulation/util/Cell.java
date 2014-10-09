@@ -31,5 +31,7 @@ public interface Cell<T> {
 	public void visited(boolean visited);
 	
 	public Iterator<T> getChildren(boolean unvisited);
+
+	float calculateTemp(int time);
 	
 }

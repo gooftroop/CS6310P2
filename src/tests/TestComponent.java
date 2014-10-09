@@ -29,20 +29,17 @@ public class TestComponent extends ComponentBase {
 		} else if (msg instanceof ConcreteMsg2) {
 			process((ConcreteMsg2) msg);
 		} else {
-			System.err
-					.printf("WARNING: No processor specified in class %s for message %s\n",
-							this.getClass().getName(), msg.getClass().getName());
+			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
+					this.getClass().getName(), msg.getClass().getName());
 		}
 	}
 
 	public void process(ConcreteMsg msg) {
-		System.out
-				.printf("processor1 called! (%s)\n", msg.getClass().getName());
+		System.out.printf("processor1 called! (%s)\n", msg.getClass().getName());
 	}
 
 	public void process(ConcreteMsg2 msg) {
-		System.out
-				.printf("processor2 called! (%s)\n", msg.getClass().getName());
+		System.out.printf("processor2 called! (%s)\n", msg.getClass().getName());
 	}
 
 }

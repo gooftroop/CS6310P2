@@ -10,7 +10,9 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	public static final float AVG = 4;
 	
-	public int x, y, lat, longi;
+	// gs: grid spacing; eta: average grid cell size 
+	public int x, y, latitude, longitude, gs;
+	public float eta;
 	
 	private boolean visited;
 	private float currTemp, newTemp;
@@ -18,23 +20,24 @@ public final class GridCell implements EarthCell<GridCell> {
 	private GridCell top = null, bottom = null, left = null, right = null;
 	
 	// Cell properties: surface area, perimeter
-	private float surfarea, pm;
-	
-	public GridCell(float temp, int x, int y, int lat, int longi) {
+	private float lv, lb, lt, surfarea, pm;
+	private float avgtemp;
+
+	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs, float eta) {
 		
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 		
-		this.setGridProps(x, y, lat, longi);
+		this.setGridProps(x, y, latitude, longitude, gs);
 		
 		this.setTemp(temp);
 		this.visited = false;
 	}
 	
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int lat, int longi) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs, float eta) {
 		
-		this(temp, x, y, lat, longi);
+		this(temp, x, y, latitude, longitude, gs, eta);
 		
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -103,24 +106,26 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	@Override
-	public void setGridProps(int x, int y, int lat, int longi) {
+	public void setGridProps(int x, int y, int latitude, int longitude, int gs) {
 		
+		this.setPorportion(p);
 		this.setX(x);
 		this.setY(y);
-		this.setLatitude(lat);
-		this.setLongitude(longi);
+		this.setLatitude(latitude);
+		this.setLongitude(longitude);
 		
 		// calc lengths, area, etc. 
+		this.calSurfaceArea(latitude, gs);
 	}
 	
 	@Override
-	public void setLatitude(int lat) {
-		this.lat = lat;
+	public void setLatitude(int latitude) {
+		this.latitude = latitude;
 	}
 	
 	@Override
-	public void setLongitude(int longi) {
-		this.longi = longi;
+	public void setLongitude(int longitude) {
+		this.longitude = longitude;
 	}
 	
 	@Override
@@ -134,8 +139,8 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	@Override
-	public float calculateTemp(int time) {
-		return 0; // new temp
+	public float calculateTemp(int sunPosition) {
+		return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
 	}
 	
 	@Override
@@ -180,22 +185,51 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	@Override
 	public int getLatitude() {
-		return this.lat;
+		return this.latitude;
 	}
 
 	@Override
 	public int getLongitude() {
-		return this.longi;
+		return this.longitude;
 	}
 
-	private float calSurfaceArea() {
-		//double lv = Earth.CIRCUMFERENCE * ;
-		double lv = Earth.CIRCUMFERENCE;
-		double lb = Math.cos(Math.toRadians(lat));
-		double lt = Math.cos(Math.toRadians(lat + gs));
+	@Override
+	public void setGridSpacing(int gs) {
+		this.gs = gs;
+	}
+
+	@Override
+	public int getGridSpacing() {
+		return this.gs;
+	}
+
+	private void calSurfaceArea(int latitude, int gs) {
+		double p  = gs / 360;
+		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
+		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
+		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
+		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 		
-		this.pm = (float) (lt + lb + 2 * lv);
+		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
+		this.surfarea =  (float) (1/2 * (this.lt + this.lb) * h);
+	}
+	
+	private float calTsun(int sunPosition) {
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude));
+		float attenuation_longi = (float) (( (Math.abs(sunPosition - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunPosition - this.longitude)) : 0);
 		
-		this.surfarea =  1 / 2 * (lt + lb) * h;
+		return 278 * attenuation_lat * attenuation_longi;
+	}
+	
+	private float calTcool() {
+		float beta = this.surfarea / this.eta;
+		// HERE IS THE AVERAGE TEMP USED
+		float tempfactor = this.currTemp / this.avgtemp;
+		
+		return -1 * beta * tempfactor * this.currTemp;
+	}
+	
+	private float calTneighbors() {
+		return this.lt / this.pm * this.top.getTemp() + this.lb / this.pm * this.bottom.getTemp() + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
 }

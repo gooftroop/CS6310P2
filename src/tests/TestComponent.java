@@ -4,6 +4,7 @@ import tests.util.ConcreteMsg;
 import tests.util.ConcreteMsg2;
 import messaging.Message;
 import messaging.Publisher;
+import util.ComponentBase;
 
 public class TestComponent extends ComponentBase {
 	Publisher publisher = Publisher.getInstance();

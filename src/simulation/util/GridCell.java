@@ -21,11 +21,7 @@ public final class GridCell implements Cell<GridCell> {
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 		
-		this.x = x;
-		this.y = y;
-		
-		this.lat = lat;
-		this.longi = longi;
+		this.setGridProps(x, y, lat, longi);
 		
 		this.setTemp(temp);
 		this.visited = false;
@@ -106,6 +102,8 @@ public final class GridCell implements Cell<GridCell> {
 		this.setY(y);
 		this.setLat(lat);
 		this.setLongi(longi);
+		
+		// calc lengths, area, etc. 
 	}
 	
 	public void setLat(int lat) {

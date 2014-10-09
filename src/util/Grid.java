@@ -1,8 +1,17 @@
 package util;
 
+
 public class Grid implements IGrid {
 	
 	// Used to transport the temps in the buffer
+	private final int sunPosition, width, height;
+	
+	public Grid(int sunPosition, int width, int height) {
+		
+		this.sunPosition = sunPosition;
+		this.width = width;
+		this. height = height;
+	}
 
 	@Override
 	public float getTemperature(int x, int y) {
@@ -12,19 +21,16 @@ public class Grid implements IGrid {
 
 	@Override
 	public int getSunPosition() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.sunPosition;
 	}
 
 	@Override
 	public int getGridWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.width;
 	}
 
 	@Override
 	public int getGridHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.height;
 	}
 }

@@ -50,12 +50,11 @@ public class DummyModel extends ComponentBase {
 	}
 	
 	private void generateData() {
-		System.out.printf("adding generated data to buffer\n");
 		try {
 			q.put(1);
+			System.out.printf("added generated data to buffer\n");
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			stopThread = true;
 		}
 	}
 }

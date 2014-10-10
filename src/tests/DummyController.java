@@ -3,7 +3,6 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import common.ComponentBase;
-
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
@@ -56,16 +55,22 @@ public class DummyController extends ComponentBase {
 
 		case VIEW:
 			pub.subscribe(NeedDisplayDataMessage.class, model);
-			// the view will produce the above message anytime the queue is 
+			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.
 			break;
 
 		case THIRD_PARTY:
-//			pub.subscribe(ProduceMessage.class, model);
-//			pub.subscribe(ProduceMessage.class, model);
-			// TODO: need work here, subscribe controller to produced message from model
-			//       and then controller can send consume message to view.
+			// This currently functions by telling the model to produce a single
+			// sim result.  The controller then waits for the view to signal
+			// it has displayed the data, before requesting the model produce
+			// another sim result.
+			pub.subscribe(ProduceMessage.class, model);
+			// NOTE: no need to subscribe controller to display message since
+			//       that is done in all cases for debug display counting.
+			//       The process method for DisplayMessage will send all
+			//       ProduceMessage's after the first below.
+			pub.send(new ProduceMessage());
 			break;
 		}
 		
@@ -103,6 +108,7 @@ public class DummyController extends ComponentBase {
 		}
 		
 		// remove subscriptions
+		Publisher.unsubscribeAll();
 		
 		// destroy model/view
 		model.close();
@@ -137,12 +143,20 @@ public class DummyController extends ComponentBase {
 			
 			// Allow non-threaded components to process event queues
 			if(!simThreaded) {
-				model.runAutomaticActions();
-				model.processMessageQueue();
+				try {
+					model.runAutomaticActions();
+					model.processMessageQueue();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if(!viewThreaded) {
-				view.runAutomaticActions();
-				view.processMessageQueue();
+				try {
+					view.runAutomaticActions();
+					view.processMessageQueue();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			// Do any orchestration required for current initiative setting
@@ -176,5 +190,10 @@ public class DummyController extends ComponentBase {
 
 	public void process(DisplayMessage msg) {
 		debugCnt++;
+		// If we're in third party mode and a display was just finished, it's
+		// time to request another sim output.
+		if(initiative == InitiativeSetting.THIRD_PARTY) {
+			pub.send(new ProduceMessage());
+		}
 	}
 }

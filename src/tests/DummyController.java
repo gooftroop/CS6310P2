@@ -2,13 +2,14 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import common.ComponentBase;
+
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
-import util.ComponentBase;
 
 public class DummyController extends ComponentBase {
 	private Boolean running = false;

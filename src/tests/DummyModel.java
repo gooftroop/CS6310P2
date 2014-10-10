@@ -2,12 +2,13 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import common.ComponentBase;
+
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
-import util.ComponentBase;
 
 public class DummyModel extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();

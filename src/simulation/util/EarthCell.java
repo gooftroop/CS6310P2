@@ -10,16 +10,16 @@ public void setLatitude(int lat);
 	
 	public int getLongitude();
 	
-	public void setPorportion(int p);
-	
-	public int getPorportion();
-	
 	public float calculateTemp(int time);
 
-	public void setGridProps(int x, int y, int latitude, int longitude, int p);
+	public void setGridProps(int x, int y, int latitude, int longitude, int gs, float avg);
 
-	void setGridSpacing(int gs);
+	public void setGridSpacing(int gs);
 
-	int getGridSpacing();
+	public int getGridSpacing();
+	
+	public void setAverageGridArea(float avg);
+	
+	public float getAverageGridArea();
 
 }

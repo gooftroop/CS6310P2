@@ -4,11 +4,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import common.Grid;
+import common.IGrid;
+
 import concurrent.RunnableSim;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
-import util.Grid;
-import util.IGrid;
 
 public final class Earth implements RunnableSim {
 	

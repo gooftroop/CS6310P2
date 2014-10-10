@@ -3,11 +3,12 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import common.ComponentBase;
+
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
 import messaging.events.NeedDisplayDataMessage;
-import util.ComponentBase;
 
 public class DummyView extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();

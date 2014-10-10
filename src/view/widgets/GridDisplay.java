@@ -6,7 +6,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import util.GridDisplayPane.GridDisplayable;
+import common.GridDisplayPane.GridDisplayable;
+
 import view.util.ColorGenerator;
 
 public class GridDisplay extends JPanel {

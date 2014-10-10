@@ -12,10 +12,9 @@ public class ThreadManager extends ThreadPoolExecutor {
 	public ThreadManager() {
 		
 		super(POOL_SIZE, POOL_SIZE, TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-		// TODO Auto-generated constructor stub
 	}
 
-	public void addRunnableSim(SimRunner r) {
+	public void addRunnableSim(Runnable r) {
 		
 		this.execute(r);
 	}

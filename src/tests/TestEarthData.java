@@ -1,6 +1,6 @@
 package tests;
 
-import util.GridDisplayPane.GridDisplayable;
+import common.GridDisplayPane.GridDisplayable;
 
 // Provides generated data for testing visualization
 

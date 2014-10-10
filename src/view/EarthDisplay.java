@@ -9,8 +9,6 @@ import java.awt.GridLayout;
 import javax.swing.*;
 
 import concurrent.RunnableSim;
-import util.GridDisplayPane.GridDisplayPane;
-import util.GridDisplayPane.GridDisplayable;
 import view.util.ColorGenerator;
 
 // Code for all up display window

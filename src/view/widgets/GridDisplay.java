@@ -6,9 +6,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import common.GridDisplayPane.GridDisplayable;
-
 import view.util.ColorGenerator;
+
+import common.IGrid;
 
 public class GridDisplay extends JPanel {
 
@@ -69,8 +69,8 @@ public class GridDisplay extends JPanel {
             int panelW = getWidth();
             
             // calculate scale factor in case we need to sub-sample the grid output
-            float xScale = (float) curGrid.getNumRows() / (float) panelH;
-            float yScale = (float) curGrid.getNumCols() / (float) panelW;
+            float xScale = (float) curGrid.getGridHeight() / (float) panelH;
+            float yScale = (float) curGrid.getGridWidth() / (float) panelW;
             
             //TODO: below finds value of each pixel in display grid.  this
             //      is good when grid to be displayed is larger than space 
@@ -83,7 +83,7 @@ public class GridDisplay extends JPanel {
             cellWidth = 1;								//GRID_SIZE / numRows;
             for (int i = 0; i < panelH; i++) {
                 for (int j = 0; j < panelW; j++) {
-                    paintSpot(anotherGraphics, i, j, curGrid.getDisplayValue((int) Math.floor(i * xScale), (int) Math.floor(j * yScale)));
+                    paintSpot(anotherGraphics, i, j, curGrid.getTemperature((int) Math.floor(i * xScale), (int) Math.floor(j * yScale)));
                 }
             }
         }

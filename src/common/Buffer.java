@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Buffer implements IBuffer {
 	
-	private final BlockingQueue<IGrid> buffer;
+	private BlockingQueue<IGrid> buffer;
 	
 	private static int size = 1;
 	private static Buffer instance = null;
@@ -18,12 +18,13 @@ public class Buffer implements IBuffer {
 		return instance;
 	}
 	
-	public static void setSize(int size) {
+	public void setSize(int size) {
 		
 		if (size < 1 || size > Integer.MAX_VALUE) 
 			throw new IllegalArgumentException("Invalid size");
-		
+
 		Buffer.size = size;
+		buffer = new LinkedBlockingQueue<IGrid>(size);
 	}
 	
 	public static void addCallback(ICallback c) {
@@ -37,7 +38,7 @@ public class Buffer implements IBuffer {
 	}
 	
 	private Buffer() {
-		buffer = new LinkedBlockingQueue<IGrid>(size);
+		// do nothing
 	}
 	
 	@Override

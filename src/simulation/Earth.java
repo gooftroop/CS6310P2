@@ -58,7 +58,7 @@ public final class Earth implements RunnableSim {
 		currentStep = 0;
 		
 		if (prime != null) prime.setTemp(INITIAL_TEMP);
-		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), p);
+		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		prime.setTop(null);
 		 
 		width = (2 * MAX_DEGREES / this.gs);	// rows
@@ -179,9 +179,9 @@ public final class Earth implements RunnableSim {
 		if (curr.getLeft() != null) { 
 			GridCell l = curr.getLeft();
 			l.setTemp(INITIAL_TEMP);
-			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), p);
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		} else {
-			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), p);
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 		}
 	}
@@ -193,7 +193,7 @@ public final class Earth implements RunnableSim {
 			curr.setTemp(INITIAL_TEMP);
 			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p);
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), p);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}

@@ -13,9 +13,6 @@ public final class GridCell implements EarthCell<GridCell> {
 	// gs: grid spacing
 	public int x, y, latitude, longitude, gs;
 
-	// avg: average grid cell area
-	public float avg;
-
 	private boolean visited;
 	private float currTemp, newTemp;
 
@@ -25,21 +22,21 @@ public final class GridCell implements EarthCell<GridCell> {
 	private float lv, lb, lt, surfarea, pm;
 	private float avgtemp;
 
-	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs, float avg) {
+	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 
-		this.setGridProps(x, y, latitude, longitude, gs, avg);
+		this.setGridProps(x, y, latitude, longitude, gs);
 
 		this.setTemp(temp);
 		this.visited = false;
 	}
 
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs, float avg) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs) {
 
-		this(temp, x, y, latitude, longitude, gs, avg);
+		this(temp, x, y, latitude, longitude, gs);
 
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -108,14 +105,13 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	@Override
-	public void setGridProps(int x, int y, int latitude, int longitude, int gs, float avg) {
+	public void setGridProps(int x, int y, int latitude, int longitude, int gs) {
 
 		this.setX(x);
 		this.setY(y);
 		this.setLatitude(latitude);
 		this.setLongitude(longitude);
 		this.setGridSpacing(gs);
-		this.setAverageGridArea(avg);
 
 		// calc lengths, area, etc.
 		this.calSurfaceArea(latitude, gs);
@@ -206,16 +202,6 @@ public final class GridCell implements EarthCell<GridCell> {
 		return this.gs;
 	}
 
-	@Override
-	public void setAverageGridArea(float avg) {
-		this.avg = avg;
-	}
-
-	@Override
-	public float getAverageGridArea() {
-		return this.avg;
-	}
-
 	private void calSurfaceArea(int latitude, int gs) {
 		double p  = gs / 360;
 		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
@@ -228,7 +214,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	private float calTsun(int sunPosition) {
-                int   sunLongitude      = getSunLocationOnEarth(sunPosition);
+		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
 		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude));
 		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 
@@ -244,7 +230,7 @@ public final class GridCell implements EarthCell<GridCell> {
         }
 
 	private float calTcool() {
-		float beta = this.surfarea / this.avg;
+		float beta = (float) (this.surfarea / (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight())));  // actual grid area / average cell area
 		float tempfactor = this.currTemp / this.avgtemp;
 
 		return -1 * beta * tempfactor * this.currTemp;

@@ -1,6 +1,7 @@
 package messaging;
 
 public interface MessageListener {
-	void onMessage(Message msg);
+	
+	public void onMessage(Message msg);
 }
 

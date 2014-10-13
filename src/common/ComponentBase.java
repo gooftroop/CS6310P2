@@ -13,7 +13,6 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	public void onMessage(Message msg) {
 
-		System.out.printf("%s.onMessage (%s)\n", this.getClass().getName(), msg.getClass().getName());
 		// enque message to be processed later
 		msgQueue.add(msg);
 	}
@@ -39,7 +38,7 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 	}
 
 	// This method dispatches a message to the appropriate processor
-	public abstract void dispatchMessage(Message msg);
+	public abstract <T extends Message> void dispatchMessage(T msg);
 
 	public void run() {
 

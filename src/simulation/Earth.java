@@ -4,14 +4,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import common.Grid;
-import common.IGrid;
-
-import concurrent.RunnableSim;
+import messaging.Message;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
 
-public final class Earth implements RunnableSim {
+import common.Grid;
+import common.IGrid;
+
+public final class Earth extends EarthEngine {
 	
 	public static final double CIRCUMFERENCE 	= 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA 	= 5.10072 * Math.pow(10, 14);
@@ -32,6 +32,22 @@ public final class Earth implements RunnableSim {
 	private static GridCell prime 	= null;
 	private static int speed 		= DEFAULT_SPEED;
 	private int gs 					= DEFAULT_DEGREES;
+	
+	public static GridCell getGrid() {
+		return prime;
+	}
+	
+	public static int getWidth() {
+		return new Integer(width);
+	}
+	
+	public static int getHeight() {
+		return new Integer(height);
+	}
+	
+	public static int getSunPosition() {
+		return new Integer(sunPosition);
+	}
 	
 	public void configure(int gs, int s) {
 		
@@ -97,24 +113,9 @@ public final class Earth implements RunnableSim {
 		this.createRow(curr, next, bottom, left, y);
 	}
 	
-	public GridCell getGrid() {
-		return prime;
-	}
-	
-	public int getWidth() {
-		return new Integer(width);
-	}
-	
-	public int getHeight() {
-		return new Integer(height);
-	}
-	
-	public int getSunPosition() {
-		return new Integer(sunPosition);
-	}
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void run() {
+	@Override
+	protected void generate() {
 		
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
 		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
@@ -207,5 +208,11 @@ public final class Earth implements RunnableSim {
 	
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
+	}
+
+	@Override
+	public void dispatchMessage(Message msg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

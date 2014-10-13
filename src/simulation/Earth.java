@@ -27,6 +27,7 @@ public final class Earth implements RunnableSim {
 	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 	
 	private static int currentStep, width, height, sunPosition, p;
+	private static float avgArea;
 	
 	private static GridCell prime 	= null;
 	private static int speed 		= DEFAULT_SPEED;
@@ -57,12 +58,14 @@ public final class Earth implements RunnableSim {
 		sunPosition = SUN_START_POS;
 		currentStep = 0;
 		
-		if (prime != null) prime.setTemp(INITIAL_TEMP);
-		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
-		prime.setTop(null);
-		 
 		width = (2 * MAX_DEGREES / this.gs);	// rows
 		height = (MAX_DEGREES / this.gs);		// cols
+		
+		avgArea = (float) (SURFACE_AREA / (width * height));   // average area of each cell
+		
+		if (prime != null) prime.setTemp(INITIAL_TEMP);
+		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
+		prime.setTop(null);
 		
 		p = this.gs / 360;
 		
@@ -179,9 +182,9 @@ public final class Earth implements RunnableSim {
 		if (curr.getLeft() != null) { 
 			GridCell l = curr.getLeft();
 			l.setTemp(INITIAL_TEMP);
-			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
 		} else {
-			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
 			curr.setLeft(next);
 		}
 	}
@@ -191,9 +194,9 @@ public final class Earth implements RunnableSim {
 		if (bottom.getTop() != null) { 
 			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
-			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p);
+			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p, avgArea);
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs, avgArea);
 			bottom.setTop(curr);
 		}
 	}

@@ -86,7 +86,7 @@ public class GUI extends JFrame implements ActionListener{
 		JPanel ctrlsPanel = new JPanel(new FlowLayout());
 		ctrlsPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-		ctrlsPanel.add(button("Run"));
+		ctrlsPanel.add(button("Start"));
 		ctrlsPanel.add(button("Pause/Resume"));
 		ctrlsPanel.add(button("Stop"));
 

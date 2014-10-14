@@ -3,7 +3,10 @@ package EarthSim;
 
 import common.Initiative;
 
-public class SimulationRun {
+import messaging.Message;
+import common.ComponentBase;
+
+public class SimulationRun extends ComponentBase{
 
 	private boolean ownSimThread,ownPresThread;
 	private Initiative initiative;
@@ -41,6 +44,11 @@ public class SimulationRun {
 
 	private void debug(String s){
 		System.out.println(s);
+	}
+	@Override
+	public void dispatchMessage(Message msg) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

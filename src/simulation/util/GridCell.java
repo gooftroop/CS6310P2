@@ -221,7 +221,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		return 278 * attenuation_lat * attenuation_longi;
 	}
 
-        // A help function for get the Sun's corresponding location on longitude.
+     // A help function for get the Sun's corresponding location on longitude.
         private int getSunLocationOnEarth(int sunPosition) {
             // Grid column under the Sun at sunPosition
             int cols = 360 / this.gs;
@@ -230,7 +230,9 @@ public final class GridCell implements EarthCell<GridCell> {
         }
 
 	private float calTcool() {
-		float beta = (float) (this.surfarea / (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight())));  // actual grid area / average cell area
+		
+		float avgArea = (float) (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight()));   // average area of each cell
+		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		float tempfactor = this.currTemp / this.avgtemp;
 
 		return -1 * beta * tempfactor * this.currTemp;

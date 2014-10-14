@@ -11,6 +11,7 @@ import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
 public class DummyController extends ComponentBase {
+	
 	private Boolean running = false;
 	private Boolean paused = false;
 	private Boolean simThreaded;
@@ -133,6 +134,7 @@ public class DummyController extends ComponentBase {
 	}
 	
 	public void run() {
+		
 		Boolean queueEmpty;
 		running = true;
 		paused = false;

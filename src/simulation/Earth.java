@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import messaging.Message;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
 
@@ -27,7 +26,6 @@ public final class Earth extends EarthEngine {
 	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 	
 	private static int currentStep, width, height, sunPosition, p;
-	private static float avgArea;
 	
 	private static GridCell prime 	= null;
 	private static int speed 		= DEFAULT_SPEED;
@@ -77,10 +75,8 @@ public final class Earth extends EarthEngine {
 		width = (2 * MAX_DEGREES / this.gs);	// rows
 		height = (MAX_DEGREES / this.gs);		// cols
 		
-		avgArea = (float) (SURFACE_AREA / (width * height));   // average area of each cell
-		
 		if (prime != null) prime.setTemp(INITIAL_TEMP);
-		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
+		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		prime.setTop(null);
 		
 		p = this.gs / 360;
@@ -115,7 +111,7 @@ public final class Earth extends EarthEngine {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	protected void generate() {
+	public void generate() {
 		
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
 		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
@@ -183,9 +179,9 @@ public final class Earth extends EarthEngine {
 		if (curr.getLeft() != null) { 
 			GridCell l = curr.getLeft();
 			l.setTemp(INITIAL_TEMP);
-			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		} else {
-			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 		}
 	}
@@ -195,9 +191,9 @@ public final class Earth extends EarthEngine {
 		if (bottom.getTop() != null) { 
 			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
-			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p, avgArea);
+			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p);
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs, avgArea);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}
@@ -208,11 +204,5 @@ public final class Earth extends EarthEngine {
 	
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
-	}
-
-	@Override
-	public void dispatchMessage(Message msg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

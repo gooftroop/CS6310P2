@@ -11,6 +11,7 @@ import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
 public class DummyModel extends ComponentBase {
+	
 	private Publisher pub = Publisher.getInstance();
 	ArrayBlockingQueue<Integer> q;
 	

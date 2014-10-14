@@ -1,6 +1,8 @@
 // Demo.java
 package EarthSim;
 
+import common.Initiative;
+
 import javax.swing.SwingUtilities;
 
 public class Demo{

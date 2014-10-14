@@ -1,6 +1,8 @@
 // SimulationRun.java
 package EarthSim;
 
+import common.Initiative;
+
 public class SimulationRun {
 
 	private boolean ownSimThread,ownPresThread;

@@ -7,9 +7,10 @@ import simulation.util.GridCell;
 public class TestEarthSim {
 	public static void main(String [] args){
 		Earth earth = new Earth();
-		earth.configure(6, 10);
+		earth.configure(90, 10);
 		earth.initializePlate();
 		GridCell prime = Earth.getGrid();
+		System.out.println(2);
 		//earth.run();
 		printGrid(prime);
 	}

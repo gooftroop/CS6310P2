@@ -11,10 +11,11 @@ import simulation.Earth;
 
 public final class GridCell implements EarthCell<GridCell> {
 
-	public static final float AVG = 4;
-
 	// gs: grid spacing
 	public int x, y, latitude, longitude, gs;
+	
+	// average temperature
+	private static float avgtemp;
 
 	private boolean visited;
 	private float currTemp, newTemp;
@@ -23,7 +24,6 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	// Cell properties: surface area, perimeter
 	private float lv, lb, lt, surfarea, pm;
-	private float avgtemp;
 
 	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
@@ -145,7 +145,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	@Override
 	public float calculateTemp(int sunPosition) {
 		//return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
-		this.newTemp = this.currTemp + calTsun(sunPosition);
+		this.newTemp = this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors();
 		//System.out.println(this.currTemp);
 		return this.newTemp; // new temp
 	}
@@ -204,15 +204,24 @@ public final class GridCell implements EarthCell<GridCell> {
 		return this.gs;
 	}
 
+	public static void setAvgtemp(float avg){
+		avgtemp = avg;
+	}
+	
+	public static float getAvgtemp(){
+		return avgtemp;
+	}
+	
 	private void calSurfaceArea(int latitude, int gs) {
-		double p  = gs / 360;
+		
+		double p  = 1.0 * gs / 360;
 		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
 		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
 		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
 		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 
 		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
-		this.surfarea =  (float) (1/2 * (this.lt + this.lb) * h);
+		this.surfarea =  (float) (1.0/2 * (this.lt + this.lb) * h);
 	}
 
 	private float calTsun(int sunPosition) {
@@ -232,8 +241,9 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	private float calTcool() {
-		float beta = (float) (this.surfarea / (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight())));  // actual grid area / average cell area
-		float tempfactor = this.currTemp / this.avgtemp;
+		float avgarea = (float) (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight()));
+		float beta = (float) (this.surfarea / avgarea);  // actual grid area / average cell area
+		float tempfactor = this.currTemp / avgtemp;
 
 		return -1 * beta * tempfactor * this.currTemp;
 	}

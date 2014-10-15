@@ -9,7 +9,7 @@ public class TestEarthSim {
 		Earth earth = new Earth();
 		earth.configure(90, 10);
 		earth.initializePlate();
-		GridCell prime = Earth.getGrid();
+		GridCell prime = earth.getGrid();
 		System.out.println(2);
 		//earth.run();
 		printGrid(prime);

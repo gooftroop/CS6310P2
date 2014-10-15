@@ -8,6 +8,10 @@ public abstract class EarthEngine extends ComponentBase {
 	@Override
 	public <T extends Message> void dispatchMessage(T msg) {
 		
+	}
+	
+	@Override
+	public void close() {
 		
 	}
 }

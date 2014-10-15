@@ -1,7 +1,14 @@
 package messaging.events;
 
 import messaging.Message;
+import messaging.MessageListener;
 
-public class StopMessage extends Message {
+public class StopMessage implements Message {
+
+	@Override
+	public void process(MessageListener l) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

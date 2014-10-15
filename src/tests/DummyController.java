@@ -6,7 +6,7 @@ import common.ComponentBase;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
-import messaging.events.NeedDisplayDataMessage;
+import messaging.events.ConsumeContinuousMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
@@ -55,7 +55,7 @@ public class DummyController extends ComponentBase {
 			break;
 
 		case VIEW:
-			pub.subscribe(NeedDisplayDataMessage.class, model);
+			pub.subscribe(ConsumeContinuousMessage.class, model);
 			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.
@@ -135,7 +135,6 @@ public class DummyController extends ComponentBase {
 	
 	public void run() {
 		
-		Boolean queueEmpty;
 		running = true;
 		paused = false;
 		while (running) {
@@ -145,28 +144,17 @@ public class DummyController extends ComponentBase {
 			
 			// Allow non-threaded components to process event queues
 			if(!simThreaded) {
-				try {
-					model.runAutomaticActions();
-					model.processMessageQueue();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				model.performAction();
 			}
+			
 			if(!viewThreaded) {
-				try {
-					view.runAutomaticActions();
-					view.processMessageQueue();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				view.performAction();
 			}
 			
 			// Do any orchestration required for current initiative setting
 			//TODO: work this out between here and in message handlers...
-			
 
-			queueEmpty = processMessageQueue();
-			if (queueEmpty || paused) {
+			while (paused) {
 				// yield execution thread if nothing to process (save cpu)
 				Thread.yield();
 			}
@@ -179,16 +167,6 @@ public class DummyController extends ComponentBase {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void dispatchMessage(Message msg) {
-		if (msg instanceof DisplayMessage) {
-			process((DisplayMessage) msg);
-		} else {
-			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
-					this.getClass().getName(), msg.getClass().getName());
-		}
-	}
 
 	public void process(DisplayMessage msg) {
 		debugCnt++;
@@ -197,5 +175,31 @@ public class DummyController extends ComponentBase {
 		if(initiative == InitiativeSetting.THIRD_PARTY) {
 			pub.send(new ProduceMessage());
 		}
+	}
+
+	@Override
+	public void generate() {
+		return;
+	}
+
+	@Override
+	public <T extends Message> void dispatchMessage(T msg) {
+		
+		if (msg instanceof DisplayMessage) {
+			process((DisplayMessage) msg);
+		} else {
+			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
+					this.getClass().getName(), msg.getClass().getName());
+		}	
+	}
+
+	@Override
+	public void configure(int gs, int timeStep) {
+		return;
+	}
+
+	@Override
+	public void close() {
+		return;
 	}
 }

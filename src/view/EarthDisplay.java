@@ -6,14 +6,19 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import concurrent.RunnableSim;
 import view.util.ColorGenerator;
+import view.widgets.GridDisplay;
+
+import common.IGrid;
 
 // Code for all up display window
 
-public class EarthDisplay extends JFrame implements RunnableSim {
+public class EarthDisplay extends JFrame {
 
 	/**
 	 * 

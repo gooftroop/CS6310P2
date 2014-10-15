@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import messaging.Message;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
+
 import common.Grid;
 import common.IGrid;
 
@@ -27,11 +27,11 @@ public final class Earth extends EarthEngine {
 
 	private static int currentStep, width, height, sunPosition, p;
 	
-	private static GridCell prime 	= null;
-	private static int speed 		= DEFAULT_SPEED;
-	private int gs 					= DEFAULT_DEGREES;
+	private GridCell prime 	= null;
+	private int speed 		= DEFAULT_SPEED;
+	private int gs 			= DEFAULT_DEGREES;
 
-	public static GridCell getGrid() {
+	public GridCell getGrid() {
 		return prime;
 	}
 
@@ -47,7 +47,8 @@ public final class Earth extends EarthEngine {
 		return new Integer(sunPosition);
 	}
 
-	public void configure(int gs, int s) {
+	@Override
+	public void configure(int gs, int timeStep) {
 
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
@@ -55,7 +56,7 @@ public final class Earth extends EarthEngine {
 		if (speed <= 0 || speed > MAX_SPEED)
 			throw new IllegalArgumentException("Invalid speed setting");
 
-		speed = s;
+		speed = timeStep;
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
@@ -207,12 +208,5 @@ public final class Earth extends EarthEngine {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
-	}
-
-
-	@Override
-	public void dispatchMessage(Message msg) {
-		// TODO Auto-generated method stub
-
 	}
 }

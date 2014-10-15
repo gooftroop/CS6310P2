@@ -16,4 +16,16 @@ public class EarthDisplayEngine extends ComponentBase {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void configure(int gs, int timeStep) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
 }

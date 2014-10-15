@@ -23,9 +23,11 @@ import java.util.HashMap;
 
 public class GUI extends JFrame implements ActionListener{
 
-	private SimulationRun simrun;
+	private EarthSimEngine engine;
 	public GUI(boolean ownSimThread,boolean ownPresThread,Initiative initiative,long bufferSize){
-		this.simrun = new SimulationRun(ownSimThread,ownPresThread,initiative,bufferSize,this);
+		//todo: add initiative to EarthSimEngine later. For now give it a bool
+		// this.engine = new EarthSimEngine(ownSimThread,ownPresThread,initiative,bufferSize);
+		this.engine = new EarthSimEngine(ownSimThread,ownPresThread,false,false,(int)bufferSize);
 
 		setupWindow();
 		add(contentsPanel());
@@ -167,18 +169,17 @@ public class GUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("Start".equals(cmd)){
-			simrun.reset();
-			simrun.start();
+			engine.start();
 		}
 		if("Pause/Resume".equals(cmd)){
 			if(paused)
-				simrun.resume();
+				engine.restart();
 			else
-				simrun.pause();
+				engine.pause();
 			paused = !paused;
 		}
 		if("Stop".equals(cmd)){
-			simrun.stop();
+			engine.stop();
 		}
 	}
 	

@@ -81,6 +81,7 @@ public class GUI extends JFrame implements ActionListener{
 		// settingsPanel.add(prompt("Set initial conditions"));
 		settingsPanel.add(inputField("Grid Spacing"));
 		settingsPanel.add(inputField("Simulation Time Step"));
+		settingsPanel.add(inputField("Presentation Rate"));
 
 		return settingsPanel;
 	}
@@ -189,8 +190,7 @@ public class GUI extends JFrame implements ActionListener{
 		try{
 			int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
 			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
-			//todo: add presentationRate to inputs and get the value here
-			long presentationRate = 1L;
+			long presentationRate = Long.parseLong(inputs.get("Presentation Rate").getText());;
 
 			engine.configure(gs, timeStep, presentationRate);
 			return true;

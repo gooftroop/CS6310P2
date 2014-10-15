@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 
 import java.util.HashMap;
 
@@ -53,7 +54,7 @@ public class GUI extends JFrame implements ActionListener{
 
 		contents.add(settingsNControls(), BorderLayout.WEST);
 		contents.add(presentation(),BorderLayout.CENTER);
-		contents.add(feedback(),BorderLayout.SOUTH);
+		// contents.add(feedback(),BorderLayout.SOUTH);
 
 		this.contents = contents;
 		return contents;
@@ -80,6 +81,7 @@ public class GUI extends JFrame implements ActionListener{
 		// settingsPanel.add(prompt("Set initial conditions"));
 		settingsPanel.add(inputField("Grid Spacing"));
 		settingsPanel.add(inputField("Simulation Time Step"));
+		settingsPanel.add(inputField("Presentation Rate"));
 
 		return settingsPanel;
 	}
@@ -169,7 +171,8 @@ public class GUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("Start".equals(cmd)){
-			engine.start();
+			if(configureEngine())
+				engine.start();
 		}
 		if("Pause/Resume".equals(cmd)){
 			if(paused)
@@ -183,6 +186,20 @@ public class GUI extends JFrame implements ActionListener{
 		}
 	}
 	
+	private boolean configureEngine(){
+		try{
+			int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
+			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
+			long presentationRate = Long.parseLong(inputs.get("Presentation Rate").getText());;
+
+			engine.configure(gs, timeStep, presentationRate);
+			return true;
+
+		}catch (NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(null,"Please correct input. All fields need numbers");
+		}
+		return false;
+	}
 	// todo: add handler for window close
 
 }

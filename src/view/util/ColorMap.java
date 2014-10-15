@@ -91,7 +91,8 @@ public class ColorMap {
 
 	public String toString() {
 
-		String res = "Colormap " + name + " with " + clrs.length + " colors: { ";
+		String res = "Colormap " + name + " with " + clrs.length
+				+ " colors: { ";
 
 		for (int i = 0; i < clrs.length; i++) {
 			res += clrs[i] + " ";
@@ -158,6 +159,12 @@ public class ColorMap {
 			Color.yellow };
 
 	/*
+	 * Autumn varies smoothly from red, through orange, to yellow.
+	 */
+	public static final Color thermal[] = { Color.red, new Color(255, 128, 0),
+			Color.yellow, Color.blue, Color.green };
+
+	/*
 	 * Winter consists of colors that are shades of blue and green.
 	 */
 	public static final Color winter[] = { Color.blue, Color.green };
@@ -207,5 +214,5 @@ public class ColorMap {
 			new ColorMap("winter", winter), new ColorMap("gray", gray),
 			new ColorMap("bone", bone), new ColorMap("copper", copper),
 			new ColorMap("pink", pink), new ColorMap("prism", prism),
-			new ColorMap("white", white) };
+			new ColorMap("white", white), new ColorMap("thermal", thermal) };
 }

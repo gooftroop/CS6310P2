@@ -2,7 +2,7 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
@@ -10,7 +10,7 @@ import messaging.events.ConsumeContinuousMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
-public class DummyController extends ComponentBase {
+public class DummyController extends AbstractEngine {
 	
 	private Boolean running = false;
 	private Boolean paused = false;

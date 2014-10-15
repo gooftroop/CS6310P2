@@ -1,6 +1,9 @@
-package view.util;
+package tests.util;
 
 import java.awt.*;
+
+import view.util.ColorGenerator;
+import view.util.ColorMap;
 
 /**
  * Visualization algorithm based on the opacity of color red.

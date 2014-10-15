@@ -7,15 +7,15 @@ import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.StopMessage;
 
-public abstract class ComponentBase implements MessageListener, IComponent {
+public abstract class AbstractEngine implements MessageListener, IEngine {
 
 	protected final ConcurrentLinkedQueue<Message> msgQueue;
 
-	public ComponentBase() {
+	public AbstractEngine() {
 		msgQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
-	public void onMessage(Message msg) {
+	public synchronized void onMessage(Message msg) {
 
 		// enque message to be processed later
 		if (msg instanceof StopMessage) { 
@@ -26,7 +26,7 @@ public abstract class ComponentBase implements MessageListener, IComponent {
 	}
 
 	// TODO guard against starvation
-	public void performAction() {
+	public synchronized void performAction() {
 
 		Message msg;
 		if ((msg = msgQueue.poll()) != null) 
@@ -37,12 +37,13 @@ public abstract class ComponentBase implements MessageListener, IComponent {
 
 		while (!Thread.currentThread().isInterrupted()) {
 			// Just loop
+			this.performAction();
 			// Thread.yield was here, but it is dangerous to use
 		}
 	}
 
 	// This method dispatches a message to the appropriate processor
-	public <T extends Message> void dispatchMessage(T msg) {
+	public synchronized <T extends Message> void dispatchMessage(T msg) {
 		Publisher.getInstance().send(msg);
 	}
 }

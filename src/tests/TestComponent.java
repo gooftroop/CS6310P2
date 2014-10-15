@@ -1,13 +1,13 @@
 package tests;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 
 import tests.util.ConcreteMsg;
 import tests.util.ConcreteMsg2;
 import messaging.Message;
 import messaging.Publisher;
 
-public class TestComponent extends ComponentBase {
+public class TestComponent extends AbstractEngine {
 	
 	Publisher publisher = Publisher.getInstance();
 

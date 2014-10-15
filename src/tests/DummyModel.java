@@ -4,9 +4,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import messaging.Message;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 
-public class DummyModel extends ComponentBase {
+public class DummyModel extends AbstractEngine {
 	
 	ArrayBlockingQueue<Integer> q;
 	

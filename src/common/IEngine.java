@@ -1,6 +1,6 @@
 package common;
 
-public interface IComponent extends Runnable {
+public interface IEngine extends Runnable {
 
 	public void performAction();
 	

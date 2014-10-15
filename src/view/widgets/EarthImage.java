@@ -23,7 +23,7 @@ public class EarthImage extends JPanel {
 		try {
 			earth = ImageIO.read(new File(EARTH_IMAGE));
 		} catch (IOException e) {
-			
+			System.err.println(e.toString());
 		}
 	}
 	

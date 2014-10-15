@@ -1,7 +1,8 @@
 package tests;
 
+import tests.util.ColormapVisualizer;
+import tests.util.EarthDisplayold;
 import view.EarthDisplay;
-import view.util.ColormapVisualizer;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class TestStandAlone {
 									// ColorMap.java for complete list)
 
 		// Standard required setup
-		EarthDisplay view = new EarthDisplay(SHOW_RUN_STATS);
+		EarthDisplayold view = new EarthDisplayold(SHOW_RUN_STATS);
 		view.setVisualizer(new ColormapVisualizer(COLORMAP)); // we can fix this
 																// ourselves or
 																// allow
@@ -42,12 +43,12 @@ public class TestStandAlone {
 
 class UpdateTask extends TimerTask {
 	
-	EarthDisplay view;
+	EarthDisplayold view;
 	int rowOffset;
 	int colOffset;
 
-	UpdateTask(EarthDisplay view) {
-		this.view = view;
+	UpdateTask(EarthDisplayold view2) {
+		this.view = view2;
 		rowOffset = colOffset = 0;
 	}
 

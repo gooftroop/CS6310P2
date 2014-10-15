@@ -6,15 +6,16 @@ import java.util.TreeMap;
 public class Grid implements IGrid {
 
 	// Used to transport the temps in the buffer
-	private final int sunPosition, width, height;
+	private final int sunPosition, time, width, height;
 
 	// We use a TreeMap to not consume a contiguous amount of memory. It's
 	// backed by a Red/Black Tree, so we get pretty decent access times
 	private final Map<Integer, Float> grid;
 
-	public Grid(int sunPosition, int width, int height) {
+	public Grid(int sunPosition, int time, int width, int height) {
 
 		this.sunPosition = sunPosition;
+		this.time = time;
 		this.width = width;
 		this.height = height;
 
@@ -40,6 +41,11 @@ public class Grid implements IGrid {
 	@Override
 	public int getSunPosition() {
 		return this.sunPosition;
+	}
+	
+	@Override
+	public int getCurrentTime() {
+		return this.time;
 	}
 
 	@Override

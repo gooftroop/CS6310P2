@@ -14,18 +14,18 @@ import view.EarthDisplayEngine;
 
 import common.Buffer;
 import common.BufferController;
-import common.ComponentBase;
-import common.IComponent;
+import common.AbstractEngine;
+import common.IEngine;
 import common.Initiative;
 
 import concurrent.ThreadManager;
 
-public final class EarthSimEngine extends ComponentBase {
+public final class EarthSimEngine extends AbstractEngine {
 	
 	private static final int DEFAULT_BUFFER_SIZE = 1;
 	
 	private ThreadManager manager;
-	private IComponent model, view;
+	private IEngine model, view;
 	
 	private Initiative initiative;
 	private boolean isPaused, isStopped, isRunning;

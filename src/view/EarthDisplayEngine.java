@@ -1,31 +1,39 @@
 package view;
 
-import messaging.Message;
-import common.ComponentBase;
+import common.AbstractEngine;
+import common.Buffer;
+import common.IGrid;
 
-public class EarthDisplayEngine extends ComponentBase {
-
-	@Override
-	public void generate() {
-		// TODO Auto-generated method stub
+public class EarthDisplayEngine extends AbstractEngine {
+	
+	private final EarthDisplay earthDisplay;
+	
+	public EarthDisplayEngine() {
 		
+		earthDisplay = new EarthDisplay();
 	}
 
 	@Override
-	public <T extends Message> void dispatchMessage(T msg) {
-		// TODO Auto-generated method stub
-		
+	public synchronized void generate() {
+		try {
+			IGrid grid = Buffer.getBuffer().get();
+			earthDisplay.update(grid);
+		} catch (InterruptedException e) {
+			// We couldn't get anything. Wait for next round to try again
+		}
 	}
 
 	@Override
 	public void configure(int gs, int timeStep) {
-		// TODO Auto-generated method stub
 		
+		if (gs <= 0 || gs >= Integer.MAX_VALUE)
+			throw new IllegalArgumentException("Invalid grid spacing value");
+		
+		earthDisplay.display(gs, timeStep);
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-		
+		earthDisplay.close();
 	}
 }

@@ -128,7 +128,7 @@ public final class Earth extends EarthEngine {
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
 		sunPosition = (width * (rotationalAngle / 360) + (width / 2) % width);
 
-		IGrid grid = new Grid(sunPosition, width, height);
+		IGrid grid = new Grid(sunPosition, t, width, height);
 
 		int time = 0;
 		float totaltemp;
@@ -220,12 +220,6 @@ public final class Earth extends EarthEngine {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
-	}
-
-	@Override
-	public void dispatchMessage(Message msg) {
-		// TODO Auto-generated method stub
-
 	}
 	
 	

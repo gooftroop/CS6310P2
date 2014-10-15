@@ -7,9 +7,9 @@ import messaging.Publisher;
 import messaging.events.ConsumeContinuousMessage;
 import messaging.events.DisplayMessage;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 
-public class DummyView extends ComponentBase {
+public class DummyView extends AbstractEngine {
 
 	private Publisher pub = Publisher.getInstance();
 	ArrayBlockingQueue<Integer> q;

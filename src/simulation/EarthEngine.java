@@ -1,9 +1,9 @@
 package simulation;
 
 import messaging.Message;
-import common.ComponentBase;
+import common.AbstractEngine;
 
-public abstract class EarthEngine extends ComponentBase {
+public abstract class EarthEngine extends AbstractEngine {
 	
 	@Override
 	public <T extends Message> void dispatchMessage(T msg) {

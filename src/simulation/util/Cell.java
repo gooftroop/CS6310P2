@@ -30,8 +30,6 @@ public interface Cell<T> {
 	
 	public Iterator<T> getChildren(boolean unvisited);
 	
-	public float calculateTemp();
-	
 	public void setX(int x);
 	
 	public int getX();

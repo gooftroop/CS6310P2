@@ -7,7 +7,6 @@ import java.util.Queue;
 import messaging.Message;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
-
 import common.Grid;
 import common.IGrid;
 
@@ -95,16 +94,18 @@ public final class Earth extends EarthEngine {
 		curr.setLeft(prime);
 
 		// Create each grid row, with the exception of the south pole
-		GridCell bottom = prime.getLeft(), left = null;
+		GridCell bottom = prime, left = null;
 		for (y = 1; y < height - 1; y++) {
 
-			this.createNextRow(bottom, curr, y);
-			this.createRow(curr, next, bottom.getLeft(), left, y);
-			bottom = left;
+			this.createNextRow(bottom, curr, y);       // curr should be changed, but actually have not.
+			curr   = bottom.getTop();
+			this.createRow(curr, next, bottom.getLeft(), left, y);  // left should be changed, but actually have not.
+			bottom = bottom.getTop();
 
 		}
 
 		this.createNextRow(bottom, curr, y);
+		curr   = bottom.getTop();
 
 		// North Pole
 		this.createRow(curr, next, bottom.getLeft(), left, y);
@@ -125,37 +126,40 @@ public final class Earth extends EarthEngine {
 
 		IGrid grid = new Grid(sunPosition, width, height);
 
-		while(true) {
+		int time = 0;
+		while(time < 10) {
 
 			bfs.add(prime);
 			prime.visited(true);
-
+			
 			while(!bfs.isEmpty()) {
 
 				EarthCell point = bfs.remove();
 				calcd.add(point);
-
-				// TODO This needs testing. Should work though.
-				EarthCell c = calcd.peek();
-				if (c != null) {
-					Iterator<EarthCell> itr = c.getChildren(false);
-					if (!itr.hasNext()) {
-						c.visited(false);
-						c.swapTemp();
-						calcd.poll();
-					}
-				}
-				// done TODO
 
 				EarthCell child = null;
 				Iterator<EarthCell> itr = point.getChildren(false);
 				while(itr.hasNext()) {
 					child = itr.next();
 					child.visited(true);
-					grid.setTemperature(child.getX(), child.getY(), child.calculateTemp());
+					grid.setTemperature(child.getX(), child.getY(), child.calculateTemp(sunPosition));
 					bfs.add(child);
 				}
 			}
+			
+			printGrid();
+			
+			System.out.println(calcd.size());
+			EarthCell c = calcd.poll();
+			while (c != null) {
+				c.visited(false);
+				c.swapTemp();
+				c = calcd.poll();
+			}
+			
+			printGrid();
+			time++;
+			System.out.println(time);
 		}
 	}
 
@@ -214,5 +218,33 @@ public final class Earth extends EarthEngine {
 	public void dispatchMessage(Message msg) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	
+	// The following code is only for testing.
+	public static void main(String [] args){
+		Earth earth = new Earth();
+		earth.configure(45, 10);
+		earth.initializePlate();
+		System.out.println("Just after initializaiton:");
+		printGrid();
+		//earth.run();
+		earth.generate();
+	}
+	
+	private static void printGrid(){
+		GridCell curr = prime;
+		int height = Earth.getHeight();
+		int width  = Earth.getWidth();
+		//System.out.println(height);
+		//System.out.println(width);
+		for (int x = 0; x < height; x++) {
+			for (int y = 0; y < width; y++) {
+				GridCell rowgrid = curr.getLeft();
+				System.out.printf("%d,",rowgrid.getLongitude());
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
 	}
 }

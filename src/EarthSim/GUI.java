@@ -26,8 +26,8 @@ public class GUI extends JFrame implements ActionListener{
 	private EarthSimEngine engine;
 	public GUI(boolean ownSimThread,boolean ownPresThread,Initiative initiative,long bufferSize){
 		//todo: add initiative to EarthSimEngine later. For now give it a bool
-		// this.engine = new EarthSimEngine(ownSimThread,ownPresThread,initiative,bufferSize);
-		this.engine = new EarthSimEngine(ownSimThread,ownPresThread,false,false,(int)bufferSize);
+		this.engine = new EarthSimEngine(ownSimThread,ownPresThread,initiative,(int)bufferSize);
+		// this.engine = new EarthSimEngine(ownSimThread,ownPresThread,false,false,(int)bufferSize);
 
 		setupWindow();
 		add(contentsPanel());

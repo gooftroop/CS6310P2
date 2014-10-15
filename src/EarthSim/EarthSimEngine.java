@@ -16,6 +16,7 @@ import common.Buffer;
 import common.BufferController;
 import common.ComponentBase;
 import common.IComponent;
+import common.Initiative;
 
 import concurrent.ThreadManager;
 
@@ -26,20 +27,18 @@ public final class EarthSimEngine extends ComponentBase {
 	private ThreadManager manager;
 	private IComponent model, view;
 	
-	private final boolean simInitiative, viewInitiative;
+	private Initiative initiative;
 	private boolean isPaused, isStopped, isRunning;
 	private int gs, timeStep; 
 	private long presentationRate;
 	
-	public EarthSimEngine(boolean s, boolean p, boolean r, boolean t, int b) {
+	public EarthSimEngine(boolean s, boolean p, Initiative i, int b) {
 		
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
 		
-		// TODO there should be a way to do this through OO...
-		simInitiative = s;
-		viewInitiative = p;
+		initiative = i;
 		
 		Publisher publisher = Publisher.getInstance();
 		model = new Earth();
@@ -48,9 +47,9 @@ public final class EarthSimEngine extends ComponentBase {
 		Buffer.getBuffer().create(b);
 		
 		// TODO more extensible possible?
-		if (r) {
+		if (initiative == Initiative.PRES_THREAD) {
 			publisher.subscribe(ProduceContinuousMessage.class, (MessageListener) model);
-		} else if (t) {
+		} else if (initiative == Initiative.SIM_THREAD) {
 			publisher.subscribe(ConsumeContinuousMessage.class, (MessageListener) view);
 		} else Buffer.addCallback(new BufferController());
 		
@@ -65,9 +64,8 @@ public final class EarthSimEngine extends ComponentBase {
 		publisher.subscribe(ResumeMessage.class, (MessageListener) view);
 		publisher.subscribe(ResumeMessage.class, (MessageListener) model);
 			
-		// TODO figure out better OO so we dont have to cast
-		if (simInitiative) manager.add(model);
-		if (viewInitiative) manager.add(view);
+		if (initiative == Initiative.SIM_THREAD) manager.add(model);
+		if (initiative == Initiative.PRES_THREAD) manager.add(view);
 		manager.add(this);
 		
 		this.isPaused = this.isStopped = this.isRunning = false;
@@ -134,8 +132,8 @@ public final class EarthSimEngine extends ComponentBase {
 		
 		while(this.isPaused) { /* block */ }
 		
-		if (!simInitiative) model.performAction();
-		if (!viewInitiative) view.performAction();
+		if (initiative != Initiative.PRES_THREAD) model.performAction();
+		if (initiative != Initiative.SIM_THREAD) view.performAction();
 		
 		try {
 			Thread.currentThread();

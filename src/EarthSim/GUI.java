@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 
 import java.util.HashMap;
 
@@ -169,7 +170,8 @@ public class GUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if("Start".equals(cmd)){
-			engine.start();
+			if(configureEngine())
+				engine.start();
 		}
 		if("Pause/Resume".equals(cmd)){
 			if(paused)
@@ -183,6 +185,21 @@ public class GUI extends JFrame implements ActionListener{
 		}
 	}
 	
+	private boolean configureEngine(){
+		try{
+			int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
+			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
+			//todo: add presentationRate to inputs and get the value here
+			long presentationRate = 1L;
+
+			engine.configure(gs, timeStep, presentationRate);
+			return true;
+
+		}catch (NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(null,"Please correct input. All fields need numbers");
+		}
+		return false;
+	}
 	// todo: add handler for window close
 
 }

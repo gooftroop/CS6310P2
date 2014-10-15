@@ -81,6 +81,7 @@ public class GridDisplay extends JPanel {
             
             cellHeight = 1;								//GRID_SIZE / numCols;
             cellWidth = 1;								//GRID_SIZE / numRows;
+            
             for (int i = 0; i < panelH; i++) {
                 for (int j = 0; j < panelW; j++) {
                     paintSpot(anotherGraphics, i, j, curGrid.getTemperature((int) Math.floor(i * xScale), (int) Math.floor(j * yScale)));
@@ -90,7 +91,7 @@ public class GridDisplay extends JPanel {
         aGraphics.drawImage(bi, 0, 0, this);
     }
 
-    public void updateGrid(GridDisplayable grid) {
+    public void updateGrid(IGrid grid) {
         this.curGrid = grid;
         repaint();
     }

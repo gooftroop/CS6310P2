@@ -1,10 +1,11 @@
 package tests;
 
-import common.GridDisplayPane.GridDisplayable;
+import common.IGrid;
 
 // Provides generated data for testing visualization
 
-public class TestEarthData implements GridDisplayable {
+public class TestEarthData implements IGrid {
+	
 	private int rows;
 	private int cols;
 	private Boolean invert;
@@ -34,40 +35,56 @@ public class TestEarthData implements GridDisplayable {
 		this.rowOffset = rowOffset;
 		this.colOffset = colOffset;
 	}
-
 	@Override
-	public float getDisplayValue(int row, int col) {
+	public float getTemperature(int x, int y) {
+		
 		// Generate a test pattern for display
 		// for now we'll just checker board getting fainter as you advance to
 		// right (except that first row is completely on and last completely off
-		
+
 		// Apply offset values
-		row = (row+rowOffset) % getNumRows();
-		col = (col+colOffset) % getNumCols();
-		
-		double initialVal = (row + col) % 2;
-		if( row == 0 ) {
+		y = (y + rowOffset) % getGridHeight();
+		x = (x + colOffset) % getGridWidth();
+
+		double initialVal = (y + x) % 2;
+		if (y == 0) {
 			initialVal = 1.0;
-		}
-		else if (row == getNumRows()-1) {
+		} else if (y == getGridHeight() - 1) {
 			initialVal = 0.0;
 		}
+		
 		if (invert) {
 			initialVal = (initialVal + 1) % 2;
 		}
-		double rightGradientScale = 1.0 - ((double)col / getNumCols());
-//		System.out.printf("row/col/val %d/%d/%f\n", row, col, (float)(initialVal*rightGradientScale));
+		
+		double rightGradientScale = 1.0 - ((double) x / getGridWidth());
+		
+		// System.out.printf("row/col/val %d/%d/%f\n", row, col,
+		// (float)(initialVal*rightGradientScale));
 		return (float) (initialVal * rightGradientScale);
 	}
 
+
 	@Override
-	public int getNumRows() {
-		return rows;
+	public void setTemperature(int x, int y, float temp) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public int getNumCols() {
+	public int getSunPosition() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getGridWidth() {
 		return cols;
+	}
+
+	@Override
+	public int getGridHeight() {
+		return rows;
 	}
 
 }

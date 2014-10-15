@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+// for testing
+//import java.lang.Integer;
+
 import simulation.Earth;
 
 public final class GridCell implements EarthCell<GridCell> {
 
-	public static final float AVG = 4;
-
 	// gs: grid spacing
 	public int x, y, latitude, longitude, gs;
+	
+	// average temperature
+	private static float avgtemp;
 
 	private boolean visited;
 	private float currTemp, newTemp;
@@ -20,7 +24,6 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	// Cell properties: surface area, perimeter
 	private float lv, lb, lt, surfarea, pm;
-	private float avgtemp;
 
 	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
@@ -32,10 +35,12 @@ public final class GridCell implements EarthCell<GridCell> {
 
 		this.setTemp(temp);
 		this.visited = false;
+		
+		//System.out.println(Integer.toString(x)+ "," + Integer.toString(y));
 	}
 
 	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs) {
-
+		
 		this(temp, x, y, latitude, longitude, gs);
 
 		this.setTop(top);
@@ -139,12 +144,16 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	@Override
 	public float calculateTemp(int sunPosition) {
-		return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
+		//return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
+		this.newTemp = this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors();
+		//System.out.println(this.currTemp);
+		return this.newTemp; // new temp
 	}
 
 	@Override
 	public void swapTemp() {
 		this.currTemp = this.newTemp;
+		//System.out.println(this.newTemp);
 		this.newTemp = 0;
 	}
 
@@ -164,13 +173,6 @@ public final class GridCell implements EarthCell<GridCell> {
 
 		return ret.iterator();
 	}
-
-	@Override
-	public float calculateTemp() {
-		// Unused
-		return 0;
-	}
-
 
 	@Override
 	public int getX() {
@@ -202,15 +204,24 @@ public final class GridCell implements EarthCell<GridCell> {
 		return this.gs;
 	}
 
+	public static void setAvgtemp(float avg){
+		avgtemp = avg;
+	}
+	
+	public static float getAvgtemp(){
+		return avgtemp;
+	}
+	
 	private void calSurfaceArea(int latitude, int gs) {
-		double p  = gs / 360;
+		
+		double p  = 1.0 * gs / 360;
 		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
 		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
 		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
 		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 
 		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
-		this.surfarea =  (float) (1/2 * (this.lt + this.lb) * h);
+		this.surfarea =  (float) (1.0/2 * (this.lt + this.lb) * h);
 	}
 
 	private float calTsun(int sunPosition) {
@@ -221,22 +232,29 @@ public final class GridCell implements EarthCell<GridCell> {
 		return 278 * attenuation_lat * attenuation_longi;
 	}
 
-        // A help function for get the Sun's corresponding location on longitude.
-        private int getSunLocationOnEarth(int sunPosition) {
-            // Grid column under the Sun at sunPosition
-            int cols = 360 / this.gs;
-            int j    = ( cols * (sunPosition / 360) + cols/2 ) % cols;
-            return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
-        }
+	// A help function for get the Sun's corresponding location on longitude.
+	private int getSunLocationOnEarth(int sunPosition) {
+		// Grid column under the Sun at sunPosition
+		int cols = 360 / this.gs;
+		int j    = sunPosition;
+		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
+	}
 
 	private float calTcool() {
-		float beta = (float) (this.surfarea / (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight())));  // actual grid area / average cell area
-		float tempfactor = this.currTemp / this.avgtemp;
+		float avgArea = (float) (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight()));
+		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
+		float tempfactor = this.currTemp / avgtemp;
 
 		return -1 * beta * tempfactor * this.currTemp;
 	}
 
 	private float calTneighbors() {
-		return this.lt / this.pm * this.top.getTemp() + this.lb / this.pm * this.bottom.getTemp() + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
+		float top_temp = 0, bottom_temp = 0;
+		
+		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
+		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
+		
+		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
+
 }

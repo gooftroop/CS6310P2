@@ -4,62 +4,45 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import messaging.Message;
 import messaging.MessageListener;
+import messaging.Publisher;
+import messaging.events.StopMessage;
 
-public abstract class ComponentBase implements MessageListener, Runnable {
+public abstract class ComponentBase implements MessageListener, IComponent {
 
-	private final ConcurrentLinkedQueue<Message> msgQueue = new ConcurrentLinkedQueue<Message>();
-	protected Boolean stopThread = false; // can be set to signal thread run
-											// loop should exit
+	protected final ConcurrentLinkedQueue<Message> msgQueue;
 
+	public ComponentBase() {
+		msgQueue = new ConcurrentLinkedQueue<Message>();
+	}
+	
 	public void onMessage(Message msg) {
 
 		// enque message to be processed later
-		msgQueue.add(msg);
+		if (msg instanceof StopMessage) { 
+			msgQueue.clear();
+			Thread.currentThread().interrupt();
+		} else 
+			msgQueue.add(msg);
 	}
 
-	public void processFullMessageQueue() {
-		while (!processMessageQueue()) {
-			// Do nothing
-		}
+	// TODO guard against starvation
+	public void performAction() {
+
+		Message msg;
+		if ((msg = msgQueue.poll()) != null) 
+			msg.process(this);
 	}
+	
+	public void run() {
 
-	public Boolean processMessageQueue() {
-
-		Boolean queueEmpty = false;
-
-		Message msg = msgQueue.poll();
-		if (msg == null) {
-			queueEmpty = true;
-		} else {
-			dispatchMessage(msg);
+		while (!Thread.currentThread().isInterrupted()) {
+			// Just loop
+			// Thread.yield was here, but it is dangerous to use
 		}
-
-		return queueEmpty;
 	}
 
 	// This method dispatches a message to the appropriate processor
-	public abstract <T extends Message> void dispatchMessage(T msg);
-
-	public void run() {
-
-		// System.out.printf("starting run of %s\n", this.getClass().getName());
-		try {
-			while (!Thread.currentThread().isInterrupted() && !stopThread) {
-				runAutomaticActions();
-				if (processMessageQueue()) {
-					// yield execution thread if nothing to process (save cpu)
-					Thread.yield();
-				}
-			}
-		} catch (InterruptedException e) {
-			// OK
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	public <T extends Message> void dispatchMessage(T msg) {
+		Publisher.getInstance().send(msg);
 	}
-
-	// override this method for actions to be ran automatically
-	public void runAutomaticActions() throws Exception {
-	};
 }

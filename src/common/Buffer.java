@@ -8,7 +8,7 @@ public class Buffer implements IBuffer {
 	
 	private BlockingQueue<IGrid> buffer;
 	
-	private static int size = 1;
+	private static int size;
 	private static Buffer instance = null;
 	private static LinkedList<ICallback> callbacks = new LinkedList<ICallback>();
 	
@@ -18,7 +18,7 @@ public class Buffer implements IBuffer {
 		return instance;
 	}
 	
-	public void setSize(int size) {
+	public void create(int size) {
 		
 		if (size < 1 || size > Integer.MAX_VALUE) 
 			throw new IllegalArgumentException("Invalid size");
@@ -68,7 +68,7 @@ public class Buffer implements IBuffer {
 
 	@Override
 	public int getCapacity() {
-		return size;
+		return Buffer.size;
 	}
 
 	@Override

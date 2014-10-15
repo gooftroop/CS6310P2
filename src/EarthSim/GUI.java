@@ -54,7 +54,7 @@ public class GUI extends JFrame implements ActionListener{
 
 		contents.add(settingsNControls(), BorderLayout.WEST);
 		contents.add(presentation(),BorderLayout.CENTER);
-		contents.add(feedback(),BorderLayout.SOUTH);
+		// contents.add(feedback(),BorderLayout.SOUTH);
 
 		this.contents = contents;
 		return contents;

@@ -241,8 +241,8 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	private float calTcool() {
-		float avgarea = (float) (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight()));
-		float beta = (float) (this.surfarea / avgarea);  // actual grid area / average cell area
+		float avgArea = (float) (Earth.SURFACE_AREA / (Earth.getWidth() * Earth.getHeight()));
+		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		float tempfactor = this.currTemp / avgtemp;
 
 		return -1 * beta * tempfactor * this.currTemp;

@@ -26,12 +26,12 @@ public final class Earth extends EarthEngine {
 	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 
 	private static int currentStep, width, height, sunPosition, p;
+	
+	private GridCell prime 	= null;
+	private int speed 		= DEFAULT_SPEED;
+	private int gs 			= DEFAULT_DEGREES;
 
-	private static GridCell prime 	= null;
-	private static int speed 		= DEFAULT_SPEED;
-	private int gs 					= DEFAULT_DEGREES;
-
-	public static GridCell getGrid() {
+	public GridCell getGrid() {
 		return prime;
 	}
 
@@ -47,7 +47,8 @@ public final class Earth extends EarthEngine {
 		return new Integer(sunPosition);
 	}
 
-	public void configure(int gs, int s) {
+	@Override
+	public void configure(int gs, int timeStep) {
 
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
@@ -55,7 +56,7 @@ public final class Earth extends EarthEngine {
 		if (speed <= 0 || speed > MAX_SPEED)
 			throw new IllegalArgumentException("Invalid speed setting");
 
-		speed = s;
+		speed = timeStep;
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
@@ -78,7 +79,7 @@ public final class Earth extends EarthEngine {
 		if (prime != null) prime.setTemp(INITIAL_TEMP);
 		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		prime.setTop(null);
-
+		
 		p = this.gs / 360;
 
 		// Set initial average temperature
@@ -116,7 +117,7 @@ public final class Earth extends EarthEngine {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	protected void generate() {
+	public void generate() {
 
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
 		Queue<EarthCell> calcd = new LinkedList<EarthCell>();

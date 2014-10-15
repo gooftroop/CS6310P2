@@ -1,5 +1,9 @@
 package common;
 
+import messaging.Publisher;
+import messaging.events.ConsumeMessage;
+import messaging.events.ProduceMessage;
+
 public class BufferController implements ICallback {
 	
 	// we don't want to starve the buffer in either direction,
@@ -22,15 +26,16 @@ public class BufferController implements ICallback {
 		// the buffer is empty - this means that invoke was called after a grid was removed
 		// and we need to fill it up to prevent starvation. Ideally the only way this could
 		// happen is if the buffer size was 1
-		if (r == 0)
-			// TODO send produce message
+		if (r == 0) {
+			Publisher.getInstance().send(new ProduceMessage());
 			return;
+		}
 		
-		// if (r < b.getCapacity())
-			// TODO send produce message
+		if (r < b.getCapacity())
+			Publisher.getInstance().send(new ProduceMessage());
 		
-		// if (r > 0)
-			// TODO send consume message
+		if (r > 0)
+			Publisher.getInstance().send(new ConsumeMessage());
 		
 	}
 }

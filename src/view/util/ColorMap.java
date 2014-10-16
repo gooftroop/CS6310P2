@@ -71,7 +71,7 @@ public class ColorMap {
 
 			b = check(b);
 
-			res = new Color(r, g, b, opacity);
+			res = new Color(scale(r), scale(g), scale(b), opacity);
 		}
 
 		return res;
@@ -160,8 +160,8 @@ public class ColorMap {
 	/*
 	 * Autumn varies smoothly from red, through orange, to yellow.
 	 */
-	public static final Color thermal[] = { Color.red, new Color(255, 128, 0),
-			Color.yellow, Color.blue, Color.green };
+	public static final Color thermal[] = { Color.blue, Color.CYAN,
+			Color.GREEN, Color.yellow, new Color(255, 128, 0), Color.red };
 
 	/*
 	 * Winter consists of colors that are shades of blue and green.
@@ -214,4 +214,8 @@ public class ColorMap {
 			new ColorMap("bone", bone), new ColorMap("copper", copper),
 			new ColorMap("pink", pink), new ColorMap("prism", prism),
 			new ColorMap("white", white), new ColorMap("thermal", thermal) };
+
+	private float scale(float temp) {
+		return (((1 - 0) * (temp - 0)) / (255 - 0)) + 0;
+	}
 }

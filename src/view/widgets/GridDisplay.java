@@ -1,13 +1,13 @@
 package view.widgets;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 import view.util.ColorGenerator;
-
 import common.IGrid;
 
 public class GridDisplay extends JPanel {
@@ -21,31 +21,18 @@ public class GridDisplay extends JPanel {
 	
 	private final ColorGenerator visualizer;
 	
-	public GridDisplay(ColorGenerator visualizer) {
+	public GridDisplay(ColorGenerator visualizer, int width, int height) {
 		this.visualizer = visualizer;
-	}
-
-	/**
-	 * Paints one cell of the grid.
-	 *
-	 * @param aGraphics
-	 *            Graphics into which painting will be done
-	 * @param x
-	 *            row number of the grid cell
-	 * @param y
-	 *            column number of the grid cell
-	 * @param t
-	 *            intensity of Color red to be painted; a number from 0.0 to 1.0
-	 */
-	private void paintSpot(Graphics g, int x, int y, int width, int height, float t) {
 		
-		// paint the "grid edge"
-		g.setColor(Color.BLACK);
-		g.drawRect(x, y, width, height);
+		this.setBackground(new Color(0,0,0,0));
+		this.setOpaque(false);
 		
-		// "fill" the rectangle with the temp color
-		g.setColor(visualizer.calculateColor(t));
-		g.fillRect(x, y, width, height);
+		Dimension size = new Dimension(width, height);
+	    setPreferredSize(size);
+	    setMinimumSize(size);
+	    setMaximumSize(size);
+	    setSize(size);
+	    setLayout(null);
 	}
 
 	/**
@@ -63,26 +50,34 @@ public class GridDisplay extends JPanel {
 
 		int wHeight = this.getSize().height;
 		int wWidth = this.getSize().width;
-		BufferedImage bi = new BufferedImage(wWidth, wHeight, BufferedImage.TYPE_INT_ARGB);
 		
 		if (grid != null) {
 
-			Graphics render = bi.createGraphics();
-			
 			int height = wHeight / grid.getGridHeight();
 			int width = wWidth / grid.getGridWidth();
 
 			for (int y = 0; y < grid.getGridHeight(); y++) {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
-					paintSpot(render, x, y, width, height, grid.getTemperature(x, y));
+					
+					float t = grid.getTemperature(x, y);
+					
+					int celly = (y * height);
+					int cellx = (x * width);
+					
+					// paint the "grid edge"
+					g.setColor(Color.DARK_GRAY);
+					g.drawRect(cellx, celly, width, height);
+					
+					// "fill" the rectangle with the temp color
+					g.setColor(visualizer.calculateColor(t));
+					g.fillRect(cellx, celly, width, height);
 				}
 			}
 		}
-		
-		g.drawImage(bi, 0, 0, this);
 	}
 
-	public void update(IGrid grid) {
+	public synchronized void update(IGrid grid) {
+
 		this.grid = grid;
 		repaint();
 	}

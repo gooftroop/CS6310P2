@@ -1,10 +1,13 @@
 package view.widgets;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 public class SimulationStatus extends JPanel {
 
@@ -23,6 +26,7 @@ public class SimulationStatus extends JPanel {
 	
 	public SimulationStatus() {
 		
+		this.setBorder(new EmptyBorder(10,10,10,10));
 		this.setLayout(new GridLayout(HEIGHT,  WIDTH, HGAP, VGAP));
 		
 		sunPosStats 	= new JTextField("0");
@@ -34,6 +38,31 @@ public class SimulationStatus extends JPanel {
 		lblCurrTime = new JLabel("Time:");
 		lblGs 		= new JLabel("Grid Spacing:");
 		lblTimeStep = new JLabel("Simulation Time Step:");
+		
+		sunPosStats.setPreferredSize(new Dimension(10, 10));
+		sunPosStats.setMaximumSize(new Dimension(10, 10));
+		sunPosStats.getFont().deriveFont(Font.PLAIN, 10);
+		sunPosStats.setEditable(false);
+		
+		currTimeStatus.setPreferredSize(new Dimension(10, 10));
+		currTimeStatus.setMaximumSize(new Dimension(10, 10));
+		currTimeStatus.getFont().deriveFont(Font.PLAIN, 10);
+		currTimeStatus.setEditable(false);
+		
+		gsStatus.setPreferredSize(new Dimension(10, 10));
+		gsStatus.setMaximumSize(new Dimension(10, 10));
+		gsStatus.getFont().deriveFont(Font.PLAIN, 10);
+		gsStatus.setEditable(false);
+		
+		timeStepStatus.setPreferredSize(new Dimension(10, 10));
+		timeStepStatus.setMaximumSize(new Dimension(10, 10));
+		timeStepStatus.getFont().deriveFont(Font.PLAIN, 10);
+		timeStepStatus.setEditable(false);
+		
+		lblSunPos.getFont().deriveFont(Font.PLAIN, 8);
+		lblCurrTime.getFont().deriveFont(Font.PLAIN, 8);
+		lblGs.getFont().deriveFont(Font.PLAIN, 8);
+		lblTimeStep.getFont().deriveFont(Font.PLAIN, 8);
 		
 		this.add(lblSunPos);
 		this.add(sunPosStats);

@@ -5,6 +5,9 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import simulation.Earth;
 import view.util.ThermalVisualizer;
@@ -29,7 +32,7 @@ public class EarthDisplay extends JFrame {
 	private GridDisplay gridDisplay;
 	
 	private static final String COLORMAP = "thermal";
-	private static final float OPACITY = 0.7f;
+	private static final float OPACITY = 0.6f;
 			
 	private static final int EARTH = 0;
 	private static final int GRID = 1;
@@ -44,12 +47,11 @@ public class EarthDisplay extends JFrame {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(600, 400));
 		this.setResizable(true);
 		
 		// Add sim settings
 		simStatus = new SimulationStatus();
-		this.add(simStatus, BorderLayout.WEST);
+		this.add(simStatus, BorderLayout.SOUTH);
 		
 		// Add the display region
 		display = new JLayeredPane();
@@ -57,11 +59,16 @@ public class EarthDisplay extends JFrame {
 		
 		// Add EarthImage
 		earthImage = new EarthImage();
-		display.add(earthImage, EARTH);
+		display.add(earthImage, new Integer(EARTH));
+		
+		int w = earthImage.getImageWidth();
+		int h = earthImage.getImageHeight();
 		
 		// Add grid
-		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP, Earth.MIN_TEMP, Earth.MAX_TEMP, OPACITY));
-		display.add(gridDisplay, GRID);
+		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP, Earth.MIN_TEMP, Earth.MAX_TEMP, OPACITY), w, h);
+		display.add(gridDisplay, new Integer(GRID));
+		
+		this.setPreferredSize(new Dimension(w, h + 100));
 
 	}
 	
@@ -72,6 +79,7 @@ public class EarthDisplay extends JFrame {
 		
 		this.pack();
 		this.setVisible(true);
+		this.validate();
 	}
 
 	public synchronized void close() {

@@ -7,8 +7,6 @@ public class DisplayMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-		// TODO Auto-generated method stub
-		
+		l.generate();
 	}
-
 }

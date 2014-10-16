@@ -3,10 +3,10 @@ package messaging.events;
 import messaging.Message;
 import messaging.MessageListener;
 
-public class PauseMessage implements Message {
+public class CloseMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-		// nothing to do
+		l.close();
 	}
 }

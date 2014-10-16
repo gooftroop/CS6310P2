@@ -93,7 +93,7 @@ public class DummyController extends AbstractEngine {
 		run();
 	}
 	
-	public void stop() throws InterruptedException {
+	public void stop() {
 		// End run loop
 		running = false;
 		paused = false;
@@ -101,11 +101,21 @@ public class DummyController extends AbstractEngine {
 		// Stop threads
 		if(simThreaded) {
 			modelThread.interrupt();
-			modelThread.join();
+			try {
+				modelThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(viewThreaded) {
 			viewThread.interrupt();
-			viewThread.join();
+			try {
+				viewThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		// remove subscriptions
@@ -160,12 +170,7 @@ public class DummyController extends AbstractEngine {
 			}
 		}
 		
-		try {
-			stop();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stop();
 	}
 
 	public void process(DisplayMessage msg) {

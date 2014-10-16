@@ -2,6 +2,7 @@ package EarthSim;
 
 import messaging.MessageListener;
 import messaging.Publisher;
+import messaging.events.CloseMessage;
 import messaging.events.ConsumeContinuousMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
@@ -28,7 +29,6 @@ public final class EarthSimEngine extends AbstractEngine {
 	private IEngine model, view;
 	
 	private Initiative initiative;
-	private boolean isPaused, isStopped, isRunning;
 	private int gs, timeStep; 
 	private long presentationRate;
 	
@@ -55,24 +55,32 @@ public final class EarthSimEngine extends AbstractEngine {
 			publisher.subscribe(ProduceMessage.class, (MessageListener) model);
 			publisher.subscribe(ConsumeMessage.class, (MessageListener) view);
 		}
+		
+		manager = ThreadManager.getManager();
 			
-		manager = new ThreadManager();
-			
-		publisher.subscribe(StopMessage.class, (MessageListener) model);
-		publisher.subscribe(StopMessage.class, (MessageListener) view);
-			
-		publisher.subscribe(PauseMessage.class, (MessageListener) view);
-		publisher.subscribe(PauseMessage.class, (MessageListener) model);
-		publisher.subscribe(ResumeMessage.class, (MessageListener) view);
-		publisher.subscribe(ResumeMessage.class, (MessageListener) model);
+		publisher.subscribe(StartMessage.class, (MessageListener) manager);
+		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
+		publisher.subscribe(StopMessage.class, (MessageListener) manager);
+		publisher.subscribe(ResumeMessage.class, (MessageListener) manager);
+		
+		publisher.subscribe(CloseMessage.class, (MessageListener) view);
+		publisher.subscribe(CloseMessage.class, (MessageListener) model);
+		publisher.subscribe(CloseMessage.class, (MessageListener) manager);
 			
 		if (initiative == Initiative.SIM_THREAD) manager.add(model);
 		if (initiative == Initiative.PRES_THREAD) manager.add(view);
 		manager.add(this);
 		
-		this.isPaused = this.isStopped = this.isRunning = false;
 		this.gs = this.timeStep = 0;
 		this.presentationRate = 0;
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			
+			@Override
+			public void run() {
+				dispatchMessage(new CloseMessage());
+			}
+		});
 	}
 	
 	// One way we could improve extensibility is to use a message packet to send values
@@ -91,48 +99,23 @@ public final class EarthSimEngine extends AbstractEngine {
 		model.configure(this.gs, this.timeStep);
 		view.configure(this.gs, this.timeStep);
 		
-		manager.start();
-		
 		this.dispatchMessage(new StartMessage());
-		this.isRunning = true;
 	}
 	
 	public void stop() {
-		
 		this.dispatchMessage(new StopMessage());	
-		
-		this.isStopped = true;
-		this.isRunning = false;
-		
-		Thread.currentThread().interrupt();
 	}
 	
 	public void pause() {
 		this.dispatchMessage(new PauseMessage());
-		this.isPaused = true;
 	}
 	
 	public void restart() {
 		this.dispatchMessage(new ResumeMessage());
-		this.isPaused = false;
-	}
-	
-	public boolean isPaused() {
-		return this.isPaused;
-	}
-	
-	public boolean isRunning() {
-		return this.isRunning;
-	}
-	
-	public boolean isStopped() {
-		return this.isStopped;
 	}
 
 	@Override
 	public void performAction() {
-		
-		while(this.isPaused) { /* block */ }
 		
 		if (initiative != Initiative.PRES_THREAD) model.processQueue();
 		else if (initiative != Initiative.SIM_THREAD) view.processQueue();
@@ -150,6 +133,7 @@ public final class EarthSimEngine extends AbstractEngine {
 
 	@Override
 	public void generate() {
+		// nothing to do
 		return;
 	}
 
@@ -168,13 +152,6 @@ public final class EarthSimEngine extends AbstractEngine {
 
 	@Override
 	public void close() {
-		
-		this.stop();
-		manager.stop();
-		
-		model.close();
-		view.close();
-		model = view = null;
 				
 		// remove subscriptions
 		Publisher.unsubscribeAll();

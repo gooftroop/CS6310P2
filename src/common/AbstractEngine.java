@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import messaging.Message;
 import messaging.MessageListener;
 import messaging.Publisher;
-import messaging.events.StopMessage;
 
 public abstract class AbstractEngine implements MessageListener, IEngine {
 
@@ -17,12 +16,8 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	
 	public synchronized void onMessage(Message msg) {
 
-		// enque message to be processed later
-		if (msg instanceof StopMessage) { 
-			msgQueue.clear();
-			Thread.currentThread().interrupt();
-		} else 
-			msgQueue.add(msg);
+		// Enque message to be processed later
+		msgQueue.add(msg);
 	}
 
 	// TODO guard against starvation
@@ -52,5 +47,15 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	// This method dispatches a message to the appropriate processor
 	public synchronized <T extends Message> void dispatchMessage(T msg) {
 		Publisher.getInstance().send(msg);
+	}
+	
+	public void pause(Object lock) throws InterruptedException {
+		synchronized (lock) {
+			lock.wait();
+		}
+	}
+	
+	public void stop() {
+		Thread.currentThread().interrupt();
 	}
 }

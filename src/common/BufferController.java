@@ -4,7 +4,7 @@ import messaging.Publisher;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
 
-public class BufferController implements ICallback {
+public class BufferController implements IHandler {
 	
 	// we don't want to starve the buffer in either direction,
 	// nor do we want to make either either agent wait for long.

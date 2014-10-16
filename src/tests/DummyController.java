@@ -6,8 +6,8 @@ import common.AbstractEngine;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
-import messaging.events.ConsumeContinuousMessage;
-import messaging.events.ProduceContinuousMessage;
+import messaging.events.ContinuouslyConsumeMessage;
+import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.ProduceMessage;
 
 public class DummyController extends AbstractEngine {
@@ -48,14 +48,14 @@ public class DummyController extends AbstractEngine {
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
 		case MODEL:
-			pub.subscribe(ProduceContinuousMessage.class, model);
+			pub.subscribe(ContinuouslyProduceMessage.class, model);
 			// kickstart message to the model.  After first message it will 
 			// continue to provide the message to itself and fill buffer.
-			pub.send(new ProduceContinuousMessage());
+			pub.send(new ContinuouslyProduceMessage());
 			break;
 
 		case VIEW:
-			pub.subscribe(ConsumeContinuousMessage.class, model);
+			pub.subscribe(ContinuouslyConsumeMessage.class, model);
 			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.

@@ -7,6 +7,6 @@ public class DisplayMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-		l.generate();
+		// do nothing
 	}
 }

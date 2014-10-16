@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import messaging.Publisher;
+import messaging.events.UpdatedMessage;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
-
 import common.Grid;
 import common.IGrid;
 
@@ -170,6 +171,9 @@ public final class Earth extends EarthEngine {
 			}
 			
 		}
+		
+		// This tells the handler that this is ready to be triggered again if it has the initiative
+		Publisher.getInstance().send(new UpdatedMessage(this));
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {

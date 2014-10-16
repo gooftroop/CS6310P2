@@ -5,15 +5,13 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import simulation.Earth;
 import view.util.ThermalVisualizer;
 import view.widgets.EarthImage;
 import view.widgets.GridDisplay;
 import view.widgets.SimulationStatus;
+
 import common.IGrid;
 
 public class EarthDisplay extends JFrame {

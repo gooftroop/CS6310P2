@@ -3,11 +3,11 @@ package EarthSim;
 import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.CloseMessage;
-import messaging.events.ConsumeContinuousMessage;
+import messaging.events.ContinuouslyConsumeMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
-import messaging.events.ProduceContinuousMessage;
+import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.ProduceMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
@@ -19,46 +19,48 @@ import common.BufferController;
 import common.AbstractEngine;
 import common.IEngine;
 import common.Initiative;
+import common.InitiativeHandler;
 import concurrent.ThreadManager;
 
 public final class EarthSimEngine extends AbstractEngine {
 	
 	private static final int DEFAULT_BUFFER_SIZE = 1;
 	
+	private InitiativeHandler handler;
 	private ThreadManager manager;
 	private IEngine model, view;
 	
-	private Initiative initiative;
 	private int gs, timeStep; 
 	private long presentationRate;
 	
-	public EarthSimEngine(boolean s, boolean p, Initiative i, int b) {
+	public EarthSimEngine(Initiative i, MessageListener model, MessageListener view, int b) {
 		
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
 		
-		initiative = i;
-		
 		Publisher publisher = Publisher.getInstance();
-		model = new Earth();
-		view = new EarthDisplayEngine();
+		
+		// TODO this needs to be done in GUI
+//		model = new Earth();
+//		view = new EarthDisplayEngine();
+		
+		publisher.subscribe(ProduceMessage.class, model);
+		publisher.subscribe(ConsumeMessage.class, view);
+		publisher.subscribe(DisplayMessage.class, view);
+		
+		if (i == Initiative.SIMULATION)
+			handler.inject(new SimulationHandler());
+		else if (i == Initiative.PRESENTATION)
+			handler.inject(new ViewHandler());
+		else
+			handler.inject(new BufferHandler());
 		
 		Buffer.getBuffer().create(b);
 		
-		// TODO more extensible possible?
-		if (initiative == Initiative.PRES_THREAD)
-			publisher.subscribe(ProduceContinuousMessage.class, (MessageListener) model);
-		else if (initiative == Initiative.SIM_THREAD)
-			publisher.subscribe(ConsumeContinuousMessage.class, (MessageListener) view);
-		else {
-			publisher.subscribe(ProduceMessage.class, (MessageListener) model);
-			publisher.subscribe(ConsumeMessage.class, (MessageListener) view);
-		}
-		
 		manager = ThreadManager.getManager();
 			
-		publisher.subscribe(StartMessage.class, (MessageListener) manager);
+		publisher.subscribe(StartMessage.class, manager);
 		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
 		publisher.subscribe(StopMessage.class, (MessageListener) manager);
 		publisher.subscribe(ResumeMessage.class, (MessageListener) manager);
@@ -67,9 +69,10 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(CloseMessage.class, (MessageListener) model);
 		publisher.subscribe(CloseMessage.class, (MessageListener) manager);
 			
-		if (initiative == Initiative.SIM_THREAD) manager.add(model);
-		if (initiative == Initiative.PRES_THREAD) manager.add(view);
-		manager.add(this);
+		// TODO this needs to be done in GUI
+//		if (simThreaded) manager.add((IEngine) model);
+//		if (viewThreaded) manager.add((IEngine) view);
+//		manager.add(this);
 		
 		this.gs = this.timeStep = 0;
 		this.presentationRate = 0;
@@ -110,16 +113,16 @@ public final class EarthSimEngine extends AbstractEngine {
 		this.dispatchMessage(new PauseMessage());
 	}
 	
-	public void restart() {
+	public void resume() {
 		this.dispatchMessage(new ResumeMessage());
 	}
 
 	@Override
 	public void performAction() {
-		
-		if (initiative != Initiative.PRES_THREAD) model.processQueue();
-		else if (initiative != Initiative.SIM_THREAD) view.processQueue();
-		else BufferController.getController().invoke();
+
+		// This will cause who ever has the initiative to do their stuff
+		// If both engines are non threaded, this will block until the 
+		handler.invoke();
 		
 		try {
 			Thread.currentThread();

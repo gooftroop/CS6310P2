@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import messaging.Message;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
+
 import common.Grid;
 import common.IGrid;
 
@@ -15,7 +15,8 @@ public final class Earth extends EarthEngine {
 	public static final double CIRCUMFERENCE 	= 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA 	= 5.10072 * Math.pow(10, 14);
 
-	private static final float INITIAL_TEMP 	= 288;
+	public static final int MAX_TEMP 			= 288;
+	public static final int MIN_TEMP			= 0;
 
 	private static final int DEFAULT_DEGREES 	= 15;
 	private static final int DEFAULT_SPEED 		= 1; // minutes
@@ -76,14 +77,14 @@ public final class Earth extends EarthEngine {
 		width = (2 * MAX_DEGREES / this.gs);	// rows
 		height = (MAX_DEGREES / this.gs);		// cols
 
-		if (prime != null) prime.setTemp(INITIAL_TEMP);
-		else prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+		if (prime != null) prime.setTemp(MAX_TEMP);
+		else prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		prime.setTop(null);
 		
 		p = this.gs / 360;
 
 		// Set initial average temperature
-		GridCell.setAvgtemp(INITIAL_TEMP);
+		GridCell.setAvgtemp(MAX_TEMP);
 		
 		// South Pole
 		GridCell next = null, curr = prime;
@@ -191,10 +192,10 @@ public final class Earth extends EarthEngine {
 
 		if (curr.getLeft() != null) {
 			GridCell l = curr.getLeft();
-			l.setTemp(INITIAL_TEMP);
+			l.setTemp(MAX_TEMP);
 			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		} else {
-			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 			if (bottom != null) {
 				bottom.setTop(next);
@@ -206,10 +207,10 @@ public final class Earth extends EarthEngine {
 
 		if (bottom.getTop() != null) {
 			curr = bottom.getTop();
-			curr.setTemp(INITIAL_TEMP);
+			curr.setTemp(MAX_TEMP);
 			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p);
 		} else {
-			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
+			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}

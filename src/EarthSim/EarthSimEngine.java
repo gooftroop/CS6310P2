@@ -3,21 +3,21 @@ package EarthSim;
 import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.ConsumeContinuousMessage;
+import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
 import messaging.events.ProduceContinuousMessage;
+import messaging.events.ProduceMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 import simulation.Earth;
 import view.EarthDisplayEngine;
-
 import common.Buffer;
 import common.BufferController;
 import common.AbstractEngine;
 import common.IEngine;
 import common.Initiative;
-
 import concurrent.ThreadManager;
 
 public final class EarthSimEngine extends AbstractEngine {
@@ -47,12 +47,14 @@ public final class EarthSimEngine extends AbstractEngine {
 		Buffer.getBuffer().create(b);
 		
 		// TODO more extensible possible?
-		if (initiative == Initiative.PRES_THREAD) {
+		if (initiative == Initiative.PRES_THREAD)
 			publisher.subscribe(ProduceContinuousMessage.class, (MessageListener) model);
-		} else if (initiative == Initiative.SIM_THREAD) {
+		else if (initiative == Initiative.SIM_THREAD)
 			publisher.subscribe(ConsumeContinuousMessage.class, (MessageListener) view);
-		} else Buffer.addCallback(new BufferController());
-		
+		else {
+			publisher.subscribe(ProduceMessage.class, (MessageListener) model);
+			publisher.subscribe(ConsumeMessage.class, (MessageListener) view);
+		}
 			
 		manager = new ThreadManager();
 			
@@ -132,8 +134,9 @@ public final class EarthSimEngine extends AbstractEngine {
 		
 		while(this.isPaused) { /* block */ }
 		
-		if (initiative != Initiative.PRES_THREAD) model.performAction();
-		if (initiative != Initiative.SIM_THREAD) view.performAction();
+		if (initiative != Initiative.PRES_THREAD) model.processQueue();
+		else if (initiative != Initiative.SIM_THREAD) view.processQueue();
+		else BufferController.getController().invoke();
 		
 		try {
 			Thread.currentThread();

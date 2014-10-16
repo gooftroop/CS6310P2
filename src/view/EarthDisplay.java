@@ -6,11 +6,11 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
+import simulation.Earth;
 import view.util.ThermalVisualizer;
 import view.widgets.EarthImage;
 import view.widgets.GridDisplay;
 import view.widgets.SimulationStatus;
-
 import common.IGrid;
 
 public class EarthDisplay extends JFrame {
@@ -29,6 +29,7 @@ public class EarthDisplay extends JFrame {
 	private GridDisplay gridDisplay;
 	
 	private static final String COLORMAP = "thermal";
+	private static final float OPACITY = 0.7f;
 			
 	private static final int EARTH = 0;
 	private static final int GRID = 1;
@@ -59,28 +60,25 @@ public class EarthDisplay extends JFrame {
 		display.add(earthImage, EARTH);
 		
 		// Add grid
-		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP));
+		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP, Earth.MIN_TEMP, Earth.MAX_TEMP, OPACITY));
 		display.add(gridDisplay, GRID);
 
 	}
 	
-	public void display(int gs, int timeStep) {
+	public synchronized void display(int gs, int timeStep) {
 		
 		this.gs = gs;
 		this.timeStep = timeStep;
-		
-		// set grid size
-		gridDisplay.display(gs);
 		
 		this.pack();
 		this.setVisible(true);
 	}
 
-	public void close() {
+	public synchronized void close() {
 		this.dispose();
 	}
 	
-	public void update(IGrid grid) {
+	public synchronized void update(IGrid grid) {
 		
 		simStatus.update(grid.getSunPosition(), grid.getCurrentTime(), this.gs, this.timeStep);
 		gridDisplay.update(grid);

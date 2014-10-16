@@ -33,11 +33,10 @@ public class ColorMap {
 		if (res == null)
 			throw new IllegalArgumentException("unknown colormap requested");
 
-		// Main.debug.println("set map to " + res);
 		return res;
 	}
 
-	public Color getColor(double here) {
+	public Color getColor(double here, float opacity) {
 
 		Color res = clrs[0];
 
@@ -60,25 +59,25 @@ public class ColorMap {
 			int g1 = clrs[n + 1].getGreen();
 			int b1 = clrs[n + 1].getBlue();
 
-			double r = r0 + dh * (r1 - r0);
+			float r = (float) (r0 + dh * (r1 - r0));
 
 			r = check(r);
 
-			double g = g0 + dh * (g1 - g0);
+			float g = (float) (g0 + dh * (g1 - g0));
 
 			g = check(g);
 
-			double b = b0 + dh * (b1 - b0);
+			float b = (float) (b0 + dh * (b1 - b0));
 
 			b = check(b);
 
-			res = new Color((int) r, (int) g, (int) b);
+			res = new Color(r, g, b, opacity);
 		}
 
 		return res;
 	}
 
-	private double check(double c) {
+	private float check(float c) {
 
 		if (c < 0)
 			return 0;
@@ -124,7 +123,7 @@ public class ColorMap {
 	 * colors begin with red, pass through yellow, green, cyan, blue, magenta,
 	 * and return to red. The colormap is particularly appropriate for
 	 * displaying periodic functions. HSV(m) is the same as hsv2rgb([h
-	 * ones(m,2)]) where h is the linear ramp, h = (0:m–1)'/m.
+	 * ones(m,2)]) where h is the linear ramp, h = (0:m���1)'/m.
 	 */
 	public static final Color HSV[] = { Color.red, Color.yellow, Color.green,
 			Color.cyan, Color.blue, Color.magenta, Color.red };

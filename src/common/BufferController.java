@@ -16,11 +16,26 @@ public class BufferController implements ICallback {
 	 * Invoke is a callback, so it gets called whenever something is added to the 
 	 * buffer, or when it's removed
 	 */
+	
+	private static IBuffer b = null;
+	private static BufferController instance = null;
+	
+	public static BufferController getController() {
+		if (instance == null) instance = new BufferController();
+		
+		return instance;
+	}
+	
+	private BufferController() {
+		b = Buffer.getBuffer();
+	}
 
 	@Override
 	public void invoke() {
 		
-		IBuffer b = Buffer.getBuffer();
+		if (b == null)
+			throw new IllegalStateException("Improperly Configured BufferController");
+		
 		int r = b.getRemainingCapacity();
 		
 		// the buffer is empty - this means that invoke was called after a grid was removed

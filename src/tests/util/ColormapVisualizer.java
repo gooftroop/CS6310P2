@@ -19,6 +19,6 @@ public class ColormapVisualizer implements ColorGenerator {
     @Override
     public Color calculateColor(double value) {
     	//NOTE: value is expected to be between 0 and 1.0
-    	return colormap.getColor(value);
+    	return colormap.getColor(value, 1);
     }
 }

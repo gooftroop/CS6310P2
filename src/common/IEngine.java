@@ -7,5 +7,7 @@ public interface IEngine extends Runnable {
 	public void configure(int gs, int timeStep);
 	
 	public void close();
+	
+	public void processQueue();
 
 }

@@ -41,6 +41,13 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 			// Thread.yield was here, but it is dangerous to use
 		}
 	}
+	
+	public synchronized void processQueue() {
+		
+		while(!msgQueue.isEmpty()) {
+			this.performAction();
+		}
+	}
 
 	// This method dispatches a message to the appropriate processor
 	public synchronized <T extends Message> void dispatchMessage(T msg) {

@@ -22,9 +22,7 @@ public class TestComponent extends AbstractEngine {
 		publisher.send(msg2);
 		publisher.send(msg);
 
-		while(!msgQueue.isEmpty()) {
-			this.performAction();
-		}
+		this.processQueue();
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 public class EarthImage extends JPanel {
 	
-	private static final String EARTH_IMAGE = "../resource/earth.png";
+	private static final String EARTH_IMAGE = "../resource/earth.jpg";
 
 	/**
 	 * 

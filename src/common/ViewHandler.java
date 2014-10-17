@@ -2,6 +2,7 @@ package common;
 
 import messaging.MessageListener;
 import messaging.Publisher;
+import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
 
 public class ViewHandler implements IHandler {
@@ -14,8 +15,11 @@ public class ViewHandler implements IHandler {
 
 	@Override
 	public void trigger(Class<? extends MessageListener> src) {
-		if (this.type.equals(src))
+		if (this.type.equals(src)) {
 			Publisher.getInstance().send(new ProduceMessage());
+			// Now tell the View to get the next grid
+			Publisher.getInstance().send(new ConsumeMessage());
+		}
 	}
 	
 	@Override

@@ -15,8 +15,11 @@ public class SimulationHandler implements IHandler {
 
 	@Override
 	public void trigger(Class<? extends MessageListener> src) {
-		if (this.type.equals(src))
+		if (this.type.equals(src)) {
 			Publisher.getInstance().send(new ConsumeMessage());
+			// Now tell the Simulation to do another calculation
+			Publisher.getInstance().send(new ProduceMessage());
+		}
 	}
 	
 	@Override

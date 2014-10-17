@@ -4,9 +4,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import messaging.Message;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 
-public class DummyModel extends ComponentBase {
+public class DummyModel extends AbstractEngine {
 	
 	ArrayBlockingQueue<Integer> q;
 	
@@ -38,5 +38,11 @@ public class DummyModel extends ComponentBase {
 	@Override
 	public void configure(int gs, int timeStep) {
 		return;
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

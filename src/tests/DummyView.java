@@ -3,13 +3,12 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import tests.util.ContinuouslyConsumeMessage;
 import messaging.Publisher;
-import messaging.events.ConsumeContinuousMessage;
 import messaging.events.DisplayMessage;
+import common.AbstractEngine;
 
-import common.ComponentBase;
-
-public class DummyView extends ComponentBase {
+public class DummyView extends AbstractEngine {
 
 	private Publisher pub = Publisher.getInstance();
 	ArrayBlockingQueue<Integer> q;
@@ -47,12 +46,18 @@ public class DummyView extends ComponentBase {
 			// rate...
 			present(data);
 		} else {
-			pub.send(new ConsumeContinuousMessage());
+			pub.send(new ContinuouslyConsumeMessage());
 		}
 	}
 
 	@Override
 	public void configure(int gs, int timeStep) {
 		return;
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

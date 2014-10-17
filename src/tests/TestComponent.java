@@ -1,13 +1,13 @@
 package tests;
 
-import common.ComponentBase;
+import common.AbstractEngine;
 
 import tests.util.ConcreteMsg;
 import tests.util.ConcreteMsg2;
 import messaging.Message;
 import messaging.Publisher;
 
-public class TestComponent extends ComponentBase {
+public class TestComponent extends AbstractEngine {
 	
 	Publisher publisher = Publisher.getInstance();
 
@@ -22,9 +22,7 @@ public class TestComponent extends ComponentBase {
 		publisher.send(msg2);
 		publisher.send(msg);
 
-		while(!msgQueue.isEmpty()) {
-			this.performAction();
-		}
+		this.processQueue();
 	}
 
 	@Override
@@ -46,5 +44,11 @@ public class TestComponent extends ComponentBase {
 	@Override
 	public void close() {
 		return;
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

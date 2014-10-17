@@ -1,10 +1,11 @@
 package common;
 
+import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
 
-public class BufferController implements ICallback {
+public class BufferController implements IHandler {
 	
 	// we don't want to starve the buffer in either direction,
 	// nor do we want to make either either agent wait for long.
@@ -16,11 +17,21 @@ public class BufferController implements ICallback {
 	 * Invoke is a callback, so it gets called whenever something is added to the 
 	 * buffer, or when it's removed
 	 */
+	
+	private IBuffer b = null;
+	
+	public BufferController() {
+		b = Buffer.getBuffer();
+	}
 
 	@Override
-	public void invoke() {
+	public void trigger(Class<? extends MessageListener> src) {
 		
-		IBuffer b = Buffer.getBuffer();
+		// We don't care about src here
+		
+		if (b == null)
+			throw new IllegalStateException("Improperly Configured BufferController");
+		
 		int r = b.getRemainingCapacity();
 		
 		// the buffer is empty - this means that invoke was called after a grid was removed
@@ -37,5 +48,10 @@ public class BufferController implements ICallback {
 		if (r > 0)
 			Publisher.getInstance().send(new ConsumeMessage());
 		
+	}
+	
+	@Override
+	public void start() {
+		Publisher.getInstance().send(new ProduceMessage());
 	}
 }

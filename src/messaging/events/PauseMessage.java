@@ -7,6 +7,6 @@ public class PauseMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-
+		// nothing to do
 	}
 }

@@ -1,75 +1,116 @@
+// Demo.java
 package EarthSim;
 
-import java.awt.EventQueue;
-import java.util.Hashtable;
+import common.State;
 
-import common.ComponentBase;
-import EarthSim.gui.EarthSim;
+import javax.swing.SwingUtilities;
 
 public class Demo {
-	
-	protected static final Hashtable<String, Object> options = new Hashtable<String, Object>();
 
 	public static void main(String[] args) {
-		
-		Demo.configureOpts();
-		
-		boolean s = (Boolean) options.get("-s"), p = (Boolean) options.get("-p"), 
-				r = (Boolean) options.get("-r"), t = (Boolean) options.get("-t");
-		
-		int b = (Integer) options.get("-b");
-		final ComponentBase engine = new EarthSimEngine(s, p, r, t, b);
-		
-		EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	new EarthSim(engine);
-            }
-		});
+		Demo demo = new Demo();
+		demo.processArgs(args);
+		demo.run();
 	}
-	
-	protected static void configureOpts() {
-		options.put("-s", false);
-		options.put("-p", false);
-		options.put("-r", false);
-		options.put("-t", false);
-		options.put("-b", 1);
+
+	public Demo() {
+		// empty
 	}
-	
-	protected static void parseArgs(String... args) {
+
+	private String[] args;
+
+	private boolean ownSimThread = false, ownPresThread = false;
+
+	private State initiative = State.MASTER;
+	private boolean rset = false, tset = false;
+
+	private long bufferSize = 1;
+
+	// Note: processArgs ignore args that are not s,p,r,t or b as long as you
+	// provide a max of 5 input values.
+	public void processArgs(String[] args) {
 		
-		String curr = "";
-		
-		if (args.length == 0) throw new IllegalArgumentException("No arguments provided to Demo");
-		
+		System.out.println(args.length);
+		if (args.length > 5)
+			usage();
+
 		for (int i = 0; i < args.length; i++) {
 			
-			curr = args[i];
-			
-	        switch (curr.charAt(0)) {
-	        			
-	        	case '-':
-		            if (!options.containsKey(curr)) 
-		            	throw new IllegalArgumentException("Invalid argument '" + curr + "'");
-		            
-		            if ("-b".equals(curr)) {
-		            	
-		        		if (++i >= args.length || args[i] == "")
-		        			throw new IllegalArgumentException("Expecting an value for argument " + curr);
-		        		
-		        		try {
-		        			int val = Integer.parseInt(args[i]);
-		        			options.put(curr, val);
-		        		} catch( NumberFormatException e) {
-		        			throw new IllegalArgumentException("Invalid value for argument " + curr);
-		        		}
-		        		
-		            } else options.put(curr, true);
+			String arg = args[i];
 
-		            break;
-		        default:
-		        	throw new IllegalArgumentException("Invalid parameter " + curr);
-	        }
-		}	
+			if ("-s".equalsIgnoreCase(arg)) 
+				ownSimThread = true;
+			
+			else if ("-p".equalsIgnoreCase(arg)) 
+				ownPresThread = true;
+			
+			else if ("-r".equalsIgnoreCase(arg))
+				rset = true;
+			
+			else if ("-t".equalsIgnoreCase(arg))
+				tset = true;
+			
+			else if ("-b".equalsIgnoreCase(arg)) {
+				
+				if (i == -1 || i++ >= args.length) {
+					System.out.println("-b needs a value.");
+					usage();
+				}
+				
+				String bufSizeString = args[i];
+				
+				try {
+					bufferSize = Integer.parseInt(bufSizeString);
+				} catch (NumberFormatException nfe) {
+					System.out.println("Error reading -b value as an integer. Please retry.");
+					usage();
+				}
+				
+			} else
+				usage();
+		}
+
+		if (rset && tset) {
+			System.out.println("Cannot set both -r and -t.");
+			usage();
+		}
+		
+		initiative = rset ? State.PRESENTATION : (tset ? State.SIMULATION : State.MASTER);
+	}
+
+	public void usage() {
+		System.out.println("Usage: java EarthSim.Demo [-s] [-p] [-r|-t] [-b #]");
+		System.exit(-1);
+	}
+
+	public void run() {
+		debug("Demo started with settings:");
+		printSettings();
+		createAndShowUI();
+		debug("Demo running...");
+	}
+
+	private void createAndShowUI() {
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				GUI ui = new GUI(ownSimThread, ownPresThread, initiative, bufferSize);
+				ui.setVisible(true);
+			}
+		});
+	}
+
+	private void printSettings() {
+		
+		debug("Simulation on own thread\t:" + ownSimThread);
+		debug("Presentation on own thread\t:" + ownPresThread);
+		debug("Initiative\t\t\t:" + initiative);
+		debug("Buffer Size\t\t\t:" + bufferSize);
+		debug("");
+	}
+
+	private void debug(String s) {
+		System.out.println(s);
 	}
 }

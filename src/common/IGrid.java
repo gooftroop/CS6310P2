@@ -8,6 +8,8 @@ public interface IGrid {
 	
 	public int getSunPosition();
 	
+	public int getCurrentTime();
+	
 	public int getGridWidth();
 	
 	public int getGridHeight();

@@ -2,15 +2,15 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import common.ComponentBase;
+import tests.util.ContinuouslyConsumeMessage;
+import tests.util.ContinuouslyProduceMessage;
+import common.AbstractEngine;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
-import messaging.events.ConsumeContinuousMessage;
-import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
-public class DummyController extends ComponentBase {
+public class DummyController extends AbstractEngine {
 	
 	private Boolean running = false;
 	private Boolean paused = false;
@@ -48,14 +48,14 @@ public class DummyController extends ComponentBase {
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
 		case MODEL:
-			pub.subscribe(ProduceContinuousMessage.class, model);
+			pub.subscribe(ContinuouslyProduceMessage.class, model);
 			// kickstart message to the model.  After first message it will 
 			// continue to provide the message to itself and fill buffer.
-			pub.send(new ProduceContinuousMessage());
+			pub.send(new ContinuouslyProduceMessage());
 			break;
 
 		case VIEW:
-			pub.subscribe(ConsumeContinuousMessage.class, model);
+			pub.subscribe(ContinuouslyConsumeMessage.class, model);
 			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.
@@ -93,7 +93,7 @@ public class DummyController extends ComponentBase {
 		run();
 	}
 	
-	public void stop() throws InterruptedException {
+	public void stop() {
 		// End run loop
 		running = false;
 		paused = false;
@@ -101,11 +101,21 @@ public class DummyController extends ComponentBase {
 		// Stop threads
 		if(simThreaded) {
 			modelThread.interrupt();
-			modelThread.join();
+			try {
+				modelThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(viewThreaded) {
 			viewThread.interrupt();
-			viewThread.join();
+			try {
+				viewThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		// remove subscriptions
@@ -160,12 +170,7 @@ public class DummyController extends ComponentBase {
 			}
 		}
 		
-		try {
-			stop();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stop();
 	}
 
 	public void process(DisplayMessage msg) {
@@ -201,5 +206,11 @@ public class DummyController extends ComponentBase {
 	@Override
 	public void close() {
 		return;
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

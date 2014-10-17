@@ -13,5 +13,5 @@ public interface ColorGenerator {
      * @param temperature value
      * @return color object
      */
-    public Color calculateColor(double temperature);
+    public Color calculateColor(double temp);
 }

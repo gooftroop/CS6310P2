@@ -1,94 +1,92 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-//import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.JLayeredPane;
 
-import view.util.ColorGenerator;
+import simulation.Earth;
+import view.util.ThermalVisualizer;
+import view.widgets.EarthImage;
 import view.widgets.GridDisplay;
+import view.widgets.SimulationStatus;
 
 import common.IGrid;
-
-// Code for all up display window
 
 public class EarthDisplay extends JFrame {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8499406356314284286L;
+	private static final long serialVersionUID = -309131746356718870L;
 	
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
-
-	// private SimulatorForm form;
-	private GridDisplay gridPane;
-	private Boolean showRunStats;
+	// core display
+	private final JLayeredPane display;
+	
+	// widgets
+	private SimulationStatus simStatus;
+	private EarthImage earthImage;
+	private GridDisplay gridDisplay;
+	
+	private static final String COLORMAP = "thermal";
+	private static final float OPACITY = 0.6f;
+			
+	private static final int EARTH = 0;
+	private static final int GRID = 1;
+	
+	private int gs = 0, timeStep = 0;
 	
 	public EarthDisplay() {
-		this(false);
+		
+		super("Earth Simulation");
+		
+		EarthDisplay.setDefaultLookAndFeelDecorated(true);
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLayout(new BorderLayout());
+		this.setResizable(true);
+		
+		// Add sim settings
+		simStatus = new SimulationStatus();
+		this.add(simStatus, BorderLayout.SOUTH);
+		
+		// Add the display region
+		display = new JLayeredPane();
+		this.add(display, BorderLayout.CENTER);
+		
+		// Add EarthImage
+		earthImage = new EarthImage();
+		display.add(earthImage, new Integer(EARTH));
+		
+		int w = earthImage.getImageWidth();
+		int h = earthImage.getImageHeight();
+		
+		// Add grid
+		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP, Earth.MIN_TEMP, Earth.MAX_TEMP, OPACITY), w, h);
+		display.add(gridDisplay, new Integer(GRID));
+		
+		this.setPreferredSize(new Dimension(w, h + 100));
+
 	}
 	
-	public EarthDisplay(Boolean showRunStats) {
-		this.showRunStats = showRunStats;
-
-		setTitle("Earth Display");
-		setSize(new Dimension(WIDTH, HEIGHT));
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		init();
-		// pack();
+	public synchronized void display(int gs, int timeStep) {
+		
+		this.gs = gs;
+		this.timeStep = timeStep;
+		
+		this.pack();
+		this.setVisible(true);
+		this.validate();
 	}
 
-	/**
-	 * Method to initialize the UI and draw components
-	 */
-	private void init() {
-		
-		Container pane = getContentPane();
-		
-		// Buildup top pane with earth data
-		JPanel top = new JPanel();
-		top.setLayout(new BorderLayout());
-		top.setBorder(BorderFactory.createTitledBorder("Mercator Projection of Earth Temperatures"));
-		
-		// TODO: probably want something to extend the base grid display and add
-		// overlay indication of current sun position
-		gridPane = new GridDisplay();
-		top.add(gridPane, BorderLayout.CENTER);
-
-		//Build up stats pane
-		JPanel statsExternal = new JPanel(new BorderLayout());
-		JPanel stats = new JPanel(new GridLayout(0, 2, 10, 3));
-		stats.setBorder(BorderFactory.createTitledBorder("Run Stats"));
-		
-		//TODO: add runtime stats of interest (time/rotation/performance stats/etc)
-		stats.add(new JLabel("Stat1: "));
-		stats.add(new JLabel("value"));
-		stats.add(new JLabel("Stat2: "));
-		stats.add(new JLabel("value"));
-		stats.add(new JLabel("Stat3: "));
-		stats.add(new JLabel("value"));
-		statsExternal.add(stats, BorderLayout.PAGE_END);
-		
-		// Build up final pane
-		pane.add(top, BorderLayout.CENTER);
-		
-		if (showRunStats) pane.add(statsExternal, BorderLayout.LINE_START);
+	public synchronized void close() {
+		this.dispose();
 	}
-
-	public void updateGrid(IGrid grid) {
-		gridPane.updateGrid(grid);
-	}
-
-	public void setVisualizer(ColorGenerator visualizer) {
-		gridPane.setVisualizer(visualizer);
+	
+	public synchronized void update(IGrid grid) {
+		
+		simStatus.update(grid.getSunPosition(), grid.getCurrentTime(), this.gs, this.timeStep);
+		gridDisplay.update(grid);
 	}
 }

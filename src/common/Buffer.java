@@ -1,8 +1,8 @@
 package common;
 
-import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Buffer implements IBuffer {
 	
@@ -10,7 +10,6 @@ public class Buffer implements IBuffer {
 	
 	private static int size;
 	private static Buffer instance = null;
-	private static LinkedList<ICallback> callbacks = new LinkedList<ICallback>();
 	
 	public static Buffer getBuffer() {
 		if (instance == null) instance = new Buffer();
@@ -27,38 +26,18 @@ public class Buffer implements IBuffer {
 		buffer = new LinkedBlockingQueue<IGrid>(size);
 	}
 	
-	public static void addCallback(ICallback c) {
-		if (!callbacks.contains(c))
-			callbacks.add(c);
-	}
-	
-	public static void removeCallback(ICallback c) {
-		if (callbacks.contains(c))
-			callbacks.remove(c);
-	}
-	
 	private Buffer() {
 		// do nothing
 	}
 	
 	@Override
-	public void add(IGrid grid) {
-		try {
-			buffer.offer(grid);
-		} finally {
-			for (ICallback c : callbacks)
-				c.invoke();
-		}
+	public void add(IGrid grid) throws InterruptedException {
+		buffer.offer(grid, 3, TimeUnit.SECONDS);
 	}
 
 	@Override
 	public IGrid get() throws InterruptedException {
-		try {
-			return buffer.take();
-		} finally {
-			for (ICallback c : callbacks)
-				c.invoke();
-		}
+		return buffer.poll(3, TimeUnit.SECONDS);
 	}
 	
 	@Override

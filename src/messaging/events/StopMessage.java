@@ -7,8 +7,6 @@ public class StopMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-		// TODO Auto-generated method stub
-		
+		// nothing to do
 	}
-
 }

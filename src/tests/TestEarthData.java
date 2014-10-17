@@ -87,4 +87,9 @@ public class TestEarthData implements IGrid {
 		return rows;
 	}
 
+	@Override
+	public int getCurrentTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

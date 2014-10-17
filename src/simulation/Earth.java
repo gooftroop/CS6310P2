@@ -72,8 +72,6 @@ public final class Earth extends AbstractEngine {
 			for (int i = 1; i < increments.length; i++)
 				if (increments[i] > gs) this.gs = increments[i - 1];
 		} else this.gs = gs;
-		
-		this.initializePlate();
 	}
 
 	public void initializePlate() {
@@ -127,11 +125,15 @@ public final class Earth extends AbstractEngine {
 		// North Pole
 		this.createRow(curr, next, bottom.getLeft(), left, y);
 	}
+	
+	public void reset() {
+		this.initializePlate();
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void generate() {
-
+		System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
 		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
 
@@ -143,10 +145,8 @@ public final class Earth extends AbstractEngine {
 
 		IGrid grid = new Grid(sunPosition, t, width, height);
 
-		int time = 0;
 		float totaltemp;
 		float avgtemp;
-		while(time < 10) {
 
 			bfs.add(prime);
 			prime.visited(true);
@@ -173,15 +173,12 @@ public final class Earth extends AbstractEngine {
 			avgtemp = totaltemp / width * height;
 			GridCell.setAvgtemp(avgtemp);
 			
-			System.out.println(calcd.size());
 			EarthCell c = calcd.poll();
 			while (c != null) {
 				c.visited(false);
 				c.swapTemp();
 				c = calcd.poll();
 			}
-			
-		}
 		
 		try {
 			Buffer.getBuffer().add(grid);
@@ -191,6 +188,8 @@ public final class Earth extends AbstractEngine {
 		
 		// This tells the handler that this is ready to be triggered again if it has the initiative
 		Publisher.getInstance().send(new UpdatedMessage(this));
+		
+		System.out.println("finished generating grid");
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom, GridCell left, int y) {

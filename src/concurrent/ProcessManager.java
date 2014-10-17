@@ -76,7 +76,6 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 	public void start() {
 		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
 		for (Runnable r : this.queued) {
-			System.out.println("Running " + r);
 			this.execute(r);
 		}
 	}

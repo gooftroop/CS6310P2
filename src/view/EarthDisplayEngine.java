@@ -13,6 +13,8 @@ public class EarthDisplayEngine extends AbstractEngine {
 	private final EarthDisplay earthDisplay;
 	private IGrid grid = null;
 	
+	private int gs, timeStep;
+	
 	public EarthDisplayEngine() {
 		this(false);
 	}
@@ -57,11 +59,18 @@ public class EarthDisplayEngine extends AbstractEngine {
 		if (gs <= 0 || gs >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid grid spacing value");
 		
-		earthDisplay.display(gs, timeStep);
+		this.gs = gs;
+		this.timeStep = timeStep;
 	}
 
 	@Override
 	public void close() {
 		earthDisplay.close();
+	}
+
+	@Override
+	public void reset() {
+		grid = null;
+		earthDisplay.display(this.gs, this.timeStep);
 	}
 }

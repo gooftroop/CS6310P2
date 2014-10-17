@@ -11,6 +11,8 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	protected final ConcurrentLinkedQueue<Message> msgQueue;
 	protected final boolean isThreaded;
 	
+	private boolean stopped = false;
+	
 	public AbstractEngine(final boolean isThreaded) {
 		this.isThreaded = isThreaded;
 		msgQueue = new ConcurrentLinkedQueue<Message>();
@@ -39,13 +41,17 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 
 	// I'd like to remove this...
 	public void run() {
+		
+		reset();
 
-		while (!Thread.currentThread().isInterrupted()) {
+		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
 			// Just loop
 			this.performAction();
 			// Thread.yield was here, but it is dangerous to use
 		}
 	}
+	
+	public abstract void reset();
 
 	public void processQueue() {
 
@@ -68,6 +74,7 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 
 	public void stop() {
 		Thread.currentThread().interrupt();
+		this.stopped = true;
 	}
 	
 	@Override

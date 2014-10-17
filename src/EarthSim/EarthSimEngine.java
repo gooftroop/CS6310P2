@@ -142,4 +142,10 @@ public final class EarthSimEngine extends AbstractEngine {
 	public void close() {
 		handler = null;
 	}
+
+	@Override
+	public void reset() {
+		// nothing to do
+		return;
+	}
 }

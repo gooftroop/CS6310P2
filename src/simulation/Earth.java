@@ -148,6 +148,8 @@ public final class Earth extends AbstractEngine {
 		float totaltemp;
 		float avgtemp;
 
+		while(true) {
+
 			bfs.add(prime);
 			prime.visited(true);
 			totaltemp = 0;

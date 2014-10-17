@@ -132,10 +132,9 @@ public final class Earth extends EarthEngine {
 
 		IGrid grid = new Grid(sunPosition, t, width, height);
 
-		int time = 0;
 		float totaltemp;
 		float avgtemp;
-		while(time < 10) {
+		while(true) {
 
 			bfs.add(prime);
 			prime.visited(true);

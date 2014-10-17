@@ -27,7 +27,7 @@ public final class Earth extends EarthEngine {
 
 	private static int currentStep, width, height, sunPosition, p;
 	
-	private GridCell prime 	= null;
+	private static GridCell prime 	= null;
 	private int speed 		= DEFAULT_SPEED;
 	private int gs 			= DEFAULT_DEGREES;
 
@@ -144,6 +144,16 @@ public final class Earth extends EarthEngine {
 				EarthCell point = bfs.remove();
 				calcd.add(point);
 
+				// TODO This needs testing. Should work though.
+				for (EarthCell c : calcd) {
+					Iterator<EarthCell> itr = c.getChildren(false);
+					if (!itr.hasNext()) {
+						c.visited(false);
+						c.swapTemp();
+						calcd.poll();
+					}
+				}
+				
 				EarthCell child = null;
 				float childtemp = 0;
 				Iterator<EarthCell> itr = point.getChildren(false);
@@ -159,15 +169,7 @@ public final class Earth extends EarthEngine {
 			
 			avgtemp = totaltemp / width * height;
 			GridCell.setAvgtemp(avgtemp);
-			
-			System.out.println(calcd.size());
-			EarthCell c = calcd.poll();
-			while (c != null) {
-				c.visited(false);
-				c.swapTemp();
-				c = calcd.poll();
-			}
-			
+
 		}
 	}
 
@@ -229,31 +231,31 @@ public final class Earth extends EarthEngine {
 	}
 	
 	
-//	// The following code is only for testing.
-//	public static void main(String [] args){
-//		Earth earth = new Earth();
-//		earth.configure(45, 10);
-//		earth.initializePlate();
-//		System.out.println("Just after initializaiton:");
-//		printGrid();
-//		//earth.run();
-//		earth.generate();
-//	}
-//	
-//	private static void printGrid(){
-//		GridCell curr = prime;
-//		int height = Earth.getHeight();
-//		int width  = Earth.getWidth();
-//		//System.out.println(height);
-//		//System.out.println(width);
-//		for (int x = 0; x < height; x++) {
-//			GridCell rowgrid = curr.getLeft();
-//			for (int y = 0; y < width; y++) {
-//				System.out.printf("%.2f,",rowgrid.getTemp());
-//				rowgrid = rowgrid.getLeft();
-//			}
-//			System.out.println();
-//			curr = curr.getTop();
-//		}
-//	}
+	// The following code is only for testing.
+	public static void main(String [] args){
+		Earth earth = new Earth();
+		earth.configure(45, 10);
+		earth.initializePlate();
+		System.out.println("Just after initializaiton:");
+		printGrid(prime);
+		//earth.run();
+		earth.generate();
+	}
+	
+	private static void printGrid(GridCell initial){
+		GridCell curr = initial;
+		int height = Earth.getHeight();
+		int width  = Earth.getWidth();
+		//System.out.println(height);
+		//System.out.println(width);
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				System.out.printf("%.2f,",rowgrid.getTemp());
+				rowgrid = rowgrid.getLeft();
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+	}
 }

@@ -60,8 +60,8 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(DisplayMessage.class, (MessageListener) view);
 			
 		publisher.subscribe(StartMessage.class, manager);
-		publisher.subscribe(StartMessage.class, (MessageListener) model); // TODO casting is bad
 		publisher.subscribe(StartMessage.class, (MessageListener) view);
+		publisher.subscribe(StartMessage.class, (MessageListener) model);
 		
 		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
 		publisher.subscribe(StopMessage.class, (MessageListener) manager);
@@ -72,14 +72,14 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(CloseMessage.class, (MessageListener) manager);
 		
 		if (i == State.SIMULATION)
-			handler = new InitiativeHandler(new SimulationHandler((Class<? extends MessageListener>) model.getClass()));
+			handler = new InitiativeHandler(new SimulationHandler((Class<? extends MessageListener>) model.getClass(), simThreaded));
 		else if (i == State.PRESENTATION)
-			handler = new InitiativeHandler(new ViewHandler((Class<? extends MessageListener>) view.getClass()));
+			handler = new InitiativeHandler(new ViewHandler((Class<? extends MessageListener>) view.getClass(), viewThreaded));
 		else
 			handler = new InitiativeHandler(new BufferController());
 		
 		publisher.subscribe(UpdatedMessage.class, handler);
-		publisher.subscribe(StartMessage.class, handler);
+		//publisher.subscribe(StartMessage.class, handler);
 			
 		if (simThreaded) manager.add((IEngine) model);
 		if (viewThreaded) manager.add((IEngine) view);
@@ -119,6 +119,8 @@ public final class EarthSimEngine extends AbstractEngine {
 	@Override
 	public void performAction() {
 
+		// TODO this is yet another hack...it would be nice not to have to check either 
+		//- at the very least, the threaded flag
 		if (!simThreaded && i == State.SIMULATION)
 			publisher.send(new ProduceMessage());
 		

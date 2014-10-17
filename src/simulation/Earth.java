@@ -126,6 +126,9 @@ public final class Earth extends AbstractEngine {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void generate() {
+		
+		if (prime == null)
+			throw new IllegalStateException("Earth has not been started");
 
 		System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();

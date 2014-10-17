@@ -8,9 +8,11 @@ import messaging.events.ProduceMessage;
 public class ViewHandler implements IHandler {
 
 	private final Class<? extends MessageListener> type;
+	private final boolean isThreaded;
 	
-	public ViewHandler(Class<? extends MessageListener> type) {
+	public ViewHandler(Class<? extends MessageListener> type, boolean isThreaded) {
 		this.type = type;
+		this.isThreaded = isThreaded;
 	}
 
 	@Override
@@ -18,7 +20,8 @@ public class ViewHandler implements IHandler {
 		if (this.type.equals(src)) {
 			Publisher.getInstance().send(new ProduceMessage());
 			// Now tell the View to get the next grid
-			Publisher.getInstance().send(new ConsumeMessage());
+			if (isThreaded)
+				Publisher.getInstance().send(new ConsumeMessage());
 		}
 	}
 	

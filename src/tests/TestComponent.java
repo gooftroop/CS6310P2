@@ -45,4 +45,10 @@ public class TestComponent extends AbstractEngine {
 	public void close() {
 		return;
 	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -54,4 +54,10 @@ public class DummyView extends AbstractEngine {
 	public void configure(int gs, int timeStep) {
 		return;
 	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
 }

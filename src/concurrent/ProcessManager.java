@@ -14,23 +14,23 @@ import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 
-public class ThreadManager extends ThreadPoolExecutor implements MessageListener {
+public class ProcessManager extends ThreadPoolExecutor implements MessageListener {
 	
 	private static final Object LSUSPEND = new Object();
 	
-	private final static int POOL_SIZE = 2;
+	private final static int POOL_SIZE = 5;
 	private final static long TIMEOUT = 0L;
 	private final Queue<IEngine> queued;
 	
-	private static ThreadManager instance = null;
+	private static ProcessManager instance = null;
 	
-	public static ThreadManager getManager() {
-		if (instance == null) instance = new ThreadManager();
+	public static ProcessManager getManager() {
+		if (instance == null) instance = new ProcessManager();
 		
 		return instance;
 	}
 
-	private ThreadManager() {
+	private ProcessManager() {
 		
 		super(POOL_SIZE, POOL_SIZE, TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		
@@ -75,7 +75,10 @@ public class ThreadManager extends ThreadPoolExecutor implements MessageListener
 
 	public void start() {
 		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
-		for (Runnable r : this.queued) this.execute(r);
+		for (Runnable r : this.queued) {
+			System.out.println("Running " + r);
+			this.execute(r);
+		}
 	}
 	
 	public void pause() {

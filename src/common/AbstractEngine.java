@@ -69,4 +69,9 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	public void stop() {
 		Thread.currentThread().interrupt();
 	}
+	
+	@Override
+	public void close() {
+		// do nothing
+	}
 }

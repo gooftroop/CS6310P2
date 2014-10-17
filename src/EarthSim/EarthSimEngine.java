@@ -3,62 +3,61 @@ package EarthSim;
 import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.CloseMessage;
-import messaging.events.ContinuouslyConsumeMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
-import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.ProduceMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
+import messaging.events.UpdatedMessage;
 import simulation.Earth;
 import view.EarthDisplayEngine;
+import common.AbstractEngine;
 import common.Buffer;
 import common.BufferController;
-import common.AbstractEngine;
 import common.IEngine;
-import common.Initiative;
+import common.State;
 import common.InitiativeHandler;
-import concurrent.ThreadManager;
+import common.SimulationHandler;
+import common.ViewHandler;
+import concurrent.ProcessManager;
 
 public final class EarthSimEngine extends AbstractEngine {
 	
 	private static final int DEFAULT_BUFFER_SIZE = 1;
 	
 	private InitiativeHandler handler;
-	private ThreadManager manager;
-	private IEngine model, view;
+	private ProcessManager manager;
+	private Publisher publisher;
+	private IEngine model, view; // TODO is IEngine useful?? maybe seperate this stuff better
 	
-	private int gs, timeStep; 
+	// TODO I want to refactor this - this needs to be done cause this is ugly
+	private boolean simThreaded;
+	private State i;
+	 
 	private long presentationRate;
 	
-	public EarthSimEngine(Initiative i, MessageListener model, MessageListener view, int b) {
+	public EarthSimEngine(State i, boolean simThreaded, boolean viewThreaded, int b) {
 		
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
 		
-		Publisher publisher = Publisher.getInstance();
-		
-		// TODO this needs to be done in GUI
-//		model = new Earth();
-//		view = new EarthDisplayEngine();
-		
-		publisher.subscribe(ProduceMessage.class, model);
-		publisher.subscribe(ConsumeMessage.class, view);
-		publisher.subscribe(DisplayMessage.class, view);
-		
-		if (i == Initiative.SIMULATION)
-			handler.inject(new SimulationHandler());
-		else if (i == Initiative.PRESENTATION)
-			handler.inject(new ViewHandler());
-		else
-			handler.inject(new BufferHandler());
+		this.simThreaded = simThreaded; // see above note
+		this.i = i; // see above note
 		
 		Buffer.getBuffer().create(b);
 		
-		manager = ThreadManager.getManager();
+		model = new Earth(simThreaded);
+		view = new EarthDisplayEngine(viewThreaded);
+		
+		manager = ProcessManager.getManager();
+		
+		publisher = Publisher.getInstance();
+		publisher.subscribe(ProduceMessage.class, (MessageListener) model); // TODO casting is bad
+		publisher.subscribe(ConsumeMessage.class, (MessageListener) view);
+		publisher.subscribe(DisplayMessage.class, (MessageListener) view);
 			
 		publisher.subscribe(StartMessage.class, manager);
 		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
@@ -68,22 +67,22 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(CloseMessage.class, (MessageListener) view);
 		publisher.subscribe(CloseMessage.class, (MessageListener) model);
 		publisher.subscribe(CloseMessage.class, (MessageListener) manager);
-			
-		// TODO this needs to be done in GUI
-//		if (simThreaded) manager.add((IEngine) model);
-//		if (viewThreaded) manager.add((IEngine) view);
-//		manager.add(this);
 		
-		this.gs = this.timeStep = 0;
+		if (i == State.SIMULATION)
+			handler = new InitiativeHandler(new SimulationHandler((Class<? extends MessageListener>) model.getClass()));
+		else if (i == State.PRESENTATION)
+			handler = new InitiativeHandler(new ViewHandler((Class<? extends MessageListener>) view.getClass()));
+		else
+			handler = new InitiativeHandler(new BufferController());
+		
+		publisher.subscribe(UpdatedMessage.class, handler);
+		publisher.subscribe(StartMessage.class, handler);
+			
+		if (simThreaded) manager.add((IEngine) model);
+		if (viewThreaded) manager.add((IEngine) view);
+		manager.add(this);
+		
 		this.presentationRate = 0;
-		
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			
-			@Override
-			public void run() {
-				dispatchMessage(new CloseMessage());
-			}
-		});
 	}
 	
 	// One way we could improve extensibility is to use a message packet to send values
@@ -93,53 +92,14 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (presentationRate <= 0 || presentationRate >= Long.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid Presentation Rate value");
 		
+		if (presentationRate < 1000)
+			this.presentationRate =  presentationRate * 1000;
+		else
+			this.presentationRate = presentationRate;
+		
 		this.configure(gs, timeStep);
-		this.presentationRate = presentationRate;
 	}
 	
-	public void start() {
-		
-		model.configure(this.gs, this.timeStep);
-		view.configure(this.gs, this.timeStep);
-		
-		this.dispatchMessage(new StartMessage());
-	}
-	
-	public void stop() {
-		this.dispatchMessage(new StopMessage());	
-	}
-	
-	public void pause() {
-		this.dispatchMessage(new PauseMessage());
-	}
-	
-	public void resume() {
-		this.dispatchMessage(new ResumeMessage());
-	}
-
-	@Override
-	public void performAction() {
-
-		// This will cause who ever has the initiative to do their stuff
-		// If both engines are non threaded, this will block until the 
-		handler.invoke();
-		
-		try {
-			Thread.currentThread();
-			Thread.sleep(this.presentationRate);
-		} catch (InterruptedException e) {
-			// do nothing
-		}
-		
-		Publisher.getInstance().send(new DisplayMessage());
-	}
-
-	@Override
-	public void generate() {
-		// nothing to do
-		return;
-	}
-
 	@Override
 	public void configure(int gs, int timeStep) {
 		
@@ -149,14 +109,37 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (timeStep <= 0 || timeStep >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid Time Step value");
 		
-		this.gs = gs;
-		this.timeStep = timeStep;
+		model.configure(gs, timeStep);
+		view.configure(gs, timeStep);
+	}
+
+	@Override
+	public void performAction() {
+
+		if (!simThreaded && i == State.SIMULATION)
+			publisher.send(new ProduceMessage());
+		
+		if (i == State.MASTER)
+			publisher.send(new UpdatedMessage(null)); // There has got be a way of not using classes
+		
+		try {
+			Thread.currentThread();
+			Thread.sleep(this.presentationRate);
+		} catch (InterruptedException e) {
+			// do nothing
+		}
+		
+		publisher.send(new DisplayMessage());
+	}
+
+	@Override
+	public void generate() {
+		// nothing to do
+		return;
 	}
 
 	@Override
 	public void close() {
-				
-		// remove subscriptions
-		Publisher.unsubscribeAll();
+		handler = null;
 	}
 }

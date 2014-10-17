@@ -7,8 +7,6 @@ public class StartMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {
-		// TODO Auto-generated method stub
-		
+		// Nothing to do - this should be a signal message
 	}
-
 }

@@ -3,10 +3,9 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import tests.util.ContinuouslyConsumeMessage;
 import messaging.Publisher;
-import messaging.events.ContinuouslyConsumeMessage;
 import messaging.events.DisplayMessage;
-
 import common.AbstractEngine;
 
 public class DummyView extends AbstractEngine {

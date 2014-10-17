@@ -8,4 +8,12 @@ public interface MessageListener {
 	
 	public void close();
 	
+	public void start();
+	
+	public void stop();
+	
+	public void pause();
+	
+	public void resume();
+	
 }

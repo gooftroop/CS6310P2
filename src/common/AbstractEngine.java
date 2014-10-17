@@ -11,7 +11,7 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	protected final ConcurrentLinkedQueue<Message> msgQueue;
 	protected final boolean isThreaded;
 	
-	private boolean stopped = false;
+	protected boolean stopped = false;
 	
 	public AbstractEngine(final boolean isThreaded) {
 		this.isThreaded = isThreaded;
@@ -31,18 +31,19 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 			msg.process(this);
 	}
 
-	// TODO guard against starvation
-	public void performAction() {
+	// TODO guard against starvation?
+	public synchronized void performAction() {
 
 		Message msg;
-		if ((msg = msgQueue.poll()) != null)
+		if ((msg = msgQueue.poll()) != null) {
+			//System.out.println("Going to process message " + msg);
 			msg.process(this);
+			//System.out.println("Done processing message " + msg);
+		}
 	}
 
 	// I'd like to remove this...
 	public void run() {
-		
-		reset();
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
 			// Just loop
@@ -50,8 +51,6 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 			// Thread.yield was here, but it is dangerous to use
 		}
 	}
-	
-	public abstract void reset();
 
 	public void processQueue() {
 

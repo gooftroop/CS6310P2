@@ -3,11 +3,11 @@ package view.widgets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 import view.util.ColorGenerator;
+
 import common.IGrid;
 
 public class GridDisplay extends JPanel {
@@ -45,7 +45,6 @@ public class GridDisplay extends JPanel {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		
 		super.paintComponent(g);
 
 		int wHeight = this.getSize().height;
@@ -60,6 +59,7 @@ public class GridDisplay extends JPanel {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
 					
 					float t = grid.getTemperature(x, y);
+					System.out.println("Got temp " + t);
 					
 					int celly = (y * height);
 					int cellx = (x * width);
@@ -76,8 +76,9 @@ public class GridDisplay extends JPanel {
 		}
 	}
 
-	public synchronized void update(IGrid grid) {
+	public void update(IGrid grid) {
 
+		System.out.println("Updating with grid " + grid);
 		this.grid = grid;
 		repaint();
 	}

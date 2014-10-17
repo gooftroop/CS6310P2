@@ -25,11 +25,12 @@ public class EarthDisplayEngine extends AbstractEngine {
 	}
 	
 	@Override
-	public synchronized void onMessage(Message msg) {
+	public void onMessage(Message msg) {
 
 		if (msg instanceof DisplayMessage) {
 			if (grid != null) {
 				earthDisplay.update(grid);
+				grid = null;
 			}
 			
 			// This tells the handler that this is ready to be triggered again if it has the initiative
@@ -42,13 +43,17 @@ public class EarthDisplayEngine extends AbstractEngine {
 	public synchronized void generate() {
 		
 		try {
-			grid = Buffer.getBuffer().get();
+			//System.out.println("Going to retrieve from he buffer");
+			if (grid == null)
+				grid = Buffer.getBuffer().get();
+			//System.out.println("Got to grid " + grid + " from he buffer");
 		} catch (InterruptedException e) {
 			// We couldn't get anything. Wait for next round to try again
 			// This won't cause the top level GUI to block, but appear as if
 			// the program is hanging, which is the appropriate user feedback
 			// we want to convey -- for some reason, the Earth is not producing
 			// a grid.
+			System.out.println(e);
 			grid = null;
 		}
 	}
@@ -69,8 +74,20 @@ public class EarthDisplayEngine extends AbstractEngine {
 	}
 
 	@Override
-	public void reset() {
+	public void start() {
 		grid = null;
 		earthDisplay.display(this.gs, this.timeStep);
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 }

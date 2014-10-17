@@ -104,6 +104,7 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 		}
 	}
 
+	// TODO convert to internal calling messages
 	@Override
 	public void onMessage(Message msg) {
 		// Don't queue - execute immediately

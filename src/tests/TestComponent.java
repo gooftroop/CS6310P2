@@ -11,7 +11,7 @@ public class TestComponent extends AbstractEngine {
 	
 	Publisher publisher = Publisher.getInstance();
 
-	public void start() throws IllegalAccessException {
+	public void start() {
 		
 		publisher.subscribe(ConcreteMsg.class, this);
 		publisher.subscribe(ConcreteMsg2.class, this);
@@ -47,7 +47,13 @@ public class TestComponent extends AbstractEngine {
 	}
 
 	@Override
-	public void reset() {
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
 		// TODO Auto-generated method stub
 		
 	}

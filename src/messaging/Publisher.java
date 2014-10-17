@@ -39,7 +39,7 @@ public class Publisher {
 		subscribers.clear();
 	}
 	
-	public void send(Message msg) {
+	public synchronized void send(Message msg) {
 
 		// Send message to all subscribers
 		ConcurrentLinkedQueue<MessageListener> allListeners = subscribers.get(msg.getClass());

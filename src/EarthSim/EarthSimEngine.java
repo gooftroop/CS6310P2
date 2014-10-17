@@ -60,6 +60,9 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(DisplayMessage.class, (MessageListener) view);
 			
 		publisher.subscribe(StartMessage.class, manager);
+		publisher.subscribe(StartMessage.class, (MessageListener) model); // TODO casting is bad
+		publisher.subscribe(StartMessage.class, (MessageListener) view);
+		
 		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
 		publisher.subscribe(StopMessage.class, (MessageListener) manager);
 		publisher.subscribe(ResumeMessage.class, (MessageListener) manager);
@@ -144,8 +147,20 @@ public final class EarthSimEngine extends AbstractEngine {
 	}
 
 	@Override
-	public void reset() {
+	public void start() {
 		// nothing to do
 		return;
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 }

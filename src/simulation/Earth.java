@@ -8,10 +8,12 @@ import messaging.Publisher;
 import messaging.events.UpdatedMessage;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
+import common.AbstractEngine;
+import common.Buffer;
 import common.Grid;
 import common.IGrid;
 
-public final class Earth extends EarthEngine {
+public final class Earth extends AbstractEngine {
 
 	public static final double CIRCUMFERENCE 	= 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA 	= 5.10072 * Math.pow(10, 14);
@@ -27,27 +29,32 @@ public final class Earth extends EarthEngine {
 
 	private static final int[] increments = {6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180};
 
-	private static int currentStep, width, height, sunPosition, p;
+	private int currentStep, width, height, sunPosition, p;
+	private float avgArea;
 	
 	private GridCell prime 	= null;
 	private int speed 		= DEFAULT_SPEED;
 	private int gs 			= DEFAULT_DEGREES;
 
+	public Earth(boolean simThreaded) {
+		super(simThreaded);
+	}
+
 	public GridCell getGrid() {
 		return prime;
 	}
 
-	public static int getWidth() {
-		return new Integer(width);
-	}
-
-	public static int getHeight() {
-		return new Integer(height);
-	}
-
-	public static int getSunPosition() {
-		return new Integer(sunPosition);
-	}
+//	public static int getWidth() {
+//		return new Integer(width);
+//	}
+//
+//	public static int getHeight() {
+//		return new Integer(height);
+//	}
+//
+//	public static int getSunPosition() {
+//		return new Integer(sunPosition);
+//	}
 
 	@Override
 	public void configure(int gs, int timeStep) {
@@ -65,6 +72,8 @@ public final class Earth extends EarthEngine {
 			for (int i = 1; i < increments.length; i++)
 				if (increments[i] > gs) this.gs = increments[i - 1];
 		} else this.gs = gs;
+		
+		this.initializePlate();
 	}
 
 	public void initializePlate() {
@@ -77,9 +86,11 @@ public final class Earth extends EarthEngine {
 
 		width = (2 * MAX_DEGREES / this.gs);	// rows
 		height = (MAX_DEGREES / this.gs);		// cols
+		
+		avgArea = (float) (Earth.SURFACE_AREA / (width * height));
 
 		if (prime != null) prime.setTemp(MAX_TEMP);
-		else prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+		else prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
 		prime.setTop(null);
 		
 		p = this.gs / 360;
@@ -128,7 +139,7 @@ public final class Earth extends EarthEngine {
 
 		int t = speed * currentStep;
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
-		sunPosition = (width * (rotationalAngle / 360) + (width / 2) % width);
+		sunPosition = rotationalAngle == 0 ? rotationalAngle : (width * (rotationalAngle / 360) + (width / 2) % width);
 
 		IGrid grid = new Grid(sunPosition, t, width, height);
 
@@ -171,6 +182,12 @@ public final class Earth extends EarthEngine {
 			
 		}
 		
+		try {
+			Buffer.getBuffer().add(grid);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		
 		// This tells the handler that this is ready to be triggered again if it has the initiative
 		Publisher.getInstance().send(new UpdatedMessage(this));
 	}
@@ -196,9 +213,9 @@ public final class Earth extends EarthEngine {
 		if (curr.getLeft() != null) {
 			GridCell l = curr.getLeft();
 			l.setTemp(MAX_TEMP);
-			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
 		} else {
-			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
 			curr.setLeft(next);
 			if (bottom != null) {
 				bottom.setTop(next);
@@ -211,9 +228,9 @@ public final class Earth extends EarthEngine {
 		if (bottom.getTop() != null) {
 			curr = bottom.getTop();
 			curr.setTemp(MAX_TEMP);
-			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p);
+			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), p, avgArea);
 		} else {
-			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
+			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs, avgArea);
 			bottom.setTop(curr);
 		}
 	}

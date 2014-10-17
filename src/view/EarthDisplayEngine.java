@@ -28,9 +28,10 @@ public class EarthDisplayEngine extends AbstractEngine {
 		if (msg instanceof DisplayMessage) {
 			if (grid != null) {
 				earthDisplay.update(grid);
-				// This tells the handler that this is ready to be triggered again if it has the initiative
-				Publisher.getInstance().send(new UpdatedMessage(this));
 			}
+			
+			// This tells the handler that this is ready to be triggered again if it has the initiative
+			Publisher.getInstance().send(new UpdatedMessage(this));
 		} else
 			super.onMessage(msg);
 	}

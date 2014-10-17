@@ -1,5 +1,6 @@
 package common;
 
+import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
@@ -17,21 +18,16 @@ public class BufferController implements IHandler {
 	 * buffer, or when it's removed
 	 */
 	
-	private static IBuffer b = null;
-	private static BufferController instance = null;
+	private IBuffer b = null;
 	
-	public static BufferController getController() {
-		if (instance == null) instance = new BufferController();
-		
-		return instance;
-	}
-	
-	private BufferController() {
+	public BufferController() {
 		b = Buffer.getBuffer();
 	}
 
 	@Override
-	public void invoke() {
+	public void trigger(Class<? extends MessageListener> src) {
+		
+		// We don't care about src here
 		
 		if (b == null)
 			throw new IllegalStateException("Improperly Configured BufferController");
@@ -52,5 +48,10 @@ public class BufferController implements IHandler {
 		if (r > 0)
 			Publisher.getInstance().send(new ConsumeMessage());
 		
+	}
+	
+	@Override
+	public void start() {
+		Publisher.getInstance().send(new ProduceMessage());
 	}
 }

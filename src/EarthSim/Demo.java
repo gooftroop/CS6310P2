@@ -1,7 +1,7 @@
 // Demo.java
 package EarthSim;
 
-import common.Initiative;
+import common.State;
 
 import javax.swing.SwingUtilities;
 
@@ -21,17 +21,16 @@ public class Demo {
 
 	private boolean ownSimThread = false, ownPresThread = false;
 
-	private Initiative initiative = Initiative.MAIN_THREAD;
+	private State initiative = State.MASTER;
 	private boolean rset = false, tset = false;
 
 	private long bufferSize = 1;
-	private int bufPos = -1;
-	private boolean bset = false;
 
 	// Note: processArgs ignore args that are not s,p,r,t or b as long as you
 	// provide a max of 5 input values.
 	public void processArgs(String[] args) {
 		
+		System.out.println(args.length);
 		if (args.length > 5)
 			usage();
 
@@ -39,26 +38,36 @@ public class Demo {
 			
 			String arg = args[i];
 
-			if ("-s".equalsIgnoreCase(arg)) {
+			if ("-s".equalsIgnoreCase(arg)) 
 				ownSimThread = true;
-			}
 			
-			if ("-p".equalsIgnoreCase(arg)) {
+			else if ("-p".equalsIgnoreCase(arg)) 
 				ownPresThread = true;
-			}
 			
-			if ("-r".equalsIgnoreCase(arg)) {
+			else if ("-r".equalsIgnoreCase(arg))
 				rset = true;
-			}
 			
-			if ("-t".equalsIgnoreCase(arg)) {
+			else if ("-t".equalsIgnoreCase(arg))
 				tset = true;
-			}
 			
-			if ("-b".equalsIgnoreCase(arg)) {
-				bset = true;
-				bufPos = i;
-			}
+			else if ("-b".equalsIgnoreCase(arg)) {
+				
+				if (i == -1 || i++ >= args.length) {
+					System.out.println("-b needs a value.");
+					usage();
+				}
+				
+				String bufSizeString = args[i];
+				
+				try {
+					bufferSize = Integer.parseInt(bufSizeString);
+				} catch (NumberFormatException nfe) {
+					System.out.println("Error reading -b value as an integer. Please retry.");
+					usage();
+				}
+				
+			} else
+				usage();
 		}
 
 		if (rset && tset) {
@@ -66,25 +75,7 @@ public class Demo {
 			usage();
 		}
 		
-		initiative = rset ? Initiative.PRES_THREAD : Initiative.MAIN_THREAD;
-		initiative = tset ? Initiative.SIM_THREAD : Initiative.MAIN_THREAD;
-
-		if (bset) {
-			
-			if (bufPos == -1 || (bufPos + 1) >= args.length) {
-				System.out.println("-b needs a value.");
-				usage();
-			}
-			
-			String bufSizeString = args[bufPos + 1];
-			
-			try {
-				bufferSize = Integer.parseInt(bufSizeString);
-			} catch (NumberFormatException nfe) {
-				System.out.println("Error reading -b value as an integer. Please retry.");
-				usage();
-			}
-		}
+		initiative = rset ? State.PRESENTATION : (tset ? State.SIMULATION : State.MASTER);
 	}
 
 	public void usage() {
@@ -104,8 +95,7 @@ public class Demo {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				GUI ui = new GUI(ownSimThread, ownPresThread, initiative,
-						bufferSize);
+				GUI ui = new GUI(ownSimThread, ownPresThread, initiative, bufferSize);
 				ui.setVisible(true);
 			}
 		});

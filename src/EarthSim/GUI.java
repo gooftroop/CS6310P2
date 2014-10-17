@@ -1,24 +1,37 @@
 // GUI.java
 package EarthSim;
 
-import common.Initiative;
+import common.State;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
+
 import java.awt.FlowLayout;
 import java.awt.Insets;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+
 import javax.swing.JOptionPane;
+
+import messaging.Publisher;
+import messaging.events.CloseMessage;
+import messaging.events.PauseMessage;
+import messaging.events.ResumeMessage;
+import messaging.events.StartMessage;
+import messaging.events.StopMessage;
 
 import java.util.HashMap;
 
@@ -31,24 +44,29 @@ public class GUI extends JFrame implements ActionListener {
 	
 	private JPanel contents;
 	private EarthSimEngine engine;
-	
-	private boolean paused = false;
+	private final Publisher publisher;
 	
 	private HashMap<String, JTextField> outputs = new HashMap<String, JTextField>();
 	private HashMap<String, JTextField> inputs = new HashMap<String, JTextField>();
 
-	public GUI(boolean ownSimThread, boolean ownPresThread, Initiative initiative, long bufferSize) {
+	public GUI(boolean ownSimThread, boolean ownPresThread, State initiative, long bufferSize) {
 		
 		// BW - still need to think on the best way to do this. But that's only when
 		// we have the papers done...
-		// TODO: add initiative to EarthSimEngine later. For now give it a bool
-		this.engine = new EarthSimEngine(ownSimThread, ownPresThread, initiative, (int) bufferSize);
+		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);
+		this.publisher = Publisher.getInstance();
 		
-		// this.engine = new
-		// EarthSimEngine(ownSimThread,ownPresThread,false,false,(int)bufferSize);
+		// TODO this blocks close
+//		Runtime.getRuntime().addShutdownHook(new Thread() {
+//			
+//			@Override
+//			public void run() {
+//				publisher.send(new CloseMessage());
+//				Publisher.unsubscribeAll();
+//			}
+//		});
 
 		setupWindow();
-		add(contentsPanel());
 		pack();
 	}
 
@@ -57,28 +75,31 @@ public class GUI extends JFrame implements ActionListener {
 		// setup overall app ui
 		setTitle("Heated Earth Diffusion Simulation");
 		
-		// setSize(300, 200);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setSize(300, 200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-	}
-
-	private JPanel contentsPanel() {
 		
-		// setup primary window contents panel
-		JPanel contents = new JPanel(new BorderLayout());
-		contents.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
-		contents.setAlignmentY(Component.TOP_ALIGNMENT);
-
-		contents.add(settingsNControls(), BorderLayout.WEST);
-		contents.add(presentation(), BorderLayout.CENTER);
-		// contents.add(feedback(),BorderLayout.SOUTH);
-
-		this.contents = contents;
-		return contents;
+		add(settingsAndControls(), BorderLayout.CENTER);
 	}
 
-	private JPanel settingsNControls() {
+//	private JPanel contentsPanel() {
+//		
+//		// setup primary window contents panel
+//		JPanel contents = new JPanel(new BorderLayout());
+//		contents.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
+//		contents.setAlignmentY(Component.TOP_ALIGNMENT);
+//
+//		contents.add(settingsNControls(), BorderLayout.WEST);
+//		contents.add(presentation(), BorderLayout.CENTER);
+//		// contents.add(feedback(),BorderLayout.SOUTH);
+//
+//		this.contents = contents;
+//		return contents;
+//	}
+
+	private JPanel settingsAndControls() {
 		
 		JPanel sncPanel = new JPanel();
 		sncPanel.setLayout(new BoxLayout(sncPanel, BoxLayout.PAGE_AXIS));
@@ -113,18 +134,19 @@ public class GUI extends JFrame implements ActionListener {
 		ctrlsPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
 		ctrlsPanel.add(button("Start"));
-		ctrlsPanel.add(button("Pause/Resume"));
+		ctrlsPanel.add(button("Pause"));
+		ctrlsPanel.add(button("Resume"));
 		ctrlsPanel.add(button("Stop"));
 
 		return ctrlsPanel;
 	}
 
-	private JPanel presentation() {
-		
-		JPanel pres = new JPanel();
-		pres.setBorder(BorderFactory.createLineBorder(Color.black));
-		return pres;
-	}
+//	private JPanel presentation() {
+//		
+//		JPanel pres = new JPanel();
+//		pres.setBorder(BorderFactory.createLineBorder(Color.black));
+//		return pres;
+//	}
 
 //	private JPanel feedback() {
 //		
@@ -198,21 +220,34 @@ public class GUI extends JFrame implements ActionListener {
 		
 		if ("Start".equals(cmd)) {
 			if (configureEngine())
-				engine.start();
+				this.start();
 		}
 		
-		// BW - according to the specs restart resumes a paused state
-		if ("Pause/Resume".equals(cmd)) {
-			if (paused)
-				engine.restart();
-			else
-				engine.pause();
-			paused = !paused;
-		}
+		if ("Pause".equals(cmd))
+			this.pause();
 		
-		if ("Stop".equals(cmd)) {
-			engine.stop();
-		}
+		if ("Resume".equals(cmd))
+			this.resume();
+		
+		if ("Stop".equals(cmd)) 
+			this.stop();
+	}
+	
+	public void start() {
+		
+		publisher.send(new StartMessage());
+	}
+	
+	public void stop() {
+		publisher.send(new StopMessage());	
+	}
+	
+	public void pause() {
+		publisher.send(new PauseMessage());
+	}
+	
+	public void resume() {
+		publisher.send(new ResumeMessage());
 	}
 
 	private boolean configureEngine() {
@@ -220,10 +255,8 @@ public class GUI extends JFrame implements ActionListener {
 		try {
 			
 			int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
-			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step")
-					.getText());
-			long presentationRate = Long.parseLong(inputs.get(
-					"Presentation Rate").getText());
+			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
+			long presentationRate = Long.parseLong(inputs.get("Presentation Rate").getText());
 
 			engine.configure(gs, timeStep, presentationRate);
 			return true;
@@ -235,7 +268,4 @@ public class GUI extends JFrame implements ActionListener {
 		
 		return false;
 	}
-	
-	// todo: add handler for window close -- BW Done in Engine
-
 }

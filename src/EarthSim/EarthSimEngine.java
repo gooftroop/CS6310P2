@@ -138,8 +138,7 @@ public final class EarthSimEngine extends AbstractEngine {
 	public void run() {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
-			// Just loop
-			/* if (simThreaded || viewThreaded || i == State.MASTER) */ Publisher.getInstance().send(new UpdatedMessage());
+			Publisher.getInstance().send(new UpdatedMessage());
 			this.performAction();
 		}
 	}

@@ -43,21 +43,8 @@ public class EarthDisplayEngine extends AbstractEngine {
 	@Override
 	public void generate() {
 		
-		try {
-			//System.out.println("Going to retrieve from the buffer. grid is currently " + grid);
-			if (grid == null) {
-				grid = Buffer.getBuffer().get();
-				//System.out.println("Got to grid " + grid + " from the buffer");
-			} //else System.out.println("Haven't updated yet...skipping");
-		} catch (InterruptedException e) {
-			// We couldn't get anything. Wait for next round to try again
-			// This won't cause the top level GUI to block, but appear as if
-			// the program is hanging, which is the appropriate user feedback
-			// we want to convey -- for some reason, the Earth is not producing
-			// a grid.
-			System.err.println(e);
-			grid = null;
-		}
+		if (grid == null)
+			grid = Buffer.getBuffer().get();
 	}
 
 	@Override

@@ -40,7 +40,6 @@ public abstract class AbstractEngine implements IEngine {
 		}
 	}
 
-	// I'd like to remove this...
 	public void run() {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {

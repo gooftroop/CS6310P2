@@ -1,8 +1,6 @@
 package common;
 
 import messaging.Message;
-import messaging.events.StartMessage;
-import messaging.events.UpdatedMessage;
 
 public class InitiativeHandler implements IEngine {
 	

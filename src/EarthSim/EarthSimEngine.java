@@ -34,11 +34,7 @@ public final class EarthSimEngine extends AbstractEngine {
 	private InitiativeHandler handler;
 	private ProcessManager manager;
 	private Publisher publisher;
-	private IEngine model, view; // TODO is IEngine useful?? maybe seperate this stuff better
-	
-	// TODO I want to refactor this - this needs to be done cause this is ugly
-	private boolean simThreaded;
-	private State i;
+	private IEngine model, view;
 	 
 	private long presentationRate;
 	
@@ -47,9 +43,6 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
-		
-		this.simThreaded = simThreaded; // see above note
-		this.i = i; // see above note
 		
 		Buffer.getBuffer().create(b);
 		
@@ -77,14 +70,10 @@ public final class EarthSimEngine extends AbstractEngine {
 		
 		IHandler plugin;
 		
-		if (i == State.SIMULATION && simThreaded)
+		if (i == State.SIMULATION)
 			plugin = new SimulationHandler(new ContinuouslyProduceCommand());
-		else if (i == State.SIMULATION && !simThreaded)
-			plugin = new SimulationHandler(new SingleProduceCommand());
-		else if (i == State.PRESENTATION && viewThreaded)
+		else if (i == State.PRESENTATION)
 			plugin = new ViewHandler(new ContinuouslyConsumeCommand());
-		else if (i == State.PRESENTATION && !viewThreaded)
-			plugin = new ViewHandler(new SingleConsumeCommand());
 		else
 			plugin = new BufferController();
 		

@@ -102,10 +102,10 @@ public final class Earth extends AbstractEngine {
 			this.createNextRow(bottom, curr, y); 
 			
 			curr = bottom.getTop();
+			
 			// left should be changed, but actually have not.
 			this.createRow(curr, next, bottom.getLeft(), left, y);
 			bottom = bottom.getTop();
-
 		}
 
 		this.createNextRow(bottom, curr, y);

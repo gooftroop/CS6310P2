@@ -15,23 +15,24 @@ public final class GridCell implements EarthCell<GridCell> {
 	public int x, y, latitude, longitude, gs;
 	
 	// average temperature
-	private static float avgtemp;
+	private static float avgsuntemp;
+	private static float avgArea;
 
 	private boolean visited;
-	private float currTemp, newTemp, avgArea;
+	private float currTemp, newTemp;
 
 	private GridCell top = null, bottom = null, left = null, right = null;
 
 	// Cell properties: surface area, perimeter
 	private float lv, lb, lt, surfarea, pm;
 
-	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs, float avgArea) {
+	public GridCell(float temp, int x, int y, int latitude, int longitude, int gs) {
 
 		if (temp > Float.MAX_VALUE) throw new IllegalArgumentException("Invalid temp provided");
 		if (x > Integer.MAX_VALUE || x < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'x' provided");
 		if (y > Integer.MAX_VALUE || y < Integer.MIN_VALUE) throw new IllegalArgumentException("Invalid 'y' provided");
 
-		this.setGridProps(x, y, latitude, longitude, gs, avgArea);
+		this.setGridProps(x, y, latitude, longitude, gs);
 
 		this.setTemp(temp);
 		this.visited = false;
@@ -39,9 +40,9 @@ public final class GridCell implements EarthCell<GridCell> {
 		//System.out.println(Integer.toString(x)+ "," + Integer.toString(y));
 	}
 
-	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs, float avgArea) {
+	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs) {
 		
-		this(temp, x, y, latitude, longitude, gs, avgArea);
+		this(temp, x, y, latitude, longitude, gs);
 
 		this.setTop(top);
 		this.setBottom(bottom);
@@ -110,14 +111,13 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	@Override
-	public void setGridProps(int x, int y, int latitude, int longitude, int gs, float avgArea) {
+	public void setGridProps(int x, int y, int latitude, int longitude, int gs) {
 
 		this.setX(x);
 		this.setY(y);
 		this.setLatitude(latitude);
 		this.setLongitude(longitude);
 		this.setGridSpacing(gs);
-		this.setAverageArea(avgArea);
 
 		// calc lengths, area, etc.
 		this.calSurfaceArea(latitude, gs);
@@ -144,19 +144,9 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 	
 	@Override
-	public void setAverageArea(float avgArea) {
-		this.avgArea = avgArea;
-	}
-	
-	@Override
-	public float getAverageArea() {
-		return this.avgArea;
-	}
-
-	@Override
 	public float calculateTemp(int sunPosition) {
 		//return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
-		this.newTemp = this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors();
+		this.newTemp = calTsun(sunPosition) + calTcool() + calTneighbors();
 		//System.out.println(this.currTemp);
 		return this.newTemp; // new temp
 	}
@@ -215,12 +205,24 @@ public final class GridCell implements EarthCell<GridCell> {
 		return this.gs;
 	}
 
-	public static void setAvgtemp(float avg){
-		avgtemp = avg;
+	public static void setAvgSuntemp(float avg){
+		avgsuntemp = avg;
 	}
 	
-	public static float getAvgtemp(){
-		return avgtemp;
+	public static float getAvgSuntemp(){
+		return avgsuntemp;
+	}
+	
+	public float getSurfarea() {
+		return this.surfarea;
+	}
+	
+	public static void setAverageArea(float avgarea) {
+		avgArea = avgarea;
+	}
+	
+	public static float getAverageArea() {
+		return avgArea;
 	}
 	
 	private void calSurfaceArea(int latitude, int gs) {
@@ -235,11 +237,20 @@ public final class GridCell implements EarthCell<GridCell> {
 		this.surfarea =  (float) (1.0/2 * (this.lt + this.lb) * h);
 	}
 
-	private float calTsun(int sunPosition) {
+	public float calTsun(int sunPosition) {
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude));
-		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
-
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude + 1));
+		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude + 1) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude + 1)) : 0);
+		
+//		System.out.println("sunlongitude");
+//		System.out.println(sunLongitude);
+//		System.out.println("sunlatitude");
+//		System.out.println(this.latitude);
+//		System.out.println(attenuation_lat);
+//		System.out.println("sunlongtitude");
+//		System.out.println(this.longitude);
+//		System.out.println(attenuation_longi);
+		
 		return 278 * attenuation_lat * attenuation_longi;
 	}
 
@@ -253,9 +264,11 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	private float calTcool() {
 		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
-		float tempfactor = this.currTemp / avgtemp;
+		//float tempfactor = this.currTemp / avgtemp;
 
-		return -1 * beta * tempfactor * this.currTemp;
+		//System.out.println(beta);
+		//return -1 * beta * avgsuntemp;
+		return -1 * beta * avgsuntemp;
 	}
 
 	private float calTneighbors() {
@@ -266,5 +279,4 @@ public final class GridCell implements EarthCell<GridCell> {
 		
 		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
-
 }

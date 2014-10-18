@@ -30,10 +30,13 @@ public final class Earth extends AbstractEngine {
 	private static final int[] increments = { 6, 9, 10, 12, 15, 18, 20, 30, 36,
 			45, 60, 90, 180 };
 
-	private int currentStep, width, height, sunPosition, p;
-	private float avgArea;
+	private int currentStep;
+	private static int width;
+	private static int height;
+	private int sunPosition;
+	private int p;
 
-	private GridCell prime = null;
+	private static GridCell prime = null;
 	private int speed = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 
@@ -44,18 +47,6 @@ public final class Earth extends AbstractEngine {
 	public GridCell getGrid() {
 		return prime;
 	}
-
-	// public static int getWidth() {
-	// return new Integer(width);
-	// }
-	//
-	// public static int getHeight() {
-	// return new Integer(height);
-	// }
-	//
-	// public static int getSunPosition() {
-	// return new Integer(sunPosition);
-	// }
 
 	@Override
 	public void configure(int gs, int timeStep) {
@@ -81,26 +72,21 @@ public final class Earth extends AbstractEngine {
 
 		int x = 0, y = 0;
 
-		// do a reset
-		sunPosition = SUN_START_POS;
-		currentStep = 0;
-
 		width = (2 * MAX_DEGREES / this.gs); // rows
 		height = (MAX_DEGREES / this.gs); // cols
 
-		avgArea = (float) (Earth.SURFACE_AREA / (width * height));
-
+		// do a reset
+		sunPosition = (width / 2) % width;
+		currentStep = 0;
+		
 		if (prime != null)
 			prime.setTemp(MAX_TEMP);
 		else
 			prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y),
-					this.getLongitude(x), this.gs, avgArea);
+					this.getLongitude(x), this.gs);
 		prime.setTop(null);
 
 		p = this.gs / 360;
-
-		// Set initial average temperature
-		GridCell.setAvgtemp(MAX_TEMP);
 
 		// South Pole
 		GridCell next = null, curr = prime;
@@ -136,6 +122,27 @@ public final class Earth extends AbstractEngine {
 
 		// North Pole
 		this.createRow(curr, next, bottom.getLeft(), left, y);
+		
+		// Calculate the average sun temperature
+		float totaltemp = 0;
+		float totalarea = 0;
+		curr = prime;
+		
+		int rotationalAngle = (speed % MAX_SPEED) * 360 / MAX_SPEED;
+		int initPosition = width * (rotationalAngle / 360) + (width / 2) % width;
+		for (x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (y = 0; y < width; y++) {
+				System.out.printf("%d,",rowgrid.getLongitude());
+				totaltemp += rowgrid.calTsun(initPosition);
+				totalarea += rowgrid.getSurfarea();
+			}
+			curr = curr.getTop();
+			System.out.println();
+		}
+		// Set initial average temperature
+		GridCell.setAvgSuntemp(totaltemp / (width * height));
+		GridCell.setAverageArea(totalarea / (width * height));
 	}
 
 	public void reset() {
@@ -153,18 +160,14 @@ public final class Earth extends AbstractEngine {
 
 		int t = speed * currentStep;
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
-		sunPosition = rotationalAngle == 0 ? rotationalAngle : (width
-				* (rotationalAngle / 360) + (width / 2) % width);
+		sunPosition = width * (rotationalAngle / 360) + (width / 2) % width;
 
 		IGrid grid = new Grid(sunPosition, t, width, height);
 
-		float totaltemp;
-		float avgtemp;
-
 		bfs.add(prime);
 		prime.visited(true);
-		totaltemp = 0;
 
+		float suntotal = 0;
 		while (!bfs.isEmpty()) {
 
 			EarthCell point = bfs.remove();
@@ -177,15 +180,13 @@ public final class Earth extends AbstractEngine {
 				child = itr.next();
 				child.visited(true);
 				childtemp = child.calculateTemp(sunPosition);
-				totaltemp = totaltemp + childtemp;
 				grid.setTemperature(child.getX(), child.getY(), childtemp);
 				bfs.add(child);
+				suntotal += child.calTsun(sunPosition);
 			}
 		}
 
-		avgtemp = totaltemp / width * height;
-		GridCell.setAvgtemp(avgtemp);
-
+		GridCell.setAvgSuntemp(suntotal /  (width * height));
 		EarthCell c = calcd.poll();
 		while (c != null) {
 			c.visited(false);
@@ -193,11 +194,11 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-		try {
-			Buffer.getBuffer().add(grid);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+//		try {
+//			Buffer.getBuffer().add(grid);
+//		} catch (InterruptedException e) {
+//			throw new RuntimeException(e);
+//		}
 
 		// This tells the handler that this is ready to be triggered again if it
 		// has the initiative
@@ -230,10 +231,10 @@ public final class Earth extends AbstractEngine {
 			GridCell l = curr.getLeft();
 			l.setTemp(MAX_TEMP);
 			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x),
-					this.gs, avgArea);
+					this.gs);
 		} else {
 			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y,
-					this.getLatitude(y), this.getLongitude(x), this.gs, avgArea);
+					this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 			if (bottom != null) {
 				bottom.setTop(next);
@@ -247,10 +248,10 @@ public final class Earth extends AbstractEngine {
 			curr = bottom.getTop();
 			curr.setTemp(MAX_TEMP);
 			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0),
-					p, avgArea);
+					p);
 		} else {
 			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y,
-					this.getLatitude(y), this.getLongitude(0), this.gs, avgArea);
+					this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}
@@ -262,33 +263,47 @@ public final class Earth extends AbstractEngine {
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
 	}
+
+	// The following code is only for testing.
+	public static int getWidth() {
+		return new Integer(width);
+	}
+
+	public static int getHeight() {
+		return new Integer(height);
+	}
 	
-	// // The following code is only for testing.
-	// public static void main(String [] args){
-	// Earth earth = new Earth();
-	// earth.configure(45, 10);
-	// earth.initializePlate();
-	// System.out.println("Just after initializaiton:");
-	// printGrid();
-	// //earth.run();
-	// earth.generate();
-	// }
-	//
-	// private static void printGrid(){
-	// GridCell curr = prime;
-	// int height = Earth.getHeight();
-	// int width = Earth.getWidth();
-	// //System.out.println(height);
-	// //System.out.println(width);
-	// for (int x = 0; x < height; x++) {
-	// GridCell rowgrid = curr.getLeft();
-	// for (int y = 0; y < width; y++) {
-	// System.out.printf("%.2f,",rowgrid.getTemp());
-	// rowgrid = rowgrid.getLeft();
-	// }
-	// System.out.println();
-	// curr = curr.getTop();
-	// }
-	// }
->>>>>>> c6257830efc5a11ec76bc8cd5c0742c267b4d594
+	public static void main(String [] args){
+		Earth earth = new Earth(false);
+		earth.configure(45, 10);
+		earth.initializePlate();
+		System.out.println("Just after initializaiton:");
+		printGrid();
+		//earth.run();
+//		for (int i = 0; i < 1; i++) {
+//			System.out.println(Integer.toString(i) + " times");
+//			earth.generate();
+//			printGrid();
+//		}
+	}
+
+	private static void printGrid(){
+		GridCell curr = prime;
+		int height = getHeight();
+		int width = getWidth();
+		//System.out.println(height);
+		//System.out.println(width);
+		float total = 0;
+		for (int x = 0; x < height; x++) {
+			GridCell rowgrid = curr.getLeft();
+			for (int y = 0; y < width; y++) {
+				System.out.printf("%d,",rowgrid.getLongitude());
+				rowgrid = rowgrid.getLeft();
+				total += rowgrid.getTemp() - 288;
+			}
+			System.out.println();
+			curr = curr.getTop();
+		}
+		System.out.println(total);
+	}
 }

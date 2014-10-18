@@ -3,6 +3,9 @@ package view.widgets;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,6 +26,8 @@ public class SimulationStatus extends JPanel {
 	private static final int WIDTH = 2;
 	private static final int HGAP = 1;
 	private static final int VGAP = 1;
+	
+	//private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yy HH:mm:SS");
 	
 	public SimulationStatus() {
 		

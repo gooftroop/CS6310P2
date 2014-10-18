@@ -36,17 +36,12 @@ public class Buffer implements IBuffer {
 		if (grid == null)
 			throw new IllegalArgumentException("IGrid is null");
 		
-		System.out.println("inserting " + grid + ", current remaining capacity " + buffer.remainingCapacity());
-		buffer.offer(grid, 3, TimeUnit.SECONDS);
-		System.out.println("inserted. Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
+		buffer.offer(grid, 1, TimeUnit.SECONDS);
 	}
 
 	@Override
-	public IGrid get() throws InterruptedException {
-		//System.out.println("getting....current remaining capacity " + buffer.remainingCapacity());
-		IGrid grid =  buffer.poll(3, TimeUnit.SECONDS);
-		//System.out.println("got " + grid + ". Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
-		return grid;
+	public IGrid get() {
+		return buffer.poll();
 	}
 	
 	@Override

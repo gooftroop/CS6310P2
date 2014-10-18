@@ -77,7 +77,6 @@ public class GridDisplay extends JPanel {
 
 	public void update(IGrid grid) {
 
-		System.out.println("Updating with grid " + grid);
 		this.grid = grid;
 		repaint();
 	}

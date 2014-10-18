@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-// for testing
-//import java.lang.Integer;
-
 import simulation.Earth;
 
 public final class GridCell implements EarthCell<GridCell> {

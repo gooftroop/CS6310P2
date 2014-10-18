@@ -36,9 +36,9 @@ public class Buffer implements IBuffer {
 		if (grid == null)
 			throw new IllegalArgumentException("IGrid is null");
 		
-		System.out.println("inserting " + grid + ", current remaining capacity " + buffer.remainingCapacity());
+		//System.out.println("inserting " + grid + ", current remaining capacity " + buffer.remainingCapacity());
 		buffer.offer(grid, 3, TimeUnit.SECONDS);
-		System.out.println("inserted. Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
+		//System.out.println("inserted. Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
 	}
 
 	@Override

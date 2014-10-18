@@ -61,6 +61,12 @@ public abstract class AbstractEngine implements IEngine {
 	public <T extends Message> void dispatchMessage(T msg) {
 		Publisher.getInstance().send(msg);
 	}
+	
+	@Override
+	public void generate() {
+		// nothing to do
+		return;
+	}
 
 	public void stop() {
 		Thread.currentThread().interrupt();
@@ -79,5 +85,12 @@ public abstract class AbstractEngine implements IEngine {
 	
 	public void pause(Object lock) throws InterruptedException {
 		// TODO implement
+	}
+	
+
+	@Override
+	public void start() {
+		// nothing to do
+		return;
 	}
 }

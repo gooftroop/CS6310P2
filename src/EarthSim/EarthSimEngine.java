@@ -3,8 +3,6 @@ package EarthSim;
 import messaging.ContinuouslyConsumeCommand;
 import messaging.ContinuouslyProduceCommand;
 import messaging.Publisher;
-import messaging.SingleConsumeCommand;
-import messaging.SingleProduceCommand;
 import messaging.events.CloseMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
@@ -35,6 +33,9 @@ public final class EarthSimEngine extends AbstractEngine {
 	private ProcessManager manager;
 	private Publisher publisher;
 	private IEngine model, view;
+	
+	private State i;
+	private final boolean viewThreaded, simThreaded;
 	 
 	private long presentationRate;
 	
@@ -43,6 +44,10 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
+		
+		this.i = i;
+		this.simThreaded = simThreaded;
+		this.viewThreaded = viewThreaded;
 		
 		Buffer.getBuffer().create(b);
 		
@@ -129,21 +134,13 @@ public final class EarthSimEngine extends AbstractEngine {
 		
 		publisher.send(new DisplayMessage());
 	}
+	
+	public void run() {
 
-	@Override
-	public void generate() {
-		// nothing to do
-		return;
-	}
-
-	@Override
-	public void close() {
-		handler = null;
-	}
-
-	@Override
-	public void start() {
-		// nothing to do
-		return;
+		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
+			// Just loop
+			/* if (simThreaded || viewThreaded || i == State.MASTER) */ Publisher.getInstance().send(new UpdatedMessage());
+			this.performAction();
+		}
 	}
 }

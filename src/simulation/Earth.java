@@ -142,7 +142,7 @@ public final class Earth extends AbstractEngine {
 			return;
 		}
 
-		System.out.println("generating grid...");
+		//System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
 		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
 
@@ -200,7 +200,7 @@ public final class Earth extends AbstractEngine {
 			}
 		}
 
-		System.out.println("finished generating grid");
+		//System.out.println("finished generating grid");
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

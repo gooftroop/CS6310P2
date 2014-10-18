@@ -26,27 +26,16 @@ public class BufferController implements IHandler {
 	@Override
 	public void trigger() {
 		
-		// We don't care about src here
-		
 		if (b == null)
 			throw new IllegalStateException("Improperly Configured BufferController");
 		
 		int r = b.getRemainingCapacity();
 		
-		// the buffer is empty - this means that invoke was called after a grid was removed
-		// and we need to fill it up to prevent starvation. Ideally the only way this could
-		// happen is if the buffer size was 1
-		if (r == 0) {
-			Publisher.getInstance().send(new ProduceMessage());
-			return;
-		}
-		
-		if (r < b.getCapacity())
-			Publisher.getInstance().send(new ProduceMessage());
-		
-		if (r > 0)
+		if (r != b.getCapacity()) 
 			Publisher.getInstance().send(new ConsumeMessage());
 		
+		if (r <= b.getCapacity())
+			Publisher.getInstance().send(new ProduceMessage());
 	}
 	
 	@Override

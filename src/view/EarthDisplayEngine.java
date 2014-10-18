@@ -44,11 +44,11 @@ public class EarthDisplayEngine extends AbstractEngine {
 	public void generate() {
 		
 		try {
-			System.out.println("Going to retrieve from the buffer. grid is currently " + grid);
+			//System.out.println("Going to retrieve from the buffer. grid is currently " + grid);
 			if (grid == null) {
 				grid = Buffer.getBuffer().get();
-				System.out.println("Got to grid " + grid + " from the buffer");
-			} else System.out.println("Haven't updated yet...skipping");
+				//System.out.println("Got to grid " + grid + " from the buffer");
+			} //else System.out.println("Haven't updated yet...skipping");
 		} catch (InterruptedException e) {
 			// We couldn't get anything. Wait for next round to try again
 			// This won't cause the top level GUI to block, but appear as if

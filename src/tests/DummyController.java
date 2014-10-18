@@ -2,11 +2,11 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import tests.util.ContinuouslyConsumeMessage;
-import tests.util.ContinuouslyProduceMessage;
 import common.AbstractEngine;
 import messaging.Message;
 import messaging.Publisher;
+import messaging.events.ContinuouslyConsumeMessage;
+import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.ProduceMessage;
 

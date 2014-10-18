@@ -1,12 +1,13 @@
 package messaging.events;
 
 import messaging.Message;
-import messaging.MessageListener;
+
+import common.IEngine;
 
 public class CloseMessage implements Message {
 
 	@Override
-	public void process(MessageListener l) {
+	public void process(IEngine l) {
 		l.close();
 	}
 }

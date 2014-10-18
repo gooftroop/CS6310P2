@@ -127,8 +127,10 @@ public final class Earth extends AbstractEngine {
 	@Override
 	public void generate() {
 		
-		if (prime == null)
-			throw new IllegalStateException("Earth has not been started");
+		if (prime == null) {
+			System.err.println("Earth has not been started");
+			return;
+		}
 
 		System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
@@ -196,7 +198,7 @@ public final class Earth extends AbstractEngine {
 
 		// This tells the handler that this is ready to be triggered again if it
 		// has the initiative
-		Publisher.getInstance().send(new UpdatedMessage(this));
+		Publisher.getInstance().send(new UpdatedMessage());
 
 		System.out.println("finished generating grid");
 	}
@@ -256,17 +258,5 @@ public final class Earth extends AbstractEngine {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
 	}
 }

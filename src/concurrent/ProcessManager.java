@@ -14,7 +14,7 @@ import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 
-public class ProcessManager extends ThreadPoolExecutor implements MessageListener {
+public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	
 	private static final Object LSUSPEND = new Object();
 	
@@ -75,7 +75,7 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 
 	public void start() {
 		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
-		for (Runnable r : this.queued) {
+		for (IEngine r : queued) {
 			this.execute(r);
 		}
 	}
@@ -107,21 +107,42 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 	// TODO convert to internal calling messages
 	@Override
 	public void onMessage(Message msg) {
-		// Don't queue - execute immediately
-		if (msg instanceof StopMessage) {
-			this.stop();
-		} else if (msg instanceof PauseMessage) {
-			this.pause();
-		} else if (msg instanceof ResumeMessage) {
-			this.resume();
-		} else if (msg instanceof StartMessage) {
-			this.start();
-		} 
+		msg.process(this);
 	}
 
 	@Override
 	public void generate() {
 		// nothing to do
 		return;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void performAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void configure(int gs, int timeStep) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void processQueue() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause(Object lock) throws InterruptedException {
+		// TODO Auto-generated method stub
+		
 	}
 }

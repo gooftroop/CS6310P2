@@ -5,7 +5,7 @@ import messaging.MessageListener;
 import messaging.events.StartMessage;
 import messaging.events.UpdatedMessage;
 
-public class InitiativeHandler implements MessageListener {
+public class InitiativeHandler implements IEngine {
 	
 	private final IHandler handler;
 
@@ -15,21 +15,12 @@ public class InitiativeHandler implements MessageListener {
 
 	@Override
 	public void onMessage(Message msg) {
-		
-		// do i need to queue?
-		synchronized (this.handler) {
-			if (msg instanceof UpdatedMessage)
-				this.handler.trigger(((UpdatedMessage) msg).getSource().getClass());
-			if (msg instanceof StartMessage)
-				this.handler.start();
-		}
+		msg.process(this);
 	}
 
 	@Override
 	public void generate() {
-		// nothing to do
-		return;
-		
+		this.handler.trigger();
 	}
 
 	@Override
@@ -51,13 +42,37 @@ public class InitiativeHandler implements MessageListener {
 	}
 
 	@Override
-	public void pause() {
+	public void resume() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void resume() {
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void performAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void configure(int gs, int timeStep) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void processQueue() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause(Object lock) throws InterruptedException {
 		// TODO Auto-generated method stub
 		
 	}

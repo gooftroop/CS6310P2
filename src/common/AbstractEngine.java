@@ -3,10 +3,10 @@ package common;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import messaging.Message;
-import messaging.MessageListener;
 import messaging.Publisher;
+import messaging.events.UpdatedMessage;
 
-public abstract class AbstractEngine implements MessageListener, IEngine {
+public abstract class AbstractEngine implements IEngine {
 
 	protected final ConcurrentLinkedQueue<Message> msgQueue;
 	protected final boolean isThreaded;
@@ -22,7 +22,7 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 		this(false);
 	}
 
-	public synchronized void onMessage(Message msg) {
+	public void onMessage(Message msg) {
 
 		// If threaded, enque message to be processed later
 		if (this.isThreaded)
@@ -32,13 +32,11 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	}
 
 	// TODO guard against starvation?
-	public synchronized void performAction() {
+	public void performAction() {
 
 		Message msg;
-		if ((msg = msgQueue.poll()) != null) {
-			//System.out.println("Going to process message " + msg);
+		while ((msg = msgQueue.poll()) != null) {
 			msg.process(this);
-			//System.out.println("Done processing message " + msg);
 		}
 	}
 
@@ -47,8 +45,8 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
 			// Just loop
+			Publisher.getInstance().send(new UpdatedMessage());
 			this.performAction();
-			// Thread.yield was here, but it is dangerous to use
 		}
 	}
 
@@ -61,14 +59,8 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	}
 
 	// This method dispatches a message to the appropriate processor
-	public synchronized <T extends Message> void dispatchMessage(T msg) {
+	public <T extends Message> void dispatchMessage(T msg) {
 		Publisher.getInstance().send(msg);
-	}
-
-	public void pause(Object lock) throws InterruptedException {
-		synchronized (lock) {
-			lock.wait();
-		}
 	}
 
 	public void stop() {
@@ -79,5 +71,14 @@ public abstract class AbstractEngine implements MessageListener, IEngine {
 	@Override
 	public void close() {
 		// do nothing
+	}
+	
+	@Override
+	public void resume() {
+		// TODO implement
+	}
+	
+	public void pause(Object lock) throws InterruptedException {
+		// TODO implement
 	}
 }

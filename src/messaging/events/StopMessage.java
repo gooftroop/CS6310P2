@@ -1,12 +1,13 @@
 package messaging.events;
 
+import common.IEngine;
+
 import messaging.Message;
-import messaging.MessageListener;
 
 public class StopMessage implements Message {
 
 	@Override
-	public void process(MessageListener l) {
-		// nothing to do
+	public void process(IEngine l) {
+		l.stop();
 	}
 }

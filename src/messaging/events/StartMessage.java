@@ -1,12 +1,13 @@
 package messaging.events;
 
+import common.IEngine;
+
 import messaging.Message;
-import messaging.MessageListener;
 
 public class StartMessage implements Message {
 
 	@Override
-	public void process(MessageListener l) {
+	public void process(IEngine l) {
 		l.start();
 	}
 }

@@ -1,26 +1,32 @@
 package EarthSim;
 
-import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.CloseMessage;
 import messaging.events.ConsumeMessage;
+import messaging.events.ContinuouslyConsumeMessage;
+import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
 import messaging.events.ProduceMessage;
 import messaging.events.ResumeMessage;
+import messaging.events.SingleConsumeMessage;
+import messaging.events.SingleProduceMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 import messaging.events.UpdatedMessage;
 import simulation.Earth;
 import view.EarthDisplayEngine;
+
 import common.AbstractEngine;
 import common.Buffer;
 import common.BufferController;
 import common.IEngine;
-import common.State;
+import common.IHandler;
 import common.InitiativeHandler;
 import common.SimulationHandler;
+import common.State;
 import common.ViewHandler;
+
 import concurrent.ProcessManager;
 
 public final class EarthSimEngine extends AbstractEngine {
@@ -55,31 +61,39 @@ public final class EarthSimEngine extends AbstractEngine {
 		manager = ProcessManager.getManager();
 		
 		publisher = Publisher.getInstance();
-		publisher.subscribe(ProduceMessage.class, (MessageListener) model); // TODO casting is bad
-		publisher.subscribe(ConsumeMessage.class, (MessageListener) view);
-		publisher.subscribe(DisplayMessage.class, (MessageListener) view);
+		publisher.subscribe(ProduceMessage.class, model); // TODO casting is bad
+		publisher.subscribe(ConsumeMessage.class, view);
+		publisher.subscribe(DisplayMessage.class, view);
 			
 		publisher.subscribe(StartMessage.class, manager);
-		publisher.subscribe(StartMessage.class, (MessageListener) view);
-		publisher.subscribe(StartMessage.class, (MessageListener) model);
+		publisher.subscribe(StartMessage.class, view);
+		publisher.subscribe(StartMessage.class, model);
 		
-		publisher.subscribe(PauseMessage.class, (MessageListener) manager);
-		publisher.subscribe(StopMessage.class, (MessageListener) manager);
-		publisher.subscribe(ResumeMessage.class, (MessageListener) manager);
+		publisher.subscribe(PauseMessage.class, manager);
+		publisher.subscribe(StopMessage.class, manager);
+		publisher.subscribe(ResumeMessage.class, manager);
 		
-		publisher.subscribe(CloseMessage.class, (MessageListener) view);
-		publisher.subscribe(CloseMessage.class, (MessageListener) model);
-		publisher.subscribe(CloseMessage.class, (MessageListener) manager);
+		publisher.subscribe(CloseMessage.class, view);
+		publisher.subscribe(CloseMessage.class, model);
+		publisher.subscribe(CloseMessage.class, manager);
 		
-		if (i == State.SIMULATION)
-			handler = new InitiativeHandler(new SimulationHandler((Class<? extends MessageListener>) model.getClass(), simThreaded));
-		else if (i == State.PRESENTATION)
-			handler = new InitiativeHandler(new ViewHandler((Class<? extends MessageListener>) view.getClass(), viewThreaded));
+		IHandler plugin;
+		
+		if (i == State.SIMULATION && simThreaded)
+			plugin = new SimulationHandler(new ContinuouslyProduceMessage());
+		else if (i == State.SIMULATION && !simThreaded)
+			plugin = new SimulationHandler(new SingleProduceMessage());
+		else if (i == State.PRESENTATION && viewThreaded)
+			plugin = new ViewHandler(new ContinuouslyConsumeMessage());
+		else if (i == State.PRESENTATION && !viewThreaded)
+			plugin = new ViewHandler(new SingleConsumeMessage());
 		else
-			handler = new InitiativeHandler(new BufferController());
+			plugin = new BufferController();
+		
+		handler = new InitiativeHandler(plugin);
 		
 		publisher.subscribe(UpdatedMessage.class, handler);
-		//publisher.subscribe(StartMessage.class, handler);
+		publisher.subscribe(StartMessage.class, handler);
 			
 		if (simThreaded) manager.add((IEngine) model);
 		if (viewThreaded) manager.add((IEngine) view);
@@ -118,14 +132,6 @@ public final class EarthSimEngine extends AbstractEngine {
 
 	@Override
 	public void performAction() {
-
-		// TODO this is yet another hack...it would be nice not to have to check either 
-		//- at the very least, the threaded flag
-		if (!simThreaded && i == State.SIMULATION)
-			publisher.send(new ProduceMessage());
-		
-		if (i == State.MASTER)
-			publisher.send(new UpdatedMessage(null)); // There has got be a way of not using classes
 		
 		try {
 			Thread.currentThread();
@@ -152,17 +158,5 @@ public final class EarthSimEngine extends AbstractEngine {
 	public void start() {
 		// nothing to do
 		return;
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
 	}
 }

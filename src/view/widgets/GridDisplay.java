@@ -59,7 +59,6 @@ public class GridDisplay extends JPanel {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
 					
 					float t = grid.getTemperature(x, y);
-					System.out.println("Got temp " + t);
 					
 					int celly = (y * height);
 					int cellx = (x * width);

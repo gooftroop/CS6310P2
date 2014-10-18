@@ -157,11 +157,15 @@ public class ColorMap {
 	public static final Color autumn[] = { Color.red, new Color(255, 128, 0),
 			Color.yellow };
 
-	/*
-	 * Autumn varies smoothly from red, through orange, to yellow.
-	 */
-	public static final Color thermal[] = { Color.blue, Color.CYAN,
-			Color.GREEN, Color.yellow, new Color(255, 128, 0), Color.red };
+	public static final Color thermal[] = { Color.WHITE,
+			new Color(251, 246, 255), new Color(243, 224, 255),
+			new Color(214, 153, 255), new Color(153, 0, 255),
+			new Color(102, 0, 204), new Color(84, 51, 117),
+			new Color(51, 51, 153), new Color(0, 0, 102), Color.BLUE,
+			Color.CYAN, Color.GREEN, Color.yellow, new Color(255, 102, 0),
+			new Color(255, 128, 0), new Color(255, 51, 0),
+			new Color(153, 0, 0), new Color(200, 0, 0), Color.RED,
+			new Color(255, 0, 0), new Color(255, 80, 80) };
 
 	/*
 	 * Winter consists of colors that are shades of blue and green.

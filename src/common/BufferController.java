@@ -1,6 +1,5 @@
 package common;
 
-import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
@@ -25,7 +24,7 @@ public class BufferController implements IHandler {
 	}
 
 	@Override
-	public void trigger(Class<? extends MessageListener> src) {
+	public void trigger() {
 		
 		// We don't care about src here
 		

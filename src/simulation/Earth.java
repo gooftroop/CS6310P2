@@ -198,16 +198,16 @@ public final class Earth extends AbstractEngine {
 		}
 
 
-//		while(!this.stopped) {
-//			try {
-//				//System.out.println("Going to add grid to buffer");
-//				Buffer.getBuffer().add(new Grid((Grid) grid));
-//				//System.out.println("Added grid to buffer");
-//				break;
-//			} catch (InterruptedException e) {
-//				System.err.println("Unable to add to buffer: " + e);
-//			}
-//		}
+		while(!this.stopped) {
+			try {
+				//System.out.println("Going to add grid to buffer");
+				Buffer.getBuffer().add(new Grid((Grid) grid));
+				//System.out.println("Added grid to buffer");
+				break;
+			} catch (InterruptedException e) {
+				System.err.println("Unable to add to buffer: " + e);
+			}
+		}
 
 		// This tells the handler that this is ready to be triggered again if it
 		// has the initiative
@@ -283,39 +283,39 @@ public final class Earth extends AbstractEngine {
 		return new Integer(height);
 	}
 	
-	public static void main(String [] args){
-		Earth earth = new Earth(false);
-		earth.configure(45, 10);
-		earth.start();
-		System.out.println("Just after initializaiton:");
-		printGrid();
-		//earth.run();
-		for (int i = 0; i < 100; i++) {
-			System.out.println(Integer.toString(i) + " times");
-			earth.generate();
-			printGrid();
-		}
-	}
-
-	private static void printGrid(){
-		GridCell curr = prime;
-		int height = getHeight();
-		int width = getWidth();
-		//System.out.println(height);
-		//System.out.println(width);
-		float total = 0;
-		for (int x = 0; x < height; x++) {
-			GridCell rowgrid = curr.getLeft();
-			for (int y = 0; y < width; y++) {
-				System.out.printf("%.2f,",rowgrid.getTemp());
-				rowgrid = rowgrid.getLeft();
-				total += rowgrid.getTemp() - 288;
-			}
-			System.out.println();
-			curr = curr.getTop();
-		}
-		System.out.println(total);
-	}
+//	public static void main(String [] args){
+//		Earth earth = new Earth(false);
+//		earth.configure(45, 10);
+//		earth.start();
+//		System.out.println("Just after initializaiton:");
+//		printGrid();
+//		//earth.run();
+//		for (int i = 0; i < 100; i++) {
+//			System.out.println(Integer.toString(i) + " times");
+//			earth.generate();
+//			printGrid();
+//		}
+//	}
+//
+//	private static void printGrid(){
+//		GridCell curr = prime;
+//		int height = getHeight();
+//		int width = getWidth();
+//		//System.out.println(height);
+//		//System.out.println(width);
+//		float total = 0;
+//		for (int x = 0; x < height; x++) {
+//			GridCell rowgrid = curr.getLeft();
+//			for (int y = 0; y < width; y++) {
+//				System.out.printf("%.2f,",rowgrid.getTemp());
+//				rowgrid = rowgrid.getLeft();
+//				total += rowgrid.getTemp() - 288;
+//			}
+//			System.out.println();
+//			curr = curr.getTop();
+//		}
+//		System.out.println(total);
+//	}
 
 	@Override
 	public void pause() {

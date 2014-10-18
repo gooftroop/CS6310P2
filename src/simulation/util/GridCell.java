@@ -243,15 +243,6 @@ public final class GridCell implements EarthCell<GridCell> {
 		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude + 1));
 		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude + 1) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude + 1)) : 0);
 		
-//		System.out.println("sunlongitude");
-//		System.out.println(sunLongitude);
-//		System.out.println("sunlatitude");
-//		System.out.println(this.latitude);
-//		System.out.println(attenuation_lat);
-//		System.out.println("sunlongtitude");
-//		System.out.println(this.longitude);
-//		System.out.println(attenuation_longi);
-		
 		return 278 * attenuation_lat * attenuation_longi;
 	}
 

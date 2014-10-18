@@ -3,8 +3,8 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import messaging.ContinuouslyConsumeCommand;
 import messaging.Publisher;
-import messaging.events.ContinuouslyConsumeMessage;
 import messaging.events.DisplayMessage;
 import common.AbstractEngine;
 
@@ -46,7 +46,7 @@ public class DummyView extends AbstractEngine {
 			// rate...
 			present(data);
 		} else {
-			pub.send(new ContinuouslyConsumeMessage());
+			pub.send(new ContinuouslyConsumeCommand());
 		}
 	}
 

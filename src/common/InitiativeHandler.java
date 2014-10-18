@@ -1,7 +1,6 @@
 package common;
 
 import messaging.Message;
-import messaging.MessageListener;
 import messaging.events.StartMessage;
 import messaging.events.UpdatedMessage;
 

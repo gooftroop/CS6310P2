@@ -3,10 +3,10 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import common.AbstractEngine;
+import messaging.ContinuouslyConsumeCommand;
+import messaging.ContinuouslyProduceCommand;
 import messaging.Message;
 import messaging.Publisher;
-import messaging.events.ContinuouslyConsumeMessage;
-import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.ProduceMessage;
 
@@ -48,14 +48,14 @@ public class DummyController extends AbstractEngine {
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
 		case MODEL:
-			pub.subscribe(ContinuouslyProduceMessage.class, model);
+			pub.subscribe(ContinuouslyProduceCommand.class, model);
 			// kickstart message to the model.  After first message it will 
 			// continue to provide the message to itself and fill buffer.
-			pub.send(new ContinuouslyProduceMessage());
+			pub.send(new ContinuouslyProduceCommand());
 			break;
 
 		case VIEW:
-			pub.subscribe(ContinuouslyConsumeMessage.class, model);
+			pub.subscribe(ContinuouslyConsumeCommand.class, model);
 			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.

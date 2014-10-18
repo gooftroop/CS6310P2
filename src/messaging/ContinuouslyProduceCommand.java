@@ -1,11 +1,10 @@
-package messaging.events;
+package messaging;
 
 import common.IEngine;
+import messaging.events.ConsumeMessage;
+import messaging.events.ProduceMessage;
 
-import messaging.Message;
-import messaging.Publisher;
-
-public class ContinuouslyProduceMessage implements Message {
+public class ContinuouslyProduceCommand implements Message {
 
 	@Override
 	public void process(IEngine l) {

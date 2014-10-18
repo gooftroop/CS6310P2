@@ -1,22 +1,21 @@
 package EarthSim;
 
+import messaging.ContinuouslyConsumeCommand;
+import messaging.ContinuouslyProduceCommand;
 import messaging.Publisher;
+import messaging.SingleConsumeCommand;
+import messaging.SingleProduceCommand;
 import messaging.events.CloseMessage;
 import messaging.events.ConsumeMessage;
-import messaging.events.ContinuouslyConsumeMessage;
-import messaging.events.ContinuouslyProduceMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
 import messaging.events.ProduceMessage;
 import messaging.events.ResumeMessage;
-import messaging.events.SingleConsumeMessage;
-import messaging.events.SingleProduceMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 import messaging.events.UpdatedMessage;
 import simulation.Earth;
 import view.EarthDisplayEngine;
-
 import common.AbstractEngine;
 import common.Buffer;
 import common.BufferController;
@@ -26,7 +25,6 @@ import common.InitiativeHandler;
 import common.SimulationHandler;
 import common.State;
 import common.ViewHandler;
-
 import concurrent.ProcessManager;
 
 public final class EarthSimEngine extends AbstractEngine {
@@ -61,7 +59,7 @@ public final class EarthSimEngine extends AbstractEngine {
 		manager = ProcessManager.getManager();
 		
 		publisher = Publisher.getInstance();
-		publisher.subscribe(ProduceMessage.class, model); // TODO casting is bad
+		publisher.subscribe(ProduceMessage.class, model);
 		publisher.subscribe(ConsumeMessage.class, view);
 		publisher.subscribe(DisplayMessage.class, view);
 			
@@ -80,13 +78,13 @@ public final class EarthSimEngine extends AbstractEngine {
 		IHandler plugin;
 		
 		if (i == State.SIMULATION && simThreaded)
-			plugin = new SimulationHandler(new ContinuouslyProduceMessage());
+			plugin = new SimulationHandler(new ContinuouslyProduceCommand());
 		else if (i == State.SIMULATION && !simThreaded)
-			plugin = new SimulationHandler(new SingleProduceMessage());
+			plugin = new SimulationHandler(new SingleProduceCommand());
 		else if (i == State.PRESENTATION && viewThreaded)
-			plugin = new ViewHandler(new ContinuouslyConsumeMessage());
+			plugin = new ViewHandler(new ContinuouslyConsumeCommand());
 		else if (i == State.PRESENTATION && !viewThreaded)
-			plugin = new ViewHandler(new SingleConsumeMessage());
+			plugin = new ViewHandler(new SingleConsumeCommand());
 		else
 			plugin = new BufferController();
 		
@@ -95,8 +93,8 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(UpdatedMessage.class, handler);
 		publisher.subscribe(StartMessage.class, handler);
 			
-		if (simThreaded) manager.add((IEngine) model);
-		if (viewThreaded) manager.add((IEngine) view);
+		if (simThreaded) manager.add(model);
+		if (viewThreaded) manager.add(view);
 		manager.add(this);
 		
 		this.presentationRate = 0;

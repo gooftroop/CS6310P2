@@ -43,9 +43,9 @@ public class Buffer implements IBuffer {
 
 	@Override
 	public IGrid get() throws InterruptedException {
-		System.out.println("getting....current remaining capacity " + buffer.remainingCapacity());
+		//System.out.println("getting....current remaining capacity " + buffer.remainingCapacity());
 		IGrid grid =  buffer.poll(3, TimeUnit.SECONDS);
-		System.out.println("got " + grid + ". Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
+		//System.out.println("got " + grid + ". Buffer size is now " + buffer.size() + ", and capacity is " + + buffer.remainingCapacity());
 		return grid;
 	}
 	

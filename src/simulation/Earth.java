@@ -28,9 +28,9 @@ public final class Earth extends AbstractEngine {
 	private static final int[] increments = { 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
 	private int currentStep;
-	private int width;
-	private int height;
-	private int sunPosition;
+	private static int width;
+	private static int height;
+	private static int sunPosition;
 
 	private static GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
@@ -150,7 +150,7 @@ public final class Earth extends AbstractEngine {
 
 		int t = timeStep * currentStep;
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
-		sunPosition = ( width * (rotationalAngle / 360) + (width / 2) ) % width;
+		sunPosition = ( (width * rotationalAngle) / 360 + (width / 2) ) % width;
 
 		IGrid grid = new Grid(sunPosition, t, width, height);
 
@@ -191,14 +191,14 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-		while(!this.stopped) {
-			try {
-				Buffer.getBuffer().add(new Grid((Grid) grid));
-				break;
-			} catch (InterruptedException e) {
-				System.err.println("Unable to add to buffer: " + e);
-			}
-		}
+//		while(!this.stopped) {
+//			try {
+//				Buffer.getBuffer().add(new Grid((Grid) grid));
+//				break;
+//			} catch (InterruptedException e) {
+//				System.err.println("Unable to add to buffer: " + e);
+//			}
+//		}
 
 		//System.out.println("finished generating grid");
 	}

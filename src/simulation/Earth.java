@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import messaging.Publisher;
-import messaging.events.UpdatedMessage;
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
 import common.AbstractEngine;
@@ -18,7 +16,7 @@ public final class Earth extends AbstractEngine {
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
 
-	public static final int MAX_TEMP = 288; // shot in the dark here...
+	public static final int MAX_TEMP = 1000; // shot in the dark here...
 	public static final int INITIAL_TEMP = 288;
 	public static final int MIN_TEMP = 0;
 
@@ -26,18 +24,13 @@ public final class Earth extends AbstractEngine {
 	private static final int DEFAULT_SPEED = 1; // minutes
 	private static final int MAX_DEGREES = 180;
 	private static final int MAX_SPEED = 1440;
-	private static final int SUN_START_POS = 0;
 
 	private static final int[] increments = { 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
-	private int currentStep;
-	private static int width;
-	private static int height;
-	private int sunPosition;
-	private int p;
+	private int currentStep, width, height, sunPosition;
 
 	private static GridCell prime = null;
-	private int speed = DEFAULT_SPEED;
+	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 
 	public Earth(boolean simThreaded) {
@@ -54,10 +47,10 @@ public final class Earth extends AbstractEngine {
 		if (gs <= 0 || gs > MAX_DEGREES)
 			throw new IllegalArgumentException("Invalid grid spacing");
 
-		if (speed <= 0 || speed > MAX_SPEED)
+		if (timeStep <= 0 || timeStep > MAX_SPEED)
 			throw new IllegalArgumentException("Invalid speed setting");
 
-		speed = timeStep;
+		this.timeStep = timeStep;
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
@@ -82,13 +75,9 @@ public final class Earth extends AbstractEngine {
 		if (prime != null)
 			prime.setTemp(INITIAL_TEMP);
 		else
-			prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y),
-					this.getLongitude(x), this.gs);
+			prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 
 		prime.setTop(null);
-
-		p = this.gs / 360;
-
 
 		// South Pole
 		GridCell next = null, curr = prime;
@@ -156,7 +145,7 @@ public final class Earth extends AbstractEngine {
 
 		currentStep++;
 
-		int t = speed * currentStep;
+		int t = timeStep * currentStep;
 		int rotationalAngle = (t % MAX_SPEED) * 360 / MAX_SPEED;
 		sunPosition = width * (rotationalAngle / 360) + (width / 2) % width;
 
@@ -199,21 +188,14 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-
 		while(!this.stopped) {
 			try {
-				//System.out.println("Going to add grid to buffer");
 				Buffer.getBuffer().add(new Grid((Grid) grid));
-				//System.out.println("Added grid to buffer");
 				break;
 			} catch (InterruptedException e) {
 				System.err.println("Unable to add to buffer: " + e);
 			}
 		}
-
-		// This tells the handler that this is ready to be triggered again if it
-		// has the initiative
-		Publisher.getInstance().send(new UpdatedMessage());
 
 		System.out.println("finished generating grid");
 	}
@@ -241,11 +223,9 @@ public final class Earth extends AbstractEngine {
 		if (curr.getLeft() != null) {
 			GridCell l = curr.getLeft();
 			l.setTemp(INITIAL_TEMP);
-			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x),
-					this.gs);
+			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		} else {
-			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y,
-					this.getLatitude(y), this.getLongitude(x), this.gs);
+			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 			if (bottom != null) {
 				bottom.setTop(next);
@@ -258,11 +238,9 @@ public final class Earth extends AbstractEngine {
 		if (bottom.getTop() != null) {
 			curr = bottom.getTop();
 			curr.setTemp(INITIAL_TEMP);
-			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0),
-					p);
+			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 		} else {
-			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y,
-					this.getLatitude(y), this.getLongitude(0), this.gs);
+			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}
@@ -274,62 +252,4 @@ public final class Earth extends AbstractEngine {
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
 	}
-<<<<<<< HEAD
-=======
-
-
-	// The following code is only for testing.
-	public static int getWidth() {
-		return new Integer(width);
-	}
-
-	public static int getHeight() {
-		return new Integer(height);
-	}
-	
-//	public static void main(String [] args){
-//		Earth earth = new Earth(false);
-//		earth.configure(45, 10);
-//		earth.start();
-//		System.out.println("Just after initializaiton:");
-//		printGrid();
-//		//earth.run();
-//		for (int i = 0; i < 100; i++) {
-//			System.out.println(Integer.toString(i) + " times");
-//			earth.generate();
-//			printGrid();
-//		}
-//	}
-//
-//	private static void printGrid(){
-//		GridCell curr = prime;
-//		int height = getHeight();
-//		int width = getWidth();
-//		//System.out.println(height);
-//		//System.out.println(width);
-//		float total = 0;
-//		for (int x = 0; x < height; x++) {
-//			GridCell rowgrid = curr.getLeft();
-//			for (int y = 0; y < width; y++) {
-//				System.out.printf("%.2f,",rowgrid.getTemp());
-//				rowgrid = rowgrid.getLeft();
-//				total += rowgrid.getTemp() - 288;
-//			}
-//			System.out.println();
-//			curr = curr.getTop();
-//		}
-//		System.out.println(total);
-//	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-	}
->>>>>>> FETCH_HEAD
 }

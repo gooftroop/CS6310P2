@@ -36,8 +36,6 @@ public final class GridCell implements EarthCell<GridCell> {
 
 		this.setTemp(temp);
 		this.visited = false;
-		
-		//System.out.println(Integer.toString(x)+ "," + Integer.toString(y));
 	}
 
 	public GridCell(GridCell top, GridCell bottom, GridCell left, GridCell right, float temp, int x, int y, int latitude, int longitude, int gs) {
@@ -145,17 +143,14 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	@Override
 	public float calculateTemp(int sunPosition) {
-		//return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
 		float temp   = this.currTemp + ( calTsun(sunPosition) + calTcool() ) / 100;
 		this.newTemp = (temp > 0) ? temp : 0;    // avoid negative temperature
-		//System.out.println(this.currTemp);
 		return this.newTemp; // new temp
 	}
 
 	@Override
 	public void swapTemp() {
 		this.currTemp = this.newTemp;
-		//System.out.println(this.newTemp);
 		this.newTemp = 0;
 	}
 
@@ -205,7 +200,42 @@ public final class GridCell implements EarthCell<GridCell> {
 	public int getGridSpacing() {
 		return this.gs;
 	}
+	
+	public float calTsun(int sunPosition) {
+		
+		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude + 1));
+		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude + 1) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude + 1)) : 0);
+		
+		return 278 * attenuation_lat * attenuation_longi;
+	}
+	
+	private void calSurfaceArea(int latitude, int gs) {
+		
+		double p  = 1.0 * gs / 360;
+		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
+		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
+		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
+		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 
+		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
+		this.surfarea =  (float) (1.0/2 * (this.lt + this.lb) * h);
+	}
+
+	// A help function for get the Sun's corresponding location on longitude.
+	private int getSunLocationOnEarth(int sunPosition) {
+		
+		// Grid column under the Sun at sunPosition
+		int cols = 360 / this.gs;
+		int j    = sunPosition;
+		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
+	}
+
+	private float calTcool() {
+		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
+		return -1 * beta * avgsuntemp;
+	}
+	
 	public static void setAvgSuntemp(float avg){
 		avgsuntemp = avg;
 	}
@@ -226,49 +256,13 @@ public final class GridCell implements EarthCell<GridCell> {
 		return avgArea;
 	}
 	
-	private void calSurfaceArea(int latitude, int gs) {
-		
-		double p  = 1.0 * gs / 360;
-		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
-		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
-		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
-		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
-
-		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
-		this.surfarea =  (float) (1.0/2 * (this.lt + this.lb) * h);
-	}
-
-	public float calTsun(int sunPosition) {
-		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude + 1));
-		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude + 1) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude + 1)) : 0);
-		
-		return 278 * attenuation_lat * attenuation_longi;
-	}
-
-	// A help function for get the Sun's corresponding location on longitude.
-	private int getSunLocationOnEarth(int sunPosition) {
-		// Grid column under the Sun at sunPosition
-		int cols = 360 / this.gs;
-		int j    = sunPosition;
-		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
-	}
-
-	private float calTcool() {
-		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
-		//float tempfactor = this.currTemp / avgtemp;
-
-		//System.out.println(beta);
-		//return -1 * beta * avgsuntemp;
-		return -1 * beta * avgsuntemp;
-	}
-
-	private float calTneighbors() {
-		float top_temp = 0, bottom_temp = 0;
-		
-		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
-		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
-		
-		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
-	}
+//	private float calTneighbors() {
+//	
+//	float top_temp = 0, bottom_temp = 0;
+//	
+//	if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
+//	if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
+//	
+//	return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
+//}
 }

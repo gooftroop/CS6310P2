@@ -78,7 +78,7 @@ public final class Earth extends AbstractEngine {
 		if (prime != null)
 			prime.setTemp(INITIAL_TEMP);
 		else
-			prime = new GridCell(MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 
 		prime.setTop(null);
 
@@ -157,8 +157,8 @@ public final class Earth extends AbstractEngine {
 		float suntotal = 0;
 		float calcdTemp = 0;
 		
-		calcdTemp = prime.calTsun(sunPosition);
-		suntotal = suntotal + calcdTemp;
+		calcdTemp = prime.calculateTemp(sunPosition);
+		suntotal = suntotal + prime.calTsun(sunPosition);;
 		grid.setTemperature(prime.getX(), prime.getY(), calcdTemp);
 		
 		prime.visited(true);

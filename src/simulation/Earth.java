@@ -27,7 +27,10 @@ public final class Earth extends AbstractEngine {
 
 	private static final int[] increments = { 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
-	private int currentStep, width, height, sunPosition;
+	private int currentStep;
+	private int width;
+	private int height;
+	private int sunPosition;
 
 	private static GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
@@ -225,7 +228,7 @@ public final class Earth extends AbstractEngine {
 			l.setTemp(INITIAL_TEMP);
 			l.setGridProps(x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 		} else {
-			next = new GridCell(null, bottom, null, curr, MAX_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
+			next = new GridCell(null, bottom, null, curr, INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 			curr.setLeft(next);
 			if (bottom != null) {
 				bottom.setTop(next);
@@ -240,7 +243,7 @@ public final class Earth extends AbstractEngine {
 			curr.setTemp(INITIAL_TEMP);
 			curr.setGridProps(0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 		} else {
-			curr = new GridCell(null, bottom, null, null, MAX_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
+			curr = new GridCell(null, bottom, null, null, INITIAL_TEMP, 0, y, this.getLatitude(y), this.getLongitude(0), this.gs);
 			bottom.setTop(curr);
 		}
 	}

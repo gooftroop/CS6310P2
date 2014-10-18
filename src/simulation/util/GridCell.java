@@ -146,7 +146,8 @@ public final class GridCell implements EarthCell<GridCell> {
 	@Override
 	public float calculateTemp(int sunPosition) {
 		//return this.currTemp + calTsun(sunPosition) + calTcool() + calTneighbors(); // new temp
-		this.newTemp = calTsun(sunPosition) + calTcool() + calTneighbors();
+		float temp   = this.currTemp + ( calTsun(sunPosition) + calTcool() ) / 100;
+		this.newTemp = (temp > 0) ? temp : 0;    // avoid negative temperature
 		//System.out.println(this.currTemp);
 		return this.newTemp; // new temp
 	}

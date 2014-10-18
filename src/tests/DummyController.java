@@ -209,7 +209,7 @@ public class DummyController extends AbstractEngine {
 	}
 
 	@Override
-	public void reset() {
+	public void resume() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -70,7 +70,7 @@ public class EarthDisplay extends JFrame {
 
 	}
 	
-	public synchronized void display(int gs, int timeStep) {
+	public void display(int gs, int timeStep) {
 		
 		this.gs = gs;
 		this.timeStep = timeStep;
@@ -80,12 +80,12 @@ public class EarthDisplay extends JFrame {
 		this.validate();
 	}
 
-	public synchronized void close() {
+	public void close() {
 		this.dispose();
 	}
 	
-	public synchronized void update(IGrid grid) {
-		
+	public void update(IGrid grid) {
+		System.out.println("updating...");
 		simStatus.update(grid.getSunPosition(), grid.getCurrentTime(), this.gs, this.timeStep);
 		gridDisplay.update(grid);
 	}

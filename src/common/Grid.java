@@ -21,12 +21,22 @@ public class Grid implements IGrid {
 
 		grid = new TreeMap<Integer, Float>();
 	}
+	
+	public Grid(Grid toCopy) {
+		
+		this.sunPosition = toCopy.sunPosition;
+		this.time = toCopy.time;
+		this.width = toCopy.width;
+		this.height = toCopy.height;
+		
+		this.grid = new TreeMap<Integer, Float>(toCopy.grid);
+	}
 
 	@Override
 	public void setTemperature(int x, int y, float temp) {
 		if (y >= height || x >= width || x < 0 || y < 0)
 			throw new IllegalArgumentException("index (" + x + ", " + y + ") out of bounds");
-
+		
 		grid.put(y * width + x, temp);
 	}
 

@@ -201,8 +201,10 @@ public final class GridCell implements EarthCell<GridCell> {
 	public float calTsun(int sunPosition) {
 		
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude + 1));
-		float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude + 1) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude + 1)) : 0);
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude));
+		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
+		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
+		attenuation_longi = attenuation_longi > 0 ? attenuation_longi : 0;
 		
 		return 278 * attenuation_lat * attenuation_longi;
 	}

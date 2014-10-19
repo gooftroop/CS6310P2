@@ -3,9 +3,6 @@ package view.widgets;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -80,6 +77,13 @@ public class SimulationStatus extends JPanel {
 		
 		this.add(lblTimeStep);
 		this.add(timeStepStatus);
+	}
+	
+	public void init() {
+		this.sunPosStats.setText("0");
+		this.currTimeStatus.setText("0");
+		this.gsStatus.setText("0");
+		this.timeStepStatus.setText("0");
 	}
 	
 	public void update(int sunPosition, int currentTime, int gs, int timeStep) {

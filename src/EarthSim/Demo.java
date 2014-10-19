@@ -17,8 +17,6 @@ public class Demo {
 		// empty
 	}
 
-	private String[] args;
-
 	private boolean ownSimThread = false, ownPresThread = false;
 
 	private State initiative = State.MASTER;

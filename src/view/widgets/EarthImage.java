@@ -3,6 +3,7 @@ package view.widgets;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -24,8 +25,12 @@ public class EarthImage extends JPanel {
 		
 		earth = new ImageIcon(EARTH_IMAGE).getImage();
 		
-		this.width = earth.getWidth(null);
-		this.height = earth.getHeight(null);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double ratio = 1.0 * earth.getWidth(null) / earth.getHeight(null);
+		this.width = screenSize.width;
+		this.height = (int) (this.width / ratio);
+		
+		earth = earth.getScaledInstance(this.width, this.height, Image.SCALE_SMOOTH);
 
 		Dimension size = new Dimension(this.width, this.height);
 	    setPreferredSize(size);

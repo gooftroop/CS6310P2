@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.ResumeMessage;
-import messaging.events.StopMessage;
 import common.IEngine;
 
 public class ProcessManager extends ThreadPoolExecutor implements IEngine {

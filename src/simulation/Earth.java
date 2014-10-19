@@ -16,7 +16,7 @@ public final class Earth extends AbstractEngine {
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
 
-	public static final int MAX_TEMP = 500; // shot in the dark here...
+	public static final int MAX_TEMP = 550; // shot in the dark here...
 	public static final int INITIAL_TEMP = 288;
 	public static final int MIN_TEMP = 0;
 

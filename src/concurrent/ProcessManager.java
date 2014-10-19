@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.ResumeMessage;
+import messaging.events.StopMessage;
 import common.IEngine;
 
 public class ProcessManager extends ThreadPoolExecutor implements IEngine {
@@ -20,6 +21,7 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	private final Queue<IEngine> queued;
 	
 	private static ProcessManager instance = null;
+	private boolean started;
 	
 	public static ProcessManager getManager() {
 		if (instance == null) instance = new ProcessManager();
@@ -32,11 +34,12 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 		super(POOL_SIZE, POOL_SIZE, TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		
 		queued = new LinkedList<IEngine>();
+		started = false;
 	}
 
 	public synchronized void add(IEngine r) {
 		
-		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
+		if (started || this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
 		if (queued.contains(r)) return;
 		
 		this.queued.add(r);
@@ -44,7 +47,7 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	
 	public void stop() {
 		
-		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
+		if (!started || this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
 		
 		// make sure nothing is paused
 		Publisher.getInstance().send(new ResumeMessage());
@@ -53,6 +56,8 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 			// Reach down and interrupt the threads
 			r.stop();
 		}
+		
+		started = false;
 	}
 	
 	public void close() {
@@ -71,15 +76,19 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	}
 
 	public void start() {
-		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
+		
+		if (started || this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
+		
 		for (IEngine r : queued) {
 			this.execute(r);
 		}
+		
+		started = true;
 	}
 	
 	public void pause() {
 		
-		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
+		if (!started || this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
 		
 		for (IEngine r : queued) {
 			try {
@@ -92,7 +101,6 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 		}
 	}
 
-	// TODO convert to internal calling messages
 	@Override
 	public void onMessage(Message msg) {
 		msg.process(this);
@@ -100,32 +108,27 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 
 	@Override
 	public void generate() {
-		// nothing to do
 		return;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 
 	@Override
 	public void performAction() {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 
 	@Override
 	public void configure(int gs, int timeStep) {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 
 	@Override
 	public void processQueue() {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 
 	@Override

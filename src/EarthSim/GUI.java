@@ -150,17 +150,18 @@ public class GUI extends JFrame implements ActionListener {
 				this.start();
 		}
 		
-		if ("Pause".equals(cmd))
+		else if ("Pause".equals(cmd))
 			this.pause();
 		
-		if ("Resume".equals(cmd))
+		else if ("Resume".equals(cmd))
 			this.resume();
 		
-		if ("Stop".equals(cmd)) 
+		else if ("Stop".equals(cmd)) 
 			this.stop();
 	}
 	
 	public void start() {
+		publisher.send(new StopMessage());
 		publisher.send(new StartMessage());
 	}
 	

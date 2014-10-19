@@ -64,7 +64,6 @@ public abstract class AbstractEngine implements IEngine {
 	
 	@Override
 	public void generate() {
-		// nothing to do
 		return;
 	}
 
@@ -79,9 +78,10 @@ public abstract class AbstractEngine implements IEngine {
 	}
 	
 	public void pause(Object lock) throws InterruptedException {
-		// TODO implement
+		synchronized (lock) {
+			lock.wait();
+		}
 	}
-	
 
 	@Override
 	public void start() {

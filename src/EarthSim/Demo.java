@@ -30,7 +30,6 @@ public class Demo {
 	// provide a max of 5 input values.
 	public void processArgs(String[] args) {
 		
-		System.out.println(args.length);
 		if (args.length > 5)
 			usage();
 

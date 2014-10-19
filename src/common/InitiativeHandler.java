@@ -39,12 +39,6 @@ public class InitiativeHandler implements IEngine {
 	}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		

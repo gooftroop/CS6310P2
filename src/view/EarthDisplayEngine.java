@@ -28,14 +28,10 @@ public class EarthDisplayEngine extends AbstractEngine {
 
 		if (msg instanceof DisplayMessage) {
 			
-			System.out.println("Displaying...");
 			if (grid != null) {
-				System.out.println("Going to update the grid");
 				earthDisplay.update(grid);
 				grid = null;
 			}
-			
-			System.out.println("Done updating grid");
 		} else
 			super.onMessage(msg);
 	}

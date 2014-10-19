@@ -34,7 +34,6 @@ public final class EarthSimEngine extends AbstractEngine {
 	private Publisher publisher;
 	private IEngine model, view;
 	
-	private State i;
 	private final boolean viewThreaded, simThreaded;
 	 
 	private long presentationRate;
@@ -45,7 +44,6 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
 		
-		this.i = i;
 		this.simThreaded = simThreaded;
 		this.viewThreaded = viewThreaded;
 		
@@ -138,7 +136,7 @@ public final class EarthSimEngine extends AbstractEngine {
 	public void run() {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
-			Publisher.getInstance().send(new UpdatedMessage());
+			if (!simThreaded && !viewThreaded) Publisher.getInstance().send(new UpdatedMessage());
 			this.performAction();
 		}
 	}

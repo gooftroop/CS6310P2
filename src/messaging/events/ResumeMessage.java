@@ -2,12 +2,12 @@ package messaging.events;
 
 import common.IEngine;
 
-import messaging.Message;
-
-public class ResumeMessage implements Message {
+public class ResumeMessage extends SuspendBase {
 
 	@Override
 	public void process(IEngine l) {
-		// nothing to do
+		synchronized (LOCK) {
+			LOCK.notifyAll();
+		}
 	}
 }

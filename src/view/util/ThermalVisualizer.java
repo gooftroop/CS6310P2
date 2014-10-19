@@ -32,8 +32,9 @@ public class ThermalVisualizer implements ColorGenerator {
 	public Color calculateColor(double temp) {
 		
 		// convert temp to a 0 .. 1.0 scale
+		if (temp > max) temp = max;
+		if (temp < min) temp = min;
 		double scaled = (((1 - 0) * (temp - min)) / (max - min)) + 0;
-		//System.out.println("temp in is: " + temp + ", scaled temp is: " + scaled);
 		return this.colorMap.getColor(scaled, this.opacity);
 	}
 }

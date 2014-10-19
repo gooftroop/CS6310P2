@@ -7,7 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import messaging.Message;
-
+import messaging.Publisher;
+import messaging.events.ResumeMessage;
 import common.IEngine;
 
 public class ProcessManager extends ThreadPoolExecutor implements IEngine {
@@ -46,7 +47,7 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
 		
 		// make sure nothing is paused
-		this.resume();
+		Publisher.getInstance().send(new ResumeMessage());
 		
 		for (IEngine r : queued) {
 			// Reach down and interrupt the threads
@@ -90,15 +91,6 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 			}
 		}
 	}
-	
-	public void resume() {
-		
-		if (this.isShutdown() || this.isTerminating() || this.isTerminated()) return;
-		
-		synchronized (LSUSPEND) {
-			LSUSPEND.notifyAll();
-		}
-	}
 
 	// TODO convert to internal calling messages
 	@Override
@@ -138,7 +130,9 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 
 	@Override
 	public void pause(Object lock) throws InterruptedException {
-		// TODO Auto-generated method stub
 		
+		for (IEngine r: queued) {
+			r.pause(lock);
+		}
 	}
 }

@@ -207,10 +207,4 @@ public class DummyController extends AbstractEngine {
 	public void close() {
 		return;
 	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -1,39 +1,29 @@
 // GUI.java
 package EarthSim;
 
-import common.State;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
-
-import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-
 import java.awt.FlowLayout;
-import java.awt.Insets;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
+import java.util.HashMap;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import messaging.Publisher;
-import messaging.events.CloseMessage;
 import messaging.events.PauseMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
 
-import java.util.HashMap;
+import common.State;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -42,11 +32,9 @@ public class GUI extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 6146431536208036768L;
 	
-	private JPanel contents;
 	private EarthSimEngine engine;
 	private final Publisher publisher;
 	
-	private HashMap<String, JTextField> outputs = new HashMap<String, JTextField>();
 	private HashMap<String, JTextField> inputs = new HashMap<String, JTextField>();
 
 	public GUI(boolean ownSimThread, boolean ownPresThread, State initiative, long bufferSize) {
@@ -55,16 +43,6 @@ public class GUI extends JFrame implements ActionListener {
 		// we have the papers done...
 		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);
 		this.publisher = Publisher.getInstance();
-		
-		// TODO this blocks close
-//		Runtime.getRuntime().addShutdownHook(new Thread() {
-//			
-//			@Override
-//			public void run() {
-//				publisher.send(new CloseMessage());
-//				Publisher.unsubscribeAll();
-//			}
-//		});
 
 		setupWindow();
 		pack();
@@ -77,27 +55,25 @@ public class GUI extends JFrame implements ActionListener {
 		
 		setSize(300, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// TODO this blocks close
+//		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+//		Runtime.getRuntime().addShutdownHook(new Thread() {
+//			
+//			@Override
+//			public void run() {
+//				publisher.send(new CloseMessage());
+//				Publisher.unsubscribeAll();
+//			}
+//		});
+		
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setAlwaysOnTop(true);
 		
 		add(settingsAndControls(), BorderLayout.CENTER);
 	}
-
-//	private JPanel contentsPanel() {
-//		
-//		// setup primary window contents panel
-//		JPanel contents = new JPanel(new BorderLayout());
-//		contents.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
-//		contents.setAlignmentY(Component.TOP_ALIGNMENT);
-//
-//		contents.add(settingsNControls(), BorderLayout.WEST);
-//		contents.add(presentation(), BorderLayout.CENTER);
-//		// contents.add(feedback(),BorderLayout.SOUTH);
-//
-//		this.contents = contents;
-//		return contents;
-//	}
 
 	private JPanel settingsAndControls() {
 		
@@ -117,9 +93,6 @@ public class GUI extends JFrame implements ActionListener {
 		settingsPanel.setBorder(BorderFactory.createTitledBorder("Settings"));
 		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 		settingsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-		
-		// settingsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		// settingsPanel.add(prompt("Set initial conditions"));
 		
 		settingsPanel.add(inputField("Grid Spacing"));
 		settingsPanel.add(inputField("Simulation Time Step"));
@@ -141,30 +114,9 @@ public class GUI extends JFrame implements ActionListener {
 		return ctrlsPanel;
 	}
 
-//	private JPanel presentation() {
-//		
-//		JPanel pres = new JPanel();
-//		pres.setBorder(BorderFactory.createLineBorder(Color.black));
-//		return pres;
-//	}
-
-//	private JPanel feedback() {
-//		
-//		JPanel fbPanel = new JPanel();
-//		fbPanel.setLayout(new BoxLayout(fbPanel, BoxLayout.PAGE_AXIS));
-//		fbPanel.add(displayField("Rotational Position"));
-//		fbPanel.add(displayField("Time"));
-//		fbPanel.add(displayField("Grid Spacing"));
-//		fbPanel.add(displayField("Simulation Time Step"));
-//
-//		return fbPanel;
-//	}
-
 	private JPanel inputField(String name) {
 		
 		JPanel inputPanel = new JPanel();
-		// inputPanel.setBorder(BorderFactory.createTitledBorder("blah"));
-		// inputPanel.setLayout(new BoxLayout(inputPanel,BoxLayout.LINE_AXIS));
 		inputPanel.setLayout(new FlowLayout());
 		inputPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
@@ -172,7 +124,6 @@ public class GUI extends JFrame implements ActionListener {
 		l.setAlignmentX(Component.LEFT_ALIGNMENT);
 		inputPanel.add(l);
 
-		// inputPanel.add(Box.createHorizontalGlue());
 		JTextField t = new JTextField("", 10);
 		t.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		l.setLabelFor(t);
@@ -181,30 +132,6 @@ public class GUI extends JFrame implements ActionListener {
 		inputs.put(name, t);
 		return inputPanel;
 	}
-
-//	private JPanel displayField(String name) {
-//		
-//		JPanel outputPanel = new JPanel();
-//		// outputPanel.setBorder(BorderFactory.createTitledBorder("blah"));
-//		// outputPanel.setLayout(new
-//		// BoxLayout(outputPanel,BoxLayout.LINE_AXIS));
-//		outputPanel.setLayout(new FlowLayout());
-//		outputPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-//
-//		JLabel l = new JLabel(name);
-//		l.setAlignmentX(Component.LEFT_ALIGNMENT);
-//		outputPanel.add(l);
-//
-//		// outputPanel.add(Box.createHorizontalGlue());
-//		JTextField t = new JTextField("", 10);
-//		t.setAlignmentX(Component.RIGHT_ALIGNMENT);
-//		t.setEditable(false);
-//		l.setLabelFor(t);
-//		outputPanel.add(t);
-//
-//		outputs.put(name, t);
-//		return outputPanel;
-//	}
 
 	private JButton button(String name) {
 		
@@ -234,7 +161,6 @@ public class GUI extends JFrame implements ActionListener {
 	}
 	
 	public void start() {
-		
 		publisher.send(new StartMessage());
 	}
 	

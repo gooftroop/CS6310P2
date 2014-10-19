@@ -75,12 +75,7 @@ public abstract class AbstractEngine implements IEngine {
 	
 	@Override
 	public void close() {
-		// do nothing
-	}
-	
-	@Override
-	public void resume() {
-		// TODO implement
+		return;
 	}
 	
 	public void pause(Object lock) throws InterruptedException {
@@ -90,7 +85,6 @@ public abstract class AbstractEngine implements IEngine {
 
 	@Override
 	public void start() {
-		// nothing to do
 		return;
 	}
 }

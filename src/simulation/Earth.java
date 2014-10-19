@@ -16,7 +16,7 @@ public final class Earth extends AbstractEngine {
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
 
-	public static final int MAX_TEMP = 1000; // shot in the dark here...
+	public static final int MAX_TEMP = 500; // shot in the dark here...
 	public static final int INITIAL_TEMP = 288;
 	public static final int MIN_TEMP = 0;
 
@@ -35,9 +35,13 @@ public final class Earth extends AbstractEngine {
 	private static GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
-
+	
+	private STATE state;
+	
 	public Earth(boolean simThreaded) {
 		super(simThreaded);
+		
+		state = STATE.READY;
 	}
 
 	public GridCell getGrid() {
@@ -62,9 +66,13 @@ public final class Earth extends AbstractEngine {
 					this.gs = increments[i - 1];
 		} else
 			this.gs = gs;
+		
+		state = STATE.CONFIGURED;
 	}
 
 	public void start() {
+		
+		state = STATE.STARTING;
 
 		int x = 0, y = 0;
 
@@ -131,16 +139,20 @@ public final class Earth extends AbstractEngine {
 		// Set initial average temperature
 		GridCell.setAvgSuntemp(totaltemp / (width * height));
 		GridCell.setAverageArea(totalarea / (width * height));
+		
+		state = STATE.STARTED;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void generate() {
 		
-		if (prime == null) {
-			System.err.println("Earth has not been started");
-			return;
-		}
+		if (state == STATE.READY || state == STATE.CONFIGURED) return;
+		
+		if (isThreaded)
+			while (state == STATE.STARTING) { /* wait */ }
+		else
+			if (state == STATE.STARTING) return;
 
 		//System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
@@ -191,16 +203,14 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-//		while(!this.stopped) {
-//			try {
-//				Buffer.getBuffer().add(new Grid((Grid) grid));
-//				break;
-//			} catch (InterruptedException e) {
-//				System.err.println("Unable to add to buffer: " + e);
-//			}
-//		}
-
-		//System.out.println("finished generating grid");
+		while(!this.stopped) {
+			try {
+				Buffer.getBuffer().add(new Grid((Grid) grid));
+				break;
+			} catch (InterruptedException e) {
+				System.err.println("Unable to add to buffer: " + e);
+			}
+		}
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,
@@ -254,5 +264,9 @@ public final class Earth extends AbstractEngine {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
+	}
+	
+	private enum STATE {
+		READY, CONFIGURED, STARTING, STARTED;
 	}
 }

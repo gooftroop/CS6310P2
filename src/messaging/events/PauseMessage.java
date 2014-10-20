@@ -1,15 +1,12 @@
 package messaging.events;
 
+import messaging.Message;
 import common.IEngine;
 
-public class PauseMessage extends SuspendBase {
+public class PauseMessage implements Message {
 
 	@Override
 	public void process(IEngine l) {
-		try {
-			l.pause(LOCK);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		l.pause();
 	}
 }

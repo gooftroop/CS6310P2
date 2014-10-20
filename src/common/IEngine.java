@@ -14,7 +14,9 @@ public interface IEngine extends Runnable {
 	
 	public void processQueue();
 	
-	public void pause(Object lock) throws InterruptedException;
+	public void pause();
+	
+	public void resume();
 	
 	public void close();
 	

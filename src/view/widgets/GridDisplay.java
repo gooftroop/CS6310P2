@@ -45,15 +45,17 @@ public class GridDisplay extends JPanel {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
+		
 		super.paintComponent(g);
-
-		int wHeight = this.getSize().height;
-		int wWidth = this.getSize().width;
 		
 		if (grid != null) {
 
-			int height = wHeight / grid.getGridHeight();
-			int width = wWidth / grid.getGridWidth();
+			int height = this.getSize().height / grid.getGridHeight();
+			System.out.println("height: " + height);
+			int width = this.getSize().width / grid.getGridWidth();
+			System.out.println("width: " + width);
+			
+			// We have under sampling here...need to fix
 
 			for (int y = 0; y < grid.getGridHeight(); y++) {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
@@ -61,7 +63,9 @@ public class GridDisplay extends JPanel {
 					float t = grid.getTemperature(x, y);
 					
 					int celly = (y * height);
+					System.out.println("celly: " + celly);
 					int cellx = (x * width);
+					System.out.println("cellx: " + cellx);
 					
 					// paint the "grid edge"
 					g.setColor(Color.DARK_GRAY);
@@ -76,7 +80,6 @@ public class GridDisplay extends JPanel {
 	}
 
 	public void update(IGrid grid) {
-
 		this.grid = grid;
 		repaint();
 	}

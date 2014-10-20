@@ -63,7 +63,13 @@ public class InitiativeHandler implements IEngine {
 	}
 
 	@Override
-	public void pause(Object lock) throws InterruptedException {
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void resume() {
 		// TODO Auto-generated method stub
 		
 	}

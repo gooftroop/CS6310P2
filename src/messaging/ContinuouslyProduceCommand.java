@@ -1,13 +1,13 @@
 package messaging;
 
-import common.IEngine;
+import messaging.events.AbstractMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
 
-public class ContinuouslyProduceCommand implements Message {
+public class ContinuouslyProduceCommand extends AbstractMessage {
 
 	@Override
-	public void process(IEngine l) {
+	public void process(MessageListener l) {
 		Publisher.getInstance().send(new ConsumeMessage());
 		Publisher.getInstance().send(new ProduceMessage());
 	}

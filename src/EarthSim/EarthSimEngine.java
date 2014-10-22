@@ -2,8 +2,8 @@ package EarthSim;
 
 import messaging.ContinuouslyConsumeCommand;
 import messaging.ContinuouslyProduceCommand;
+import messaging.MessageListener;
 import messaging.Publisher;
-import messaging.events.CloseMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.DisplayMessage;
 import messaging.events.PauseMessage;
@@ -32,7 +32,7 @@ public final class EarthSimEngine extends AbstractEngine {
 	private InitiativeHandler handler;
 	private ProcessManager manager;
 	private Publisher publisher;
-	private IEngine model, view;
+	private MessageListener model, view;
 	
 	private final boolean viewThreaded, simThreaded;
 	 
@@ -70,10 +70,6 @@ public final class EarthSimEngine extends AbstractEngine {
 		
 		publisher.subscribe(StopMessage.class, manager);
 		
-		publisher.subscribe(CloseMessage.class, view);
-		publisher.subscribe(CloseMessage.class, model);
-		publisher.subscribe(CloseMessage.class, manager);
-		
 		IHandler plugin;
 		
 		if (i == State.SIMULATION)
@@ -89,13 +85,13 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(StartMessage.class, handler);
 			
 		if (simThreaded) {
-			manager.add(model);
+			manager.add((IEngine) model);
 			publisher.subscribe(PauseMessage.class, model);
 			publisher.subscribe(ResumeMessage.class, model);
 		}
 		
 		if (viewThreaded) {
-			manager.add(view);
+			manager.add((IEngine) view);
 			publisher.subscribe(PauseMessage.class, view);
 			publisher.subscribe(ResumeMessage.class, view);
 		}
@@ -128,8 +124,8 @@ public final class EarthSimEngine extends AbstractEngine {
 		if (timeStep <= 0 || timeStep >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid Time Step value");
 		
-		model.configure(gs, timeStep);
-		view.configure(gs, timeStep);
+		((IEngine) model).configure(gs, timeStep); //TODO intermediate element?
+		((IEngine) view).configure(gs, timeStep);
 	}
 
 	@Override
@@ -145,6 +141,7 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.send(new DisplayMessage());
 	}
 	
+	@Override
 	public void run() {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {

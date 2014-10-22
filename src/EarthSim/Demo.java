@@ -26,7 +26,7 @@ public class Demo {
 
 	// Note: processArgs ignore args that are not s,p,r,t or b as long as you
 	// provide a max of 5 input values.
-	public void processArgs(String[] args) {
+	private void processArgs(String[] args) {
 		
 		if (args.length > 5)
 			usage();
@@ -75,12 +75,12 @@ public class Demo {
 		initiative = rset ? State.PRESENTATION : (tset ? State.SIMULATION : State.MASTER);
 	}
 
-	public void usage() {
+	private void usage() {
 		System.out.println("Usage: java EarthSim.Demo [-s] [-p] [-r|-t] [-b #]");
 		System.exit(-1);
 	}
 
-	public void run() {
+	private void run() {
 		debug("Demo started with settings:");
 		printSettings();
 		createAndShowUI();

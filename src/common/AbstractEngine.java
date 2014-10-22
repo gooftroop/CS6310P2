@@ -5,22 +5,23 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import messaging.Message;
+import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.UpdatedMessage;
 
-public abstract class AbstractEngine implements IEngine {
+public abstract class AbstractEngine implements IEngine, MessageListener {
 	
 	protected static ReentrantLock pauseLock = new ReentrantLock();
 	protected static Condition unpaused = pauseLock.newCondition();
 
-	protected final ConcurrentLinkedQueue<Message> msgQueue;
-	protected final boolean isThreaded;
+	protected final ConcurrentLinkedQueue<Message> MSG_QUEUE;
+	protected final boolean IS_THREADED;
 	
 	protected boolean stopped = false;
 	
 	public AbstractEngine(final boolean isThreaded) {
-		this.isThreaded = isThreaded;
-		msgQueue = new ConcurrentLinkedQueue<Message>();
+		this.IS_THREADED = isThreaded;
+		MSG_QUEUE = new ConcurrentLinkedQueue<Message>();
 	}
 
 	public AbstractEngine() {
@@ -30,8 +31,8 @@ public abstract class AbstractEngine implements IEngine {
 	public void onMessage(Message msg) {
 
 		// If threaded, enque message to be processed later
-		if (this.isThreaded)
-			msgQueue.add(msg);
+		if (this.IS_THREADED)
+			MSG_QUEUE.add(msg);
 		else
 			msg.process(this);
 	}
@@ -40,7 +41,7 @@ public abstract class AbstractEngine implements IEngine {
 	public void performAction() {
 
 		Message msg;
-		while ((msg = msgQueue.poll()) != null) {
+		while ((msg = MSG_QUEUE.poll()) != null) {
 			msg.process(this);
 		}
 	}
@@ -56,7 +57,7 @@ public abstract class AbstractEngine implements IEngine {
 
 	public void processQueue() {
 
-		ConcurrentLinkedQueue<Message> curr = new ConcurrentLinkedQueue<Message>(msgQueue);
+		ConcurrentLinkedQueue<Message> curr = new ConcurrentLinkedQueue<Message>(MSG_QUEUE);
 		while (!curr.isEmpty()) {
 			this.performAction();
 		}
@@ -75,11 +76,6 @@ public abstract class AbstractEngine implements IEngine {
 	public void stop() {
 		Thread.currentThread().interrupt();
 		this.stopped = true;
-	}
-	
-	@Override
-	public void close() {
-		return;
 	}
 	
 	public void pause() {

@@ -79,10 +79,6 @@ public class EarthDisplay extends JFrame {
 		this.setVisible(true);
 		this.validate();
 	}
-
-	public void close() {
-		this.dispose();
-	}
 	
 	public void update(IGrid grid) {
 		if (grid != null)

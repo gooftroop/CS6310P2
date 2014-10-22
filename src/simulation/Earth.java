@@ -73,6 +73,7 @@ public final class Earth extends AbstractEngine {
 		state = STATE.CONFIGURED;
 	}
 
+	@Override
 	public void start() {
 		
 		state = STATE.STARTING;
@@ -152,7 +153,7 @@ public final class Earth extends AbstractEngine {
 		
 		if (state == STATE.READY || state == STATE.CONFIGURED) return;
 		
-		if (isThreaded)
+		if (IS_THREADED)
 			while (state == STATE.STARTING) { /* wait */ }
 		else
 			if (state == STATE.STARTING) return;

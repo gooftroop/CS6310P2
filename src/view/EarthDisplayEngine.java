@@ -54,11 +54,6 @@ public class EarthDisplayEngine extends AbstractEngine {
 	}
 
 	@Override
-	public void close() {
-		earthDisplay.close();
-	}
-
-	@Override
 	public void start() {
 		grid = null;
 		earthDisplay.display(this.gs, this.timeStep);

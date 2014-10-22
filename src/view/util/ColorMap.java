@@ -11,8 +11,8 @@ import java.awt.Color;
 
 public class ColorMap {
 
-	String name;
-	Color clrs[];
+	private String name;
+	private Color clrs[];
 
 	public ColorMap(String nm, Color c[]) {
 		name = nm;
@@ -88,18 +88,6 @@ public class ColorMap {
 		return c;
 	}
 
-	public String toString() {
-
-		String res = "Colormap " + name + " with " + clrs.length
-				+ " colors: { ";
-
-		for (int i = 0; i < clrs.length; i++) {
-			res += clrs[i] + " ";
-		}
-
-		return res + "}";
-	}
-
 	/*
 	 * Colorcube contains as many regularly spaced colors in RGB color space as
 	 * possible, while attempting to provide more steps of gray, pure red, pure
@@ -115,7 +103,7 @@ public class ColorMap {
 	 * astrophysical fluid jet simulation from the National Center for
 	 * Supercomputer Applications.
 	 */
-	public static final Color jet[] = { Color.blue, Color.cyan, Color.yellow,
+	private static final Color jet[] = { Color.blue, Color.cyan, Color.yellow,
 			new Color(255, 128, 0), Color.red };
 
 	/*
@@ -125,39 +113,39 @@ public class ColorMap {
 	 * displaying periodic functions. HSV(m) is the same as hsv2rgb([h
 	 * ones(m,2)]) where h is the linear ramp, h = (0:m���1)'/m.
 	 */
-	public static final Color HSV[] = { Color.red, Color.yellow, Color.green,
+	private static final Color HSV[] = { Color.red, Color.yellow, Color.green,
 			Color.cyan, Color.blue, Color.magenta, Color.red };
 
 	/*
 	 * Hot varies smoothly from black through shades of red, orange, and yellow,
 	 * to white.
 	 */
-	public static final Color hot[] = { Color.black, Color.red,
+	private static final Color hot[] = { Color.black, Color.red,
 			new Color(255, 128, 0), Color.yellow, Color.white };
 
 	/*
 	 * Cool consists of colors that are shades of cyan and magenta. It varies
 	 * smoothly from cyan to magenta.
 	 */
-	public static final Color cool[] = { Color.cyan, Color.magenta };
+	private static final Color cool[] = { Color.cyan, Color.magenta };
 
 	/*
 	 * Spring consists of colors that are shades of magenta and yellow.
 	 */
-	public static final Color spring[] = { Color.magenta, Color.yellow };
+	private static final Color spring[] = { Color.magenta, Color.yellow };
 
 	/*
 	 * Summer consists of colors that are shades of green and yellow.
 	 */
-	public static final Color summer[] = { Color.green, Color.yellow };
+	private static final Color summer[] = { Color.green, Color.yellow };
 
 	/*
 	 * Autumn varies smoothly from red, through orange, to yellow.
 	 */
-	public static final Color autumn[] = { Color.red, new Color(255, 128, 0),
+	private static final Color autumn[] = { Color.red, new Color(255, 128, 0),
 			Color.yellow };
 
-	public static final Color thermal[] = { Color.WHITE,
+	private static final Color thermal[] = { Color.WHITE,
 			new Color(251, 246, 255), new Color(243, 224, 255),
 			new Color(214, 153, 255), new Color(153, 0, 255),
 			new Color(102, 0, 204), new Color(84, 51, 117),
@@ -170,24 +158,24 @@ public class ColorMap {
 	/*
 	 * Winter consists of colors that are shades of blue and green.
 	 */
-	public static final Color winter[] = { Color.blue, Color.green };
+	private static final Color winter[] = { Color.blue, Color.green };
 
 	/*
 	 * Gray returns a linear grayscale colormap.
 	 */
-	public static final Color gray[] = { Color.black, Color.white };
+	private static final Color gray[] = { Color.black, Color.white };
 
 	/*
 	 * Bone is a grayscale colormap with a higher value for the blue component.
 	 * This colormap is useful for adding an "electronic" look to grayscale
 	 * images.
 	 */
-	public static final Color bone[] = { new Color(0, 0, 50), Color.white };
+	private static final Color bone[] = { new Color(0, 0, 50), Color.white };
 
 	/*
 	 * Copper varies smoothly from black to bright copper.
 	 */
-	public static final Color copper[] = { Color.black, new Color(220, 120, 80) };
+	private static final Color copper[] = { Color.black, new Color(220, 120, 80) };
 
 	/*
 	 * Pink contains pastel shades of pink. The pink colormap provides sepia
@@ -195,22 +183,22 @@ public class ColorMap {
 	 * red, orange, yellow, green, blue, and violet. White is an all white
 	 * monochrome colormap.
 	 */
-	public static final Color pink[] = { new Color(255, 128, 128), Color.white };
+	private static final Color pink[] = { new Color(255, 128, 128), Color.white };
 
 	/*
 	 * Prism repeats the six colors red, orange, yellow, green, blue, and
 	 * violet. White is an all white monochrome colormap.
 	 */
-	public static final Color prism[] = { Color.red, new Color(255, 128, 0),
+	private static final Color prism[] = { Color.red, new Color(255, 128, 0),
 			Color.yellow, Color.green, Color.cyan, Color.blue,
 			new Color(64, 0, 75) };
 
 	/*
 	 * White is an all white monochrome colormap.
 	 */
-	public static final Color white[] = { Color.white, Color.white };
+	private static final Color white[] = { Color.white, Color.white };
 
-	public static ColorMap maps[] = { new ColorMap("jet", jet),
+	public static ColorMap[] maps = { new ColorMap("jet", jet),
 			new ColorMap("HSV", HSV), new ColorMap("hot", hot),
 			new ColorMap("cool", cool), new ColorMap("spring", spring),
 			new ColorMap("summer", summer), new ColorMap("autumn", autumn),

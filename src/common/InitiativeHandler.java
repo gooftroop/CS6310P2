@@ -1,8 +1,10 @@
 package common;
 
 import messaging.Message;
+import messaging.MessageListener;
+import messaging.events.UpdatedMessage;
 
-public class InitiativeHandler implements IEngine {
+public class InitiativeHandler implements MessageListener {
 	
 	private final IHandler handler;
 
@@ -12,7 +14,9 @@ public class InitiativeHandler implements IEngine {
 
 	@Override
 	public void onMessage(Message msg) {
-		msg.process(this);
+		if (msg instanceof UpdatedMessage) {
+			this.generate();
+		}
 	}
 
 	@Override
@@ -21,56 +25,12 @@ public class InitiativeHandler implements IEngine {
 	}
 
 	@Override
-	public void close() {
-		// nothing to do
+	public void performAction() {
 		return;
 	}
 
 	@Override
-	public void start() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void performAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void configure(int gs, int timeStep) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void processQueue() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 }

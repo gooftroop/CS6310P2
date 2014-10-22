@@ -56,17 +56,6 @@ public class GUI extends JFrame implements ActionListener {
 		setSize(300, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		// TODO this blocks close
-//		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//		Runtime.getRuntime().addShutdownHook(new Thread() {
-//			
-//			@Override
-//			public void run() {
-//				publisher.send(new CloseMessage());
-//				Publisher.unsubscribeAll();
-//			}
-//		});
-		
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

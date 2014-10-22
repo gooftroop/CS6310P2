@@ -2,12 +2,10 @@ package messaging.events;
 
 import common.IEngine;
 
-import messaging.Message;
-
-public class StartMessage implements Message {
+public class StartMessage extends AbstractMessage {
 
 	@Override
-	public void process(IEngine l) {
+	public void processEngine(IEngine l) {
 		l.start();
 	}
 }

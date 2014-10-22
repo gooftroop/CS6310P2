@@ -5,15 +5,14 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import messaging.Message;
+import messaging.MessageListener;
 import messaging.Publisher;
 import messaging.events.ResumeMessage;
 import common.IEngine;
 
-public class ProcessManager extends ThreadPoolExecutor implements IEngine {
+public class ProcessManager extends ThreadPoolExecutor implements MessageListener, IEngine {
 
 	private final static int POOL_SIZE = 5;
 	private final static long TIMEOUT = 0L;
@@ -114,12 +113,16 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	}
 
 	@Override
-	public void run() {
+	public void performAction() {
+		return;
+	}
+	@Override
+	public void processQueue() {
 		return;
 	}
 
 	@Override
-	public void performAction() {
+	public void run() {
 		return;
 	}
 
@@ -129,14 +132,11 @@ public class ProcessManager extends ThreadPoolExecutor implements IEngine {
 	}
 
 	@Override
-	public void processQueue() {
-		return;
-	}
-
 	public void pause() {
 		return;
 	}
 
+	@Override
 	public void resume() {
 		return;
 	}

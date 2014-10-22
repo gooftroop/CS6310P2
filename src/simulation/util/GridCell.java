@@ -231,7 +231,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	}
 
 	public float calTcool() {
-		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
+		// float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		//return -1 * beta * avgsuntemp;
 		return -1 * avgsuntemp;
 	}
@@ -256,13 +256,13 @@ public final class GridCell implements EarthCell<GridCell> {
 		return avgArea;
 	}
 	
-	public float calTneighbors() {
-
-		float top_temp = 0, bottom_temp = 0;
-
-		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
-		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
-
-		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
-	}
+//	public float calTneighbors() {
+//
+//		float top_temp = 0, bottom_temp = 0;
+//
+//		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
+//		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
+//
+//		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
+//	}
 }

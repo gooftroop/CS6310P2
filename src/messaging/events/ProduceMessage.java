@@ -1,13 +1,11 @@
 package messaging.events;
 
-import common.IEngine;
+import messaging.MessageListener;
 
-import messaging.Message;
-
-public class ProduceMessage implements Message {
+public class ProduceMessage extends AbstractMessage {
 
 	@Override
-	public void process(IEngine l) {
+	public void process(MessageListener l) {
 		l.generate();
 	}
 }

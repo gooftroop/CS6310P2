@@ -65,8 +65,6 @@ public final class Earth extends AbstractEngine {
 				if (i < gs) this.gs = i;
 				else break;
 			}
-			
-			System.out.println("gs: " + this.gs);
 		} else
 			this.gs = gs;
 		
@@ -102,13 +100,15 @@ public final class Earth extends AbstractEngine {
 			curr = curr.getLeft();
 		}
 
+
+		
 		// Stitch the grid row together
 		prime.setRight(curr);
 		curr.setLeft(prime);
 
 		// Create each grid row, with the exception of the south pole
 		GridCell bottom = prime, left = null;
-		for (y = 1; y < height - 1; y++) {
+		for (y = 1; y < height; y++) {
 
 			// curr should be changed, but actually have not.
 			this.createNextRow(bottom, curr, y); 
@@ -119,12 +119,6 @@ public final class Earth extends AbstractEngine {
 			this.createRow(curr, next, bottom.getLeft(), left, y);
 			bottom = bottom.getTop();
 		}
-
-		this.createNextRow(bottom, curr, y);
-		curr = bottom.getTop();
-
-		// North Pole
-		this.createRow(curr, next, bottom.getLeft(), left, y);
 		
 		// Calculate the average sun temperature
 		float totaltemp = 0;
@@ -207,14 +201,14 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-		while(!this.stopped) {
-			try {
-				Buffer.getBuffer().add(new Grid((Grid) grid));
-				break;
-			} catch (InterruptedException e) {
-				System.err.println("Unable to add to buffer: " + e);
-			}
-		}
+//		while(!this.stopped) {
+//			try {
+//				Buffer.getBuffer().add(new Grid((Grid) grid));
+//				break;
+//			} catch (InterruptedException e) {
+//				System.err.println("Unable to add to buffer: " + e);
+//			}
+//		}
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

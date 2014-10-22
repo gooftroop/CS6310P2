@@ -95,6 +95,7 @@ public final class EarthSimEngine extends AbstractEngine {
 			publisher.subscribe(PauseMessage.class, view);
 			publisher.subscribe(ResumeMessage.class, view);
 		}
+		
 		manager.add(this);
 		
 		this.presentationRate = 0;
@@ -138,6 +139,7 @@ public final class EarthSimEngine extends AbstractEngine {
 			// do nothing
 		}
 		
+		System.out.println("Sending DispayMessage");
 		publisher.send(new DisplayMessage());
 	}
 	

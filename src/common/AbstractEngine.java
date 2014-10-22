@@ -11,7 +11,6 @@ import messaging.events.PauseMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
-import messaging.events.UpdatedMessage;
 
 public abstract class AbstractEngine implements IEngine, MessageListener {
 	
@@ -34,6 +33,8 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 
 	public void onMessage(Message msg) {
 		
+		System.out.println("In " + this + ". Recevied msg " + msg);
+		
 		if (msg instanceof StopMessage) this.stop();
 		if (msg instanceof StartMessage) this.start();
 		if (msg instanceof PauseMessage) this.pause();
@@ -51,7 +52,8 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 	public void performAction() {
 
 		Message msg;
-		while ((msg = MSG_QUEUE.poll()) != null) {
+		if (MSG_QUEUE.isEmpty()) return;
+		if ((msg = MSG_QUEUE.poll()) != null) {
 			msg.process(this);
 		}
 	}
@@ -60,7 +62,7 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
 			// Just loop
-			Publisher.getInstance().send(new UpdatedMessage());
+			//Publisher.getInstance().send(new UpdatedMessage());
 			this.performAction();
 		}
 	}

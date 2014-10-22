@@ -29,6 +29,7 @@ public class EarthDisplayEngine extends AbstractEngine {
 		if (msg instanceof DisplayMessage) {
 			
 			if (grid != null) {
+				System.out.println("GOing to update display");
 				earthDisplay.update(grid);
 				grid = null;
 			}
@@ -39,8 +40,10 @@ public class EarthDisplayEngine extends AbstractEngine {
 	@Override
 	public void generate() {
 		
-		if (grid == null)
+		if (grid == null) {
 			grid = Buffer.getBuffer().get();
+			System.out.println("Retrieved Grid " + grid + " from buffer");
+		}
 	}
 
 	@Override

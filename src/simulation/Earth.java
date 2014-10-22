@@ -204,6 +204,7 @@ public final class Earth extends AbstractEngine {
 		while(!this.stopped) {
 			try {
 				Buffer.getBuffer().add(new Grid((Grid) grid));
+				System.out.println("Submitted Grid to buffer");
 				break;
 			} catch (InterruptedException e) {
 				System.err.println("Unable to add to buffer: " + e);

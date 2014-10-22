@@ -7,6 +7,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import messaging.Message;
 import messaging.MessageListener;
 import messaging.Publisher;
+import messaging.events.PauseMessage;
+import messaging.events.ResumeMessage;
+import messaging.events.StartMessage;
+import messaging.events.StopMessage;
 import messaging.events.UpdatedMessage;
 
 public abstract class AbstractEngine implements IEngine, MessageListener {
@@ -29,12 +33,18 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 	}
 
 	public void onMessage(Message msg) {
+		
+		if (msg instanceof StopMessage) this.stop();
+		if (msg instanceof StartMessage) this.start();
+		if (msg instanceof PauseMessage) this.pause();
+		if (msg instanceof ResumeMessage) this.resume();
 
 		// If threaded, enque message to be processed later
 		if (this.IS_THREADED)
 			MSG_QUEUE.add(msg);
-		else
+		else {
 			msg.process(this);
+		}
 	}
 
 	// TODO guard against starvation?

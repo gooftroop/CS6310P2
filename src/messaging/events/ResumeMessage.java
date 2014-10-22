@@ -1,11 +1,12 @@
 package messaging.events;
 
-import common.IEngine;
+import messaging.Message;
+import messaging.MessageListener;
 
-public class ResumeMessage extends AbstractMessage {
+public class ResumeMessage implements Message {
 
 	@Override
-	public void processEngine(IEngine l) {
-		l.resume();
+	public void process(MessageListener l) {
+		return;
 	}
 }

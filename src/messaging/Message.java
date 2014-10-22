@@ -1,6 +1,5 @@
 package messaging;
 
-import common.IEngine;
 
 
 // This class defines the baseclass for all messages.
@@ -9,6 +8,5 @@ import common.IEngine;
 public interface Message {
 
 	public void process(MessageListener l); 
-	
-	public void processEngine(IEngine l); 
+	 
 }

@@ -1,8 +1,9 @@
 package messaging.events;
 
+import messaging.Message;
 import messaging.MessageListener;
 
-public class ProduceMessage extends AbstractMessage {
+public class ProduceMessage implements Message {
 
 	@Override
 	public void process(MessageListener l) {

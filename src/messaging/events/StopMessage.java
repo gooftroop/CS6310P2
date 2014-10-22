@@ -1,11 +1,12 @@
 package messaging.events;
 
-import common.IEngine;
+import messaging.Message;
+import messaging.MessageListener;
 
-public class StopMessage extends AbstractMessage {
+public class StopMessage implements Message {
 
 	@Override
-	public void processEngine(IEngine l) {
-		l.stop();
+	public void process(MessageListener l) {
+		return;
 	}
 }

@@ -201,14 +201,14 @@ public final class Earth extends AbstractEngine {
 			c = calcd.poll();
 		}
 
-//		while(!this.stopped) {
-//			try {
-//				Buffer.getBuffer().add(new Grid((Grid) grid));
-//				break;
-//			} catch (InterruptedException e) {
-//				System.err.println("Unable to add to buffer: " + e);
-//			}
-//		}
+		while(!this.stopped) {
+			try {
+				Buffer.getBuffer().add(new Grid((Grid) grid));
+				break;
+			} catch (InterruptedException e) {
+				System.err.println("Unable to add to buffer: " + e);
+			}
+		}
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

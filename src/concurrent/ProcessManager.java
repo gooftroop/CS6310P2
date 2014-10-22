@@ -9,7 +9,10 @@ import java.util.concurrent.TimeUnit;
 import messaging.Message;
 import messaging.MessageListener;
 import messaging.Publisher;
+import messaging.events.PauseMessage;
 import messaging.events.ResumeMessage;
+import messaging.events.StartMessage;
+import messaging.events.StopMessage;
 import common.IEngine;
 
 public class ProcessManager extends ThreadPoolExecutor implements MessageListener, IEngine {
@@ -84,8 +87,7 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 
 	public void start() {
 
-		if (started || this.isShutdown() || this.isTerminating()
-				|| this.isTerminated())
+		if (started || this.isShutdown() || this.isTerminating() || this.isTerminated())
 			return;
 
 		System.out.println("starting...");
@@ -104,7 +106,10 @@ public class ProcessManager extends ThreadPoolExecutor implements MessageListene
 
 	@Override
 	public void onMessage(Message msg) {
-		msg.process(this);
+		if (msg instanceof StopMessage) this.stop();
+		if (msg instanceof StartMessage) this.start();
+		if (msg instanceof PauseMessage) this.pause();
+		if (msg instanceof ResumeMessage) this.resume();
 	}
 
 	@Override

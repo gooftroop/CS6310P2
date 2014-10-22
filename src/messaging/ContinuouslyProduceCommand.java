@@ -1,10 +1,9 @@
 package messaging;
 
-import messaging.events.AbstractMessage;
 import messaging.events.ConsumeMessage;
 import messaging.events.ProduceMessage;
 
-public class ContinuouslyProduceCommand extends AbstractMessage {
+public class ContinuouslyProduceCommand implements Message {
 
 	@Override
 	public void process(MessageListener l) {

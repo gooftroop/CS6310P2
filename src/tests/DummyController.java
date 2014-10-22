@@ -2,16 +2,15 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import common.AbstractEngine;
-import messaging.ContinuouslyConsumeCommand;
-import messaging.ContinuouslyProduceCommand;
+import common.ComponentBase;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
+import messaging.events.NeedDisplayDataMessage;
+import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
-public class DummyController extends AbstractEngine {
-	
+public class DummyController extends ComponentBase {
 	private Boolean running = false;
 	private Boolean paused = false;
 	private Boolean simThreaded;
@@ -48,14 +47,14 @@ public class DummyController extends AbstractEngine {
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
 		case MODEL:
-			pub.subscribe(ContinuouslyProduceCommand.class, model);
+			pub.subscribe(ProduceContinuousMessage.class, model);
 			// kickstart message to the model.  After first message it will 
 			// continue to provide the message to itself and fill buffer.
-			pub.send(new ContinuouslyProduceCommand());
+			pub.send(new ProduceContinuousMessage());
 			break;
 
 		case VIEW:
-			pub.subscribe(ContinuouslyConsumeCommand.class, model);
+			pub.subscribe(NeedDisplayDataMessage.class, model);
 			// the view will produce the above message any time the queue is 
 			// empty.  When the model sees the event it will produce a single
 			// simulation output for the view to display.
@@ -93,7 +92,7 @@ public class DummyController extends AbstractEngine {
 		run();
 	}
 	
-	public void stop() {
+	public void stop() throws InterruptedException {
 		// End run loop
 		running = false;
 		paused = false;
@@ -101,21 +100,11 @@ public class DummyController extends AbstractEngine {
 		// Stop threads
 		if(simThreaded) {
 			modelThread.interrupt();
-			try {
-				modelThread.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			modelThread.join();
 		}
 		if(viewThreaded) {
 			viewThread.interrupt();
-			try {
-				viewThread.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			viewThread.join();
 		}
 		
 		// remove subscriptions
@@ -144,7 +133,7 @@ public class DummyController extends AbstractEngine {
 	}
 	
 	public void run() {
-		
+		Boolean queueEmpty;
 		running = true;
 		paused = false;
 		while (running) {
@@ -154,23 +143,49 @@ public class DummyController extends AbstractEngine {
 			
 			// Allow non-threaded components to process event queues
 			if(!simThreaded) {
-				model.performAction();
+				try {
+					model.runAutomaticActions();
+					model.processMessageQueue();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			
 			if(!viewThreaded) {
-				view.performAction();
+				try {
+					view.runAutomaticActions();
+					view.processMessageQueue();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			// Do any orchestration required for current initiative setting
 			//TODO: work this out between here and in message handlers...
+			
 
-			while (paused) {
+			queueEmpty = processMessageQueue();
+			if (queueEmpty || paused) {
 				// yield execution thread if nothing to process (save cpu)
 				Thread.yield();
 			}
 		}
 		
-		stop();
+		try {
+			stop();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void dispatchMessage(Message msg) {
+		if (msg instanceof DisplayMessage) {
+			process((DisplayMessage) msg);
+		} else {
+			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
+					this.getClass().getName(), msg.getClass().getName());
+		}
 	}
 
 	public void process(DisplayMessage msg) {
@@ -180,31 +195,5 @@ public class DummyController extends AbstractEngine {
 		if(initiative == InitiativeSetting.THIRD_PARTY) {
 			pub.send(new ProduceMessage());
 		}
-	}
-
-	@Override
-	public void generate() {
-		return;
-	}
-
-	@Override
-	public <T extends Message> void dispatchMessage(T msg) {
-		
-		if (msg instanceof DisplayMessage) {
-			process((DisplayMessage) msg);
-		} else {
-			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
-					this.getClass().getName(), msg.getClass().getName());
-		}	
-	}
-
-	@Override
-	public void configure(int gs, int timeStep) {
-		return;
-	}
-
-	@Override
-	public void close() {
-		return;
 	}
 }

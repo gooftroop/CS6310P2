@@ -1,13 +1,7 @@
 package messaging.events;
 
-import common.IEngine;
-
 import messaging.Message;
 
-public class DisplayMessage implements Message {
+public class DisplayMessage extends Message {
 
-	@Override
-	public void process(IEngine l) {
-		// do nothing
-	}
 }

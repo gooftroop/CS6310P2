@@ -2,12 +2,16 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import common.ComponentBase;
+
 import messaging.Message;
+import messaging.Publisher;
+import messaging.events.NeedDisplayDataMessage;
+import messaging.events.ProduceContinuousMessage;
+import messaging.events.ProduceMessage;
 
-import common.AbstractEngine;
-
-public class DummyModel extends AbstractEngine {
-	
+public class DummyModel extends ComponentBase {
+	private Publisher pub = Publisher.getInstance();
 	ArrayBlockingQueue<Integer> q;
 	
 	public DummyModel(ArrayBlockingQueue<Integer> q) {
@@ -15,34 +19,42 @@ public class DummyModel extends AbstractEngine {
 	}
 	
 	@Override
-	public <T extends Message> void dispatchMessage(T msg) {
-		msg.process(this);
+	public void dispatchMessage(Message msg) {
+		if (msg instanceof ProduceContinuousMessage) {
+			process((ProduceContinuousMessage) msg);
+		} else if (msg instanceof ProduceMessage) {
+			process((ProduceMessage) msg);
+		} else if (msg instanceof NeedDisplayDataMessage) {
+			process((NeedDisplayDataMessage) msg);
+		} else {
+			System.err.printf("WARNING: No processor specified in class %s for message %s\n",
+					this.getClass().getName(), msg.getClass().getName());
+		}
 	}
 
+	private void process(ProduceContinuousMessage msg) {
+		generateData();
+		pub.send(msg); // resend message to self (since continuous)
+	}
 
-	@Override
+	private void process(ProduceMessage msg) {
+		generateData();
+	}
+
+	private void process(NeedDisplayDataMessage msg) {
+		generateData();
+	}
+
 	public void close() {
 		// destructor when done with class
 	}
-
-	@Override
-	public void generate() {
+	
+	private void generateData() {
 		try {
 			q.put(1);
 			System.out.printf("added generated data to buffer\n");
 		} catch (InterruptedException e) {
-			// Do nothing
+			stopThread = true;
 		}
-	}
-
-	@Override
-	public void configure(int gs, int timeStep) {
-		return;
-	}
-
-	@Override
-	public void start() {
-		// TODO Auto-generated method stub
-		
 	}
 }

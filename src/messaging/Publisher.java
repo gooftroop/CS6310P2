@@ -3,19 +3,17 @@ package messaging;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import common.IEngine;
-
 // This class is a singleton responsible for handling message distribution
 
 public class Publisher {
 
 	private static Publisher instance = null;
-	private static ConcurrentHashMap<Class<?>, ConcurrentLinkedQueue<IEngine>> subscribers;
+	private static ConcurrentHashMap<Class<?>, ConcurrentLinkedQueue<MessageListener>> subscribers;
 
 	private Publisher() {
 
 		// singleton. Use getInstance to access.
-		subscribers = new ConcurrentHashMap<Class<?>, ConcurrentLinkedQueue<IEngine>>();
+		subscribers = new ConcurrentHashMap<Class<?>, ConcurrentLinkedQueue<MessageListener>>();
 	}
 
 	public static Publisher getInstance() {
@@ -25,12 +23,12 @@ public class Publisher {
 		return instance;
 	}
 
-	public synchronized void subscribe(Class<?> cls, IEngine listener) {
+	public synchronized void subscribe(Class<?> cls, MessageListener listener) {
 
-		ConcurrentLinkedQueue<IEngine> subscriberList = subscribers.get(cls);
+		ConcurrentLinkedQueue<MessageListener> subscriberList = subscribers.get(cls);
 
 		if (subscriberList == null) {
-			subscriberList = new ConcurrentLinkedQueue<IEngine>();
+			subscriberList = new ConcurrentLinkedQueue<MessageListener>();
 		}
 
 		subscriberList.add(listener);
@@ -44,9 +42,9 @@ public class Publisher {
 	public void send(Message msg) {
 
 		// Send message to all subscribers
-		ConcurrentLinkedQueue<IEngine> allListeners = subscribers.get(msg.getClass());
+		ConcurrentLinkedQueue<MessageListener> allListeners = subscribers.get(msg.getClass());
 		if (allListeners != null) {
-			for (IEngine listener : allListeners) {
+			for (MessageListener listener : allListeners) {
 				listener.onMessage(msg);
 			}
 		}

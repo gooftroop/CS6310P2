@@ -2,6 +2,6 @@ package messaging.events;
 
 import messaging.Message;
 
-public class ConsumeMessage extends Message {
+public class NeedDisplayDataMessage extends Message {
 
 }

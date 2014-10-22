@@ -74,7 +74,7 @@ public class TestEarthData implements IGrid {
 	@Override
 	public int getSunPosition() {
 		// TODO Auto-generated method stub
-		return 0;
+		return rowOffset;
 	}
 
 	@Override
@@ -90,6 +90,6 @@ public class TestEarthData implements IGrid {
 	@Override
 	public int getCurrentTime() {
 		// TODO Auto-generated method stub
-		return 0;
+		return colOffset;
 	}
 }

@@ -3,6 +3,7 @@ package simulation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import simulation.util.EarthCell;
 import simulation.util.GridCell;
@@ -11,7 +12,7 @@ import common.Buffer;
 import common.Grid;
 import common.IGrid;
 
-public final class Earth extends AbstractEngine {
+public final class Earth {
 
 	public static final double CIRCUMFERENCE = 4.003014 * Math.pow(10, 7);
 	public static final double SURFACE_AREA = 5.10072 * Math.pow(10, 14);
@@ -32,15 +33,17 @@ public final class Earth extends AbstractEngine {
 	private int height;
 	private int sunPosition;
 
-	private static GridCell prime = null;
+	private GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	
 	private STATE state;
 	
-	public Earth(boolean simThreaded) {
-		super(simThreaded);
-		
+	private ArrayBlockingQueue<IGrid> q;
+	
+	
+	public Earth(ArrayBlockingQueue<IGrid> q) {
+		this.q = q;
 		state = STATE.READY;
 	}
 
@@ -48,7 +51,6 @@ public final class Earth extends AbstractEngine {
 		return prime;
 	}
 
-	@Override
 	public void configure(int gs, int timeStep) {
 
 		if (gs <= 0 || gs > MAX_DEGREES)
@@ -146,20 +148,23 @@ public final class Earth extends AbstractEngine {
 		state = STATE.STARTED;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void generate() {
+	public void generate() throws InterruptedException {
 		
-		if (state == STATE.READY || state == STATE.CONFIGURED) return;
+//		if (state == STATE.READY || state == STATE.CONFIGURED) return;
+//		
+//		if (isThreaded)
+//			while (state == STATE.STARTING) { /* wait */ }
+//		else
+//			if (state == STATE.STARTING) return;
 		
-		if (isThreaded)
-			while (state == STATE.STARTING) { /* wait */ }
-		else
-			if (state == STATE.STARTING) return;
-
+		// Don't attempt to generate if output queue is full...
+		if(q.remainingCapacity() == 0) {
+			return;
+		}
+		
 		//System.out.println("generating grid...");
-		Queue<EarthCell> bfs = new LinkedList<EarthCell>();
-		Queue<EarthCell> calcd = new LinkedList<EarthCell>();
+		Queue<GridCell> bfs = new LinkedList<GridCell>();
+		Queue<GridCell> calcd = new LinkedList<GridCell>();
 
 		currentStep++;
 
@@ -181,11 +186,11 @@ public final class Earth extends AbstractEngine {
 
 		while (!bfs.isEmpty()) {
 
-			EarthCell point = bfs.remove();
+			GridCell point = bfs.remove();
 			calcd.add(point);
 
-			EarthCell child = null;
-			Iterator<EarthCell> itr = point.getChildren(false);
+			GridCell child = null;
+			Iterator<GridCell> itr = point.getChildren(false);
 			
 			while (itr.hasNext()) {
 				
@@ -199,21 +204,22 @@ public final class Earth extends AbstractEngine {
 		}
 
 		GridCell.setAvgSuntemp(suntotal /  (width * height));
-		EarthCell c = calcd.poll();
+		GridCell c = calcd.poll();
 		while (c != null) {
 			c.visited(false);
 			c.swapTemp();
 			c = calcd.poll();
 		}
 
-		while(!this.stopped) {
-			try {
-				Buffer.getBuffer().add(new Grid((Grid) grid));
-				break;
-			} catch (InterruptedException e) {
-				System.err.println("Unable to add to buffer: " + e);
-			}
-		}
+		q.put(grid);
+//		while(!this.stopped) {
+//			try {
+//				Buffer.getBuffer().add(new Grid((Grid) grid));
+//				break;
+//			} catch (InterruptedException e) {
+//				System.err.println("Unable to add to buffer: " + e);
+//			}
+//		}
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

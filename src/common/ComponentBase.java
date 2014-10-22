@@ -10,6 +10,7 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 	private final ConcurrentLinkedQueue<Message> msgQueue = new ConcurrentLinkedQueue<Message>();
 	protected Boolean stopThread = false; // can be set to signal thread run
 											// loop should exit
+	protected Boolean paused = false;
 
 	public void onMessage(Message msg) {
 
@@ -27,14 +28,15 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 	public Boolean processMessageQueue() {
 
 		Boolean queueEmpty = false;
-
-		Message msg = msgQueue.poll();
-		if (msg == null) {
-			queueEmpty = true;
-		} else {
-			dispatchMessage(msg);
+		if(!paused) {
+			Message msg = msgQueue.poll();
+			if (msg == null) {
+				queueEmpty = true;
+			} else {
+				dispatchMessage(msg);
+			}
 		}
-
+		
 		return queueEmpty;
 	}
 
@@ -60,6 +62,11 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	}
 
+	// Used to pause a component
+	public void pause(Boolean pause) {
+		this.paused = pause;
+	}
+	
 	// override this method for actions to be ran automatically
 	public void runAutomaticActions() throws Exception {
 	};

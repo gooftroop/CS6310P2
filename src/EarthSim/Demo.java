@@ -88,6 +88,8 @@ public class Demo {
 	}
 
 	private void createAndShowUI() {
+//		GUI ui = new GUI(ownSimThread, ownPresThread, initiative, bufferSize);
+//		ui.setVisible(true);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

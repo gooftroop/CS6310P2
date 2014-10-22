@@ -2,8 +2,9 @@ package tests;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import simulation.Earth;
 import common.ComponentBase;
-
+import common.IGrid;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.NeedDisplayDataMessage;
@@ -12,10 +13,17 @@ import messaging.events.ProduceMessage;
 
 public class DummyModel extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();
-	ArrayBlockingQueue<Integer> q;
+//	ArrayBlockingQueue<IGrid> q;
+	Earth model;
+	//TODO: remove temporary debug below
+	int rowOffset = 0;
+	int colOffset = 0;
 	
-	public DummyModel(ArrayBlockingQueue<Integer> q) {
-		this.q = q;
+	public DummyModel(ArrayBlockingQueue<IGrid> q, int gs, int timeStep) {
+//		this.q = q;
+		model = new Earth(q);
+		model.configure(gs, timeStep);
+		model.start();
 	}
 	
 	@Override
@@ -51,7 +59,8 @@ public class DummyModel extends ComponentBase {
 	
 	private void generateData() {
 		try {
-			q.put(1);
+//			q.put(new TestEarthData(20, 40, false, rowOffset++, colOffset++));
+			model.generate();
 			System.out.printf("added generated data to buffer\n");
 		} catch (InterruptedException e) {
 			stopThread = true;

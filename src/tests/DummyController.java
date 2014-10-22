@@ -3,6 +3,7 @@ package tests;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import common.ComponentBase;
+import common.IGrid;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
@@ -16,13 +17,14 @@ public class DummyController extends ComponentBase {
 	private Boolean simThreaded;
 	private Boolean viewThreaded;
 	private InitiativeSetting initiative;
-	private ArrayBlockingQueue<Integer> q;
+	private ArrayBlockingQueue<IGrid> q;
 	private DummyModel model;
 	private DummyView view;
 	private Thread modelThread;
 	private Thread viewThread;
 	private Publisher pub = Publisher.getInstance();
 	private int bufferSize;
+	private Thread t;
 
 	private int debugCnt = 0;
 	
@@ -34,15 +36,19 @@ public class DummyController extends ComponentBase {
 	}
 	
 	public void start() {
+		start(10, 1, 1);
+	}
+	
+	public void start(int gs, int timeStep, float presentationInterval) {
 		// Make GUI changes:
 		// - Disable start button (can't press again until stopped)
 		// - lock sim parameter settings
 		// - enable stop/pause/restart?
 		
 		// Instance model/view
-		q = new ArrayBlockingQueue<Integer>(bufferSize);
-		model = new DummyModel(q);
-		view = new DummyView(q);
+		q = new ArrayBlockingQueue<IGrid>(bufferSize);
+		model = new DummyModel(q, gs, timeStep);
+		view = new DummyView(q, gs, timeStep, presentationInterval);
 		
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
@@ -80,22 +86,27 @@ public class DummyController extends ComponentBase {
 		
 		// Kick off threads as appropriate
 		if(simThreaded) {
-			modelThread = new Thread(model);
+			modelThread = new Thread(model,"model");
 			modelThread.start();
 		}
 		if(viewThreaded) {
-			viewThread = new Thread(view);
+			viewThread = new Thread(view,"view");
 			viewThread.start();
 		}
 		
 		// Kick off run loop
-		run();
+		if(t==null) {
+			t = new Thread(this,"controller");
+			t.start();
+		}
 	}
 	
 	public void stop() throws InterruptedException {
 		// End run loop
 		running = false;
 		paused = false;
+		
+		t.join();
 		
 		// Stop threads
 		if(simThreaded) {
@@ -117,19 +128,23 @@ public class DummyController extends ComponentBase {
 		view = null;
 		
 		// Make GUI changes
-		
+		t = null;
 	}
 	
 	public void pause() {
 		// make GUI updates
 		// set variable to skip run loop contents
 		paused = true;
+		model.pause(paused);
+		view.pause(paused);
 	}
 	
 	public void restart() {
 		// make GUI updates
 		// set variable to NOT skip run loop contents
 		paused = false;
+		model.pause(paused);
+		view.pause(paused);
 	}
 	
 	public void run() {
@@ -137,9 +152,12 @@ public class DummyController extends ComponentBase {
 		running = true;
 		paused = false;
 		while (running) {
-			if(debugCnt >= 2) {
-				running = false;
-			}
+//			if(debugCnt >= 200) {
+//				running = false;
+//			}
+//			if(paused) {
+//				continue;
+//			}
 			
 			// Allow non-threaded components to process event queues
 			if(!simThreaded) {
@@ -170,12 +188,12 @@ public class DummyController extends ComponentBase {
 			}
 		}
 		
-		try {
-			stop();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			stop();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	@Override

@@ -16,13 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
+import tests.DummyController;
+import tests.InitiativeSetting;
 import messaging.Publisher;
-import messaging.events.PauseMessage;
-import messaging.events.ResumeMessage;
-import messaging.events.StartMessage;
-import messaging.events.StopMessage;
-
 import common.State;
 
 public class GUI extends JFrame implements ActionListener {
@@ -32,17 +30,36 @@ public class GUI extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 6146431536208036768L;
 	
-	private EarthSimEngine engine;
-	private final Publisher publisher;
+//	private EarthSimEngine engine;
+//	private final Publisher publisher;
+	private DummyController controller;
 	
 	private HashMap<String, JTextField> inputs = new HashMap<String, JTextField>();
+	private HashMap<String, JButton> buttons = new HashMap<String, JButton>();
 
 	public GUI(boolean ownSimThread, boolean ownPresThread, State initiative, long bufferSize) {
 		
-		// BW - still need to think on the best way to do this. But that's only when
-		// we have the papers done...
-		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);
-		this.publisher = Publisher.getInstance();
+		// Remap initiative setting
+		InitiativeSetting init2;
+		switch(initiative) {
+		case PRESENTATION:
+			init2 = InitiativeSetting.VIEW;
+			break;
+		case SIMULATION:
+			init2 = InitiativeSetting.MODEL;
+			break;
+		case MASTER:
+			init2 = InitiativeSetting.THIRD_PARTY;
+			break;
+		default:
+			init2 = null;
+				
+		}
+		controller = new DummyController(ownSimThread, ownPresThread, init2, (int)bufferSize);
+//		// BW - still need to think on the best way to do this. But that's only when
+//		// we have the papers done...
+//		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);
+//		this.publisher = Publisher.getInstance();
 
 		setupWindow();
 		pack();
@@ -94,9 +111,9 @@ public class GUI extends JFrame implements ActionListener {
 		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 		settingsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 		
-		settingsPanel.add(inputField("Grid Spacing"));
-		settingsPanel.add(inputField("Simulation Time Step"));
-		settingsPanel.add(inputField("Presentation Rate"));
+		settingsPanel.add(inputField("Grid Spacing","2"));
+		settingsPanel.add(inputField("Simulation Time Step","50"));
+		settingsPanel.add(inputField("Presentation Rate","0.01"));
 
 		return settingsPanel;
 	}
@@ -111,10 +128,15 @@ public class GUI extends JFrame implements ActionListener {
 		ctrlsPanel.add(button("Resume"));
 		ctrlsPanel.add(button("Stop"));
 
+		buttons.get("Start").setEnabled(true);
+		buttons.get("Pause").setEnabled(false);
+		buttons.get("Resume").setEnabled(false);
+		buttons.get("Stop").setEnabled(false);
+		
 		return ctrlsPanel;
 	}
 
-	private JPanel inputField(String name) {
+	private JPanel inputField(String name, String defaultText) {
 		
 		JPanel inputPanel = new JPanel();
 		inputPanel.setLayout(new FlowLayout());
@@ -124,7 +146,7 @@ public class GUI extends JFrame implements ActionListener {
 		l.setAlignmentX(Component.LEFT_ALIGNMENT);
 		inputPanel.add(l);
 
-		JTextField t = new JTextField("", 10);
+		JTextField t = new JTextField(defaultText, 10);
 		t.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		l.setLabelFor(t);
 		inputPanel.add(t);
@@ -138,6 +160,7 @@ public class GUI extends JFrame implements ActionListener {
 		JButton button = new JButton(name);
 		button.setActionCommand(name);
 		button.addActionListener(this);
+		buttons.put(name, button);
 		return button;
 	}
 
@@ -146,46 +169,80 @@ public class GUI extends JFrame implements ActionListener {
 		String cmd = e.getActionCommand();
 		
 		if ("Start".equals(cmd)) {
-			if (configureEngine())
-				this.start();
+//			controller.start();
+			if (configureEngine()) {
+				//do gui stuff to indicate start has occurred.
+				buttons.get("Start").setEnabled(false);
+				buttons.get("Pause").setEnabled(true);
+				buttons.get("Resume").setEnabled(false);
+				buttons.get("Stop").setEnabled(true);
+			}
+//				this.start();
 		}
 		
-		else if ("Pause".equals(cmd))
-			this.pause();
+		else if ("Pause".equals(cmd)) {
+			controller.pause();
+			buttons.get("Pause").setEnabled(false);
+			buttons.get("Resume").setEnabled(true);
+		}
 		
-		else if ("Resume".equals(cmd))
-			this.resume();
+		else if ("Resume".equals(cmd)) {
+			controller.restart();
+			buttons.get("Pause").setEnabled(true);
+			buttons.get("Resume").setEnabled(false);
+			
+		}
 		
-		else if ("Stop".equals(cmd)) 
-			this.stop();
+		else if ("Stop".equals(cmd)) {
+			try {
+				controller.stop();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+			}
+			buttons.get("Start").setEnabled(true);
+			buttons.get("Pause").setEnabled(false);
+			buttons.get("Resume").setEnabled(false);
+			buttons.get("Stop").setEnabled(false);
+		}
 	}
 	
-	public void start() {
-		publisher.send(new StopMessage());
-		publisher.send(new StartMessage());
-	}
-	
-	public void stop() {
-		publisher.send(new StopMessage());	
-	}
-	
-	public void pause() {
-		publisher.send(new PauseMessage());
-	}
-	
-	public void resume() {
-		publisher.send(new ResumeMessage());
-	}
+//	public void start() {
+//		publisher.send(new StopMessage());
+//		publisher.send(new StartMessage());
+//	}
+//	
+//	public void stop() {
+//		publisher.send(new StopMessage());	
+//	}
+//	
+//	public void pause() {
+//		publisher.send(new PauseMessage());
+//	}
+//	
+//	public void resume() {
+//		publisher.send(new ResumeMessage());
+//	}
 
 	private boolean configureEngine() {
 		
 		try {
 			
-			int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
-			int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
-			long presentationRate = Long.parseLong(inputs.get("Presentation Rate").getText());
+			final int gs = Integer.parseInt(inputs.get("Grid Spacing").getText());
+			final int timeStep = Integer.parseInt(inputs.get("Simulation Time Step").getText());
+			final float presentationRate = Float.parseFloat(inputs.get("Presentation Rate").getText());
 
-			engine.configure(gs, timeStep, presentationRate);
+			controller.start(gs, timeStep, presentationRate);
+//			SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				controller.start(gs, timeStep, presentationRate);
+//			}
+//			});
+			
+//			controller.start(gs, timeStep, presentationRate);
+//			engine.configure(gs, timeStep, presentationRate);
+			
 			return true;
 
 		} catch (NumberFormatException nfe) {

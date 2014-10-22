@@ -1,7 +1,9 @@
-package tests;
+package EarthSim;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import simulation.Model;
+import view.View;
 import common.ComponentBase;
 import common.IGrid;
 import messaging.Message;
@@ -11,15 +13,15 @@ import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
-public class DummyController extends ComponentBase {
+public class Controller extends ComponentBase {
 	private Boolean running = false;
 	private Boolean paused = false;
 	private Boolean simThreaded;
 	private Boolean viewThreaded;
 	private InitiativeSetting initiative;
 	private ArrayBlockingQueue<IGrid> q;
-	private DummyModel model;
-	private DummyView view;
+	private Model model;
+	private View view;
 	private Thread modelThread;
 	private Thread viewThread;
 	private Publisher pub = Publisher.getInstance();
@@ -29,7 +31,7 @@ public class DummyController extends ComponentBase {
 	private int debugCnt = 0;
 	private boolean debugMode = false;
 	
-	public DummyController(Boolean simThreaded, Boolean viewThreaded, InitiativeSetting initiative, int bufferSize) {
+	public Controller(Boolean simThreaded, Boolean viewThreaded, InitiativeSetting initiative, int bufferSize) {
 		this.simThreaded = simThreaded;
 		this.viewThreaded = viewThreaded;
 		this.initiative = initiative;
@@ -48,8 +50,8 @@ public class DummyController extends ComponentBase {
 		
 		// Instance model/view
 		q = new ArrayBlockingQueue<IGrid>(bufferSize);
-		model = new DummyModel(q, gs, timeStep);
-		view = new DummyView(q, gs, timeStep, presentationInterval);
+		model = new Model(q, gs, timeStep);
+		view = new View(q, gs, timeStep, presentationInterval);
 		
 		// setup message subscriptions per initiative settings
 		switch (initiative) {

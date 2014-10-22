@@ -1,8 +1,7 @@
-package tests;
+package simulation;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import simulation.Earth;
 import common.ComponentBase;
 import common.IGrid;
 import messaging.Message;
@@ -11,16 +10,11 @@ import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 
-public class DummyModel extends ComponentBase {
+public class Model extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();
-//	ArrayBlockingQueue<IGrid> q;
 	Earth model;
-	//TODO: remove temporary debug below
-	int rowOffset = 0;
-	int colOffset = 0;
 	
-	public DummyModel(ArrayBlockingQueue<IGrid> q, int gs, int timeStep) {
-//		this.q = q;
+	public Model(ArrayBlockingQueue<IGrid> q, int gs, int timeStep) {
 		model = new Earth(q);
 		model.configure(gs, timeStep);
 		model.start();
@@ -59,7 +53,6 @@ public class DummyModel extends ComponentBase {
 	
 	private void generateData() {
 		try {
-//			q.put(new TestEarthData(20, 40, false, rowOffset++, colOffset++));
 			model.generate();
 			System.out.printf("added generated data to buffer\n");
 		} catch (InterruptedException e) {

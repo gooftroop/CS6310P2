@@ -17,11 +17,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import tests.DummyController;
-import tests.InitiativeSetting;
 import common.State;
 
-public class GUI extends JFrame implements ActionListener {
+public class ControllerGUI extends JFrame implements ActionListener {
 
 	/**
 	 * 
@@ -30,12 +28,12 @@ public class GUI extends JFrame implements ActionListener {
 	
 //	private EarthSimEngine engine;
 //	private final Publisher publisher;
-	private DummyController controller;
+	private Controller controller;
 	
 	private HashMap<String, JTextField> inputs = new HashMap<String, JTextField>();
 	private HashMap<String, JButton> buttons = new HashMap<String, JButton>();
 
-	public GUI(boolean ownSimThread, boolean ownPresThread, State initiative, long bufferSize) {
+	public ControllerGUI(boolean ownSimThread, boolean ownPresThread, State initiative, long bufferSize) {
 		
 		// Remap initiative setting
 		InitiativeSetting init2;
@@ -53,7 +51,7 @@ public class GUI extends JFrame implements ActionListener {
 			init2 = null;
 				
 		}
-		controller = new DummyController(ownSimThread, ownPresThread, init2, (int)bufferSize);
+		controller = new Controller(ownSimThread, ownPresThread, init2, (int)bufferSize);
 //		// BW - still need to think on the best way to do this. But that's only when
 //		// we have the papers done...
 //		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);

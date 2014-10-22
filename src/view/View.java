@@ -1,9 +1,8 @@
-package tests;
+package view;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import view.EarthDisplay;
 import common.ComponentBase;
 import common.IGrid;
 import messaging.Message;
@@ -11,7 +10,7 @@ import messaging.Publisher;
 import messaging.events.DisplayMessage;
 import messaging.events.NeedDisplayDataMessage;
 
-public class DummyView extends ComponentBase {
+public class View extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();
 	ArrayBlockingQueue<IGrid> q;
 	EarthDisplay earth = null;
@@ -19,7 +18,7 @@ public class DummyView extends ComponentBase {
 	float presentationInterval;
 	boolean displayRequestPending = false; // flag used to keep us from requesting more than once before getting response
 	
-	public DummyView(ArrayBlockingQueue<IGrid> q, int gs, int timeStep, float presentationInterval) {
+	public View(ArrayBlockingQueue<IGrid> q, int gs, int timeStep, float presentationInterval) {
 		this.q = q;
 		this.presentationInterval = presentationInterval;
 		this.earth = new EarthDisplay();

@@ -1,5 +1,8 @@
 package tests;
 
+import EarthSim.Controller;
+import EarthSim.InitiativeSetting;
+
 public class TestDummyComponents {
 
 	public static void main(String[] args) {
@@ -25,7 +28,7 @@ public class TestDummyComponents {
 
 	private static void tryControl(Boolean simThread, Boolean viewThread, InitiativeSetting initiative) {
 		System.out.printf("\n\n=== Testing simThread=%s, viewThread=%s, initiative=%s ===\n", simThread, viewThread, initiative);
-		DummyController controller = new DummyController(simThread, viewThread, initiative, 1);
+		Controller controller = new Controller(simThread, viewThread, initiative, 1);
 		controller.start();
 	}
 	

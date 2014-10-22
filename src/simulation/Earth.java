@@ -61,11 +61,10 @@ public final class Earth extends AbstractEngine {
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
-			for (int i = 1; i < increments.length; i++)
-				if (increments[i] > gs) {
-					this.gs = increments[i - 1];
-					break;
-				}
+			for (int i : increments) {
+				if (i < gs) this.gs = i;
+				else break;
+			}
 		} else
 			this.gs = gs;
 		

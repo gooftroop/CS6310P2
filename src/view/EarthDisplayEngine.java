@@ -62,5 +62,6 @@ public class EarthDisplayEngine extends AbstractEngine {
 	public void start() {
 		grid = null;
 		earthDisplay.display(this.gs, this.timeStep);
+		earthDisplay.update(grid);
 	}
 }

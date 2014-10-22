@@ -1,12 +1,17 @@
 package common;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.UpdatedMessage;
 
 public abstract class AbstractEngine implements IEngine {
+	
+	protected static ReentrantLock pauseLock = new ReentrantLock();
+	protected static Condition unpaused = pauseLock.newCondition();
 
 	protected final ConcurrentLinkedQueue<Message> msgQueue;
 	protected final boolean isThreaded;
@@ -77,9 +82,16 @@ public abstract class AbstractEngine implements IEngine {
 		return;
 	}
 	
-	public void pause(Object lock) throws InterruptedException {
-		synchronized (lock) {
-			lock.wait();
+	public void pause() {
+		pauseLock.lock();
+	}
+	
+	public void resume() {
+		pauseLock.lock();
+		try {
+			unpaused.signalAll();
+		} finally {
+			pauseLock.unlock();
 		}
 	}
 

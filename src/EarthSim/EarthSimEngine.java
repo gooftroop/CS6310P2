@@ -40,6 +40,8 @@ public final class EarthSimEngine extends AbstractEngine {
 	
 	public EarthSimEngine(State i, boolean simThreaded, boolean viewThreaded, int b) {
 		
+		super(true);
+		
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid buffer size");
@@ -63,9 +65,10 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(StartMessage.class, view);
 		publisher.subscribe(StartMessage.class, model);
 		
-		publisher.subscribe(PauseMessage.class, manager);
+		publisher.subscribe(PauseMessage.class, this);
+		publisher.subscribe(ResumeMessage.class, this);
+		
 		publisher.subscribe(StopMessage.class, manager);
-		publisher.subscribe(ResumeMessage.class, manager);
 		
 		publisher.subscribe(CloseMessage.class, view);
 		publisher.subscribe(CloseMessage.class, model);
@@ -85,8 +88,17 @@ public final class EarthSimEngine extends AbstractEngine {
 		publisher.subscribe(UpdatedMessage.class, handler);
 		publisher.subscribe(StartMessage.class, handler);
 			
-		if (simThreaded) manager.add(model);
-		if (viewThreaded) manager.add(view);
+		if (simThreaded) {
+			manager.add(model);
+			publisher.subscribe(PauseMessage.class, model);
+			publisher.subscribe(ResumeMessage.class, model);
+		}
+		
+		if (viewThreaded) {
+			manager.add(view);
+			publisher.subscribe(PauseMessage.class, view);
+			publisher.subscribe(ResumeMessage.class, view);
+		}
 		manager.add(this);
 		
 		this.presentationRate = 0;

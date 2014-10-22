@@ -29,7 +29,4 @@ public class TestDummyComponents {
 		controller.start();
 	}
 	
-	private static void tryControlGUI(Boolean simThread, Boolean viewThread, InitiativeSetting initiative) {
-		
-	}
 }

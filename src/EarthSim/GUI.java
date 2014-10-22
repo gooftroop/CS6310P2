@@ -16,11 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import tests.DummyController;
 import tests.InitiativeSetting;
-import messaging.Publisher;
 import common.State;
 
 public class GUI extends JFrame implements ActionListener {

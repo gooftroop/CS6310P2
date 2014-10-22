@@ -27,6 +27,7 @@ public class DummyController extends ComponentBase {
 	private Thread t;
 
 	private int debugCnt = 0;
+	private boolean debugMode = false;
 	
 	public DummyController(Boolean simThreaded, Boolean viewThreaded, InitiativeSetting initiative, int bufferSize) {
 		this.simThreaded = simThreaded;
@@ -152,12 +153,9 @@ public class DummyController extends ComponentBase {
 		running = true;
 		paused = false;
 		while (running) {
-//			if(debugCnt >= 200) {
-//				running = false;
-//			}
-//			if(paused) {
-//				continue;
-//			}
+			if(debugMode && debugCnt >= 2) {
+				running = false;
+			}
 			
 			// Allow non-threaded components to process event queues
 			if(!simThreaded) {

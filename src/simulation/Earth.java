@@ -5,10 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import simulation.util.EarthCell;
 import simulation.util.GridCell;
-import common.AbstractEngine;
-import common.Buffer;
 import common.Grid;
 import common.IGrid;
 
@@ -37,14 +34,11 @@ public final class Earth {
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	
-	private STATE state;
-	
 	private ArrayBlockingQueue<IGrid> q;
 	
 	
 	public Earth(ArrayBlockingQueue<IGrid> q) {
 		this.q = q;
-		state = STATE.READY;
 	}
 
 	public GridCell getGrid() {
@@ -71,14 +65,10 @@ public final class Earth {
 			System.out.println("gs: " + this.gs);
 		} else
 			this.gs = gs;
-		
-		state = STATE.CONFIGURED;
 	}
 
 	public void start() {
 		
-		state = STATE.STARTING;
-
 		int x = 0, y = 0;
 
 		width = (2 * MAX_DEGREES / this.gs); // rows
@@ -144,8 +134,6 @@ public final class Earth {
 		// Set initial average temperature
 		GridCell.setAvgSuntemp(totaltemp / (width * height));
 		GridCell.setAverageArea(totalarea / (width * height));
-		
-		state = STATE.STARTED;
 	}
 
 	public void generate() throws InterruptedException {
@@ -273,9 +261,5 @@ public final class Earth {
 
 	private int getLongitude(int x) {
 		return x < (width / 2) ? -(x + 1) * this.gs : (360) - (x + 1) * this.gs;
-	}
-	
-	private enum STATE {
-		READY, CONFIGURED, STARTING, STARTED;
 	}
 }

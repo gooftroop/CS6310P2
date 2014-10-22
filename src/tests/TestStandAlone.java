@@ -2,7 +2,6 @@ package tests;
 
 import tests.util.ColormapVisualizer;
 import tests.util.EarthDisplayold;
-import view.EarthDisplay;
 
 import java.util.*;
 

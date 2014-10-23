@@ -140,7 +140,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	@Override
 	public float calculateTemp(int sunPosition) {
-		float temp   = this.currTemp + ( calTsun(sunPosition) + calTcool() ) / 100;
+		float temp   = this.currTemp + (calTneighbors() - this.currTemp) / 2 + ( calTsun(sunPosition) + calTcool() ) / 5;
 		this.newTemp = (temp > 0) ? temp : 0;    // avoid negative temperature
 		return this.newTemp; // new temp
 	}
@@ -214,7 +214,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		double p  = 1.0 * gs / 360;
 		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
 		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
-		this.lt   = (float) (Math.cos(Math.toRadians(latitude + gs)) * this.lv);
+		this.lt   = (float) Math.abs(Math.cos(Math.toRadians(latitude + gs)) * this.lv);
 		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 
 		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
@@ -233,7 +233,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	public float calTcool() {
 		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		//return -1 * beta * avgsuntemp;
-		return -1 * avgsuntemp;
+		return -1 * beta * this.currTemp / 288 * avgsuntemp;
 	}
 	
 	public static void setAvgSuntemp(float avg){
@@ -256,6 +256,15 @@ public final class GridCell implements EarthCell<GridCell> {
 		return avgArea;
 	}
 	
+//	public float calTneighbors() {
+//
+//		float top_temp = 0, bottom_temp = 0;
+//
+//		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
+//		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
+//
+//		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
+//	}
 	public float calTneighbors() {
 
 		float top_temp = 0, bottom_temp = 0;
@@ -263,6 +272,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
 		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
 
+		//System.out.println(this.lt / this.pm + this.lb / this.pm + this.lv / this.pm * 2);
 		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
 }

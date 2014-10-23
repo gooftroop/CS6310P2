@@ -58,8 +58,10 @@ public final class Earth {
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
 			for (int i : increments) {
-				if (i < gs) this.gs = i;
-				else break;
+				if (i < gs) {
+					this.gs = i;
+					break;
+				}
 			}
 			
 			System.out.println("gs: " + this.gs);

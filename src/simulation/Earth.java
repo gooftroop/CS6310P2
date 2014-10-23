@@ -140,13 +140,6 @@ public final class Earth {
 
 	public void generate() throws InterruptedException {
 		
-//		if (state == STATE.READY || state == STATE.CONFIGURED) return;
-//		
-//		if (isThreaded)
-//			while (state == STATE.STARTING) { /* wait */ }
-//		else
-//			if (state == STATE.STARTING) return;
-		
 		// Don't attempt to generate if output queue is full...
 		if(q.remainingCapacity() == 0) {
 			return;
@@ -202,14 +195,6 @@ public final class Earth {
 		}
 
 		q.put(grid);
-//		while(!this.stopped) {
-//			try {
-//				Buffer.getBuffer().add(new Grid((Grid) grid));
-//				break;
-//			} catch (InterruptedException e) {
-//				System.err.println("Unable to add to buffer: " + e);
-//			}
-//		}
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

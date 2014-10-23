@@ -26,8 +26,6 @@ public class ControllerGUI extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 6146431536208036768L;
 	
-//	private EarthSimEngine engine;
-//	private final Publisher publisher;
 	private Controller controller;
 	
 	private HashMap<String, JTextField> inputs = new HashMap<String, JTextField>();
@@ -51,11 +49,8 @@ public class ControllerGUI extends JFrame implements ActionListener {
 			init2 = null;
 				
 		}
+		
 		controller = new Controller(ownSimThread, ownPresThread, init2, (int)bufferSize);
-//		// BW - still need to think on the best way to do this. But that's only when
-//		// we have the papers done...
-//		this.engine = new EarthSimEngine(initiative, ownSimThread, ownPresThread, (int) bufferSize);
-//		this.publisher = Publisher.getInstance();
 
 		setupWindow();
 		pack();
@@ -68,17 +63,6 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		
 		setSize(300, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		// TODO this blocks close
-//		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//		Runtime.getRuntime().addShutdownHook(new Thread() {
-//			
-//			@Override
-//			public void run() {
-//				publisher.send(new CloseMessage());
-//				Publisher.unsubscribeAll();
-//			}
-//		});
 		
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
@@ -165,7 +149,6 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		String cmd = e.getActionCommand();
 		
 		if ("Start".equals(cmd)) {
-//			controller.start();
 			if (configureEngine()) {
 				//do gui stuff to indicate start has occurred.
 				buttons.get("Start").setEnabled(false);
@@ -173,7 +156,6 @@ public class ControllerGUI extends JFrame implements ActionListener {
 				buttons.get("Resume").setEnabled(false);
 				buttons.get("Stop").setEnabled(true);
 			}
-//				this.start();
 		}
 		
 		else if ("Pause".equals(cmd)) {
@@ -193,32 +175,14 @@ public class ControllerGUI extends JFrame implements ActionListener {
 			try {
 				controller.stop();
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-//				e1.printStackTrace();
 			}
+			
 			buttons.get("Start").setEnabled(true);
 			buttons.get("Pause").setEnabled(false);
 			buttons.get("Resume").setEnabled(false);
 			buttons.get("Stop").setEnabled(false);
 		}
 	}
-	
-//	public void start() {
-//		publisher.send(new StopMessage());
-//		publisher.send(new StartMessage());
-//	}
-//	
-//	public void stop() {
-//		publisher.send(new StopMessage());	
-//	}
-//	
-//	public void pause() {
-//		publisher.send(new PauseMessage());
-//	}
-//	
-//	public void resume() {
-//		publisher.send(new ResumeMessage());
-//	}
 
 	private boolean configureEngine() {
 		
@@ -229,15 +193,6 @@ public class ControllerGUI extends JFrame implements ActionListener {
 			final float presentationRate = Float.parseFloat(inputs.get("Presentation Rate").getText());
 
 			controller.start(gs, timeStep, presentationRate);
-//			SwingUtilities.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				controller.start(gs, timeStep, presentationRate);
-//			}
-//			});
-			
-//			controller.start(gs, timeStep, presentationRate);
-//			engine.configure(gs, timeStep, presentationRate);
 			
 			return true;
 

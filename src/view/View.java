@@ -42,19 +42,18 @@ public class View extends ComponentBase {
 	@Override
 	public void dispatchMessage(Message msg) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void runAutomaticActions() throws InterruptedException {
 		// Don't do anything if enough time hasn't passed for us to display
 		// another datapoint
-//		System.out.printf("runing autoactions\n");
+
 		long curTime = System.nanoTime();
 		if ((curTime - lastDisplayTime)*1e-9 < presentationInterval) {
-//			System.out.printf("autoactions bail\n");
 			return;
 		}
+		
 		// Check to see if there is anything in the data queue to process
 		IGrid data = null;
 		data = q.poll(10, TimeUnit.MILLISECONDS);
@@ -65,6 +64,7 @@ public class View extends ComponentBase {
 		//TODO: this will be a problem now and need to be addressed.
 		if(data != null) {
 			if(STATISTIC_MODE) {
+				
 				//NOTE: we need to do something here to manage the animation update rate...
 				if(!steadyState && steadyStateReached(data)) {
 					steadyState = true;
@@ -85,7 +85,6 @@ public class View extends ComponentBase {
 
 		            startWallTime = System.nanoTime();
 		            presentationCnt = 0;
-//		        	float cpuTimePerPresentation;
 
 				}
 	            presentationCnt++;
@@ -99,13 +98,11 @@ public class View extends ComponentBase {
 				pub.send(new NeedDisplayDataMessage());
 				displayRequestPending = true;
 			}
-		}
-//		System.out.printf("runing autoactions done!\n");
-		
+		}	
 	}
 	
 	private void present(IGrid data) {
-//		System.out.printf("presented data\n");
+
 		earth.update(data);
 		pub.send(new DisplayMessage());
 	}
@@ -124,7 +121,7 @@ public class View extends ComponentBase {
 		equatorAverage /= grid.getGridWidth();
 		
 		boolean stable = false;
-//		System.out.printf("diff: %f\n", Math.abs(equatorAverage-lastEquatorAverage));
+
 		if(Math.abs(equatorAverage-lastEquatorAverage) <= STABLE_THRESHOLD) {
 			stable = true;
 		}

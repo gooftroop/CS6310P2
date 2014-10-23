@@ -14,7 +14,6 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	public void onMessage(Message msg) {
 
-//		System.out.printf("%s.onMessage (%s)\n", this.getClass().getName(), msg.getClass().getName());
 		// enque message to be processed later
 		msgQueue.add(msg);
 	}
@@ -45,14 +44,12 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	public void run() {
 
-		// System.out.printf("starting run of %s\n", this.getClass().getName());
 		try {
 			while (!Thread.currentThread().isInterrupted() && !stopThread) {
 				if(!paused) {
 					runAutomaticActions();
 				}
 				if (processMessageQueue()) {
-					// yield execution thread if nothing to process (save cpu)
 					Thread.yield();
 				}
 			}

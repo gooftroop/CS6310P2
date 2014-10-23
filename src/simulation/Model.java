@@ -54,7 +54,7 @@ public class Model extends ComponentBase {
 	private void generateData() {
 		try {
 			model.generate();
-			System.out.printf("added generated data to buffer\n");
+//			System.out.printf("added generated data to buffer\n");
 		} catch (InterruptedException e) {
 			stopThread = true;
 		}

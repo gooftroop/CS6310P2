@@ -2,10 +2,10 @@ package view;
 
 import messaging.Message;
 import messaging.events.DisplayMessage;
-
 import common.AbstractEngine;
 import common.Buffer;
 import common.IGrid;
+import common.State;
 
 public class EarthDisplayEngine extends AbstractEngine {
 	
@@ -14,12 +14,8 @@ public class EarthDisplayEngine extends AbstractEngine {
 	
 	private int gs, timeStep;
 	
-	public EarthDisplayEngine() {
-		this(false);
-	}
-	
-	public EarthDisplayEngine(final boolean isThreaded) {
-		super(isThreaded);
+	public EarthDisplayEngine(final boolean isThreaded, State initiative) {
+		super(isThreaded, initiative, State.PRESENTATION);
 		earthDisplay = new EarthDisplay();
 	}
 	
@@ -29,7 +25,7 @@ public class EarthDisplayEngine extends AbstractEngine {
 		if (msg instanceof DisplayMessage) {
 			
 			if (grid != null) {
-				System.out.println("GOing to update display");
+				System.out.println("Going to update display");
 				earthDisplay.update(grid);
 				grid = null;
 			}

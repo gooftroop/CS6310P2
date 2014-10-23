@@ -13,12 +13,13 @@ public class ViewHandler implements IHandler {
 	}
 
 	@Override
-	public void trigger() {
+	public synchronized void trigger() {
+		System.out.println("ViewHandler triggering msg...");
 		msg.process(null);
 	}
 	
 	@Override
 	public void start() {
-		Publisher.getInstance().send(new UpdatedMessage());
+		return;
 	}
 }

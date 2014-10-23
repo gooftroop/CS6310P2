@@ -51,9 +51,7 @@ public class GridDisplay extends JPanel {
 		if (grid != null) {
 
 			int height = this.getSize().height / grid.getGridHeight();
-			System.out.println("height: " + height);
 			int width = this.getSize().width / grid.getGridWidth();
-			System.out.println("width: " + width);
 			
 			// We have under sampling here...need to fix
 
@@ -63,9 +61,7 @@ public class GridDisplay extends JPanel {
 					float t = grid.getTemperature(x, y);
 					
 					int celly = (y * height);
-					System.out.println("celly: " + celly);
 					int cellx = (x * width);
-					System.out.println("cellx: " + cellx);
 					
 					// paint the "grid edge"
 					g.setColor(Color.DARK_GRAY);

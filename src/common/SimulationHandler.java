@@ -13,7 +13,8 @@ public class SimulationHandler implements IHandler {
 	}
 
 	@Override
-	public void trigger() {
+	public synchronized void trigger() {
+		System.out.println("SimulationHandler triggering msg...");
 		msg.process(null);
 	}
 	

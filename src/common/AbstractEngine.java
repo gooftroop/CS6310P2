@@ -11,6 +11,7 @@ import messaging.events.PauseMessage;
 import messaging.events.ResumeMessage;
 import messaging.events.StartMessage;
 import messaging.events.StopMessage;
+import messaging.events.UpdatedMessage;
 
 public abstract class AbstractEngine implements IEngine, MessageListener {
 	
@@ -22,13 +23,18 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 	
 	protected boolean stopped = false;
 	
-	public AbstractEngine(final boolean isThreaded) {
+	protected final State initiative;
+	protected final State self;
+	
+	public AbstractEngine(final boolean isThreaded, State initiative, State self) {
 		this.IS_THREADED = isThreaded;
+		this.initiative = initiative;
+		this.self = self;
 		MSG_QUEUE = new ConcurrentLinkedQueue<Message>();
 	}
 
-	public AbstractEngine() {
-		this(false);
+	public AbstractEngine(State initiative, State self) {
+		this(false, initiative, self);
 	}
 
 	public void onMessage(Message msg) {
@@ -54,6 +60,7 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 		Message msg;
 		if (MSG_QUEUE.isEmpty()) return;
 		if ((msg = MSG_QUEUE.poll()) != null) {
+			System.out.println(this + "going to process " + msg);
 			msg.process(this);
 		}
 	}
@@ -62,8 +69,13 @@ public abstract class AbstractEngine implements IEngine, MessageListener {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
 			// Just loop
-			//Publisher.getInstance().send(new UpdatedMessage());
+			System.out.println( this + " going to perform action");
 			this.performAction();
+			
+			if (initiative == self) {
+				System.out.println( this + " done performing action. going to send updated message");
+				Publisher.getInstance().send(new UpdatedMessage());
+			}
 		}
 	}
 

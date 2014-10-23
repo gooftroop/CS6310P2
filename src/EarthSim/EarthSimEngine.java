@@ -40,7 +40,7 @@ public final class EarthSimEngine extends AbstractEngine {
 	
 	public EarthSimEngine(State i, boolean simThreaded, boolean viewThreaded, int b) {
 		
-		super(true);
+		super(true, i, State.MASTER);
 		
 		if (b <= 0) b = DEFAULT_BUFFER_SIZE;
 		if (b >= Integer.MAX_VALUE)
@@ -51,38 +51,41 @@ public final class EarthSimEngine extends AbstractEngine {
 		
 		Buffer.getBuffer().create(b);
 		
-		model = new Earth(simThreaded);
-		view = new EarthDisplayEngine(viewThreaded);
+		model = new Earth(simThreaded, i);
+		view = new EarthDisplayEngine(viewThreaded, i);
 		
 		manager = ProcessManager.getManager();
+		
+		IHandler plugin;
+		
+		if (i == State.SIMULATION) {
+			plugin = new SimulationHandler(new ContinuouslyProduceCommand());
+		} else if (i == State.PRESENTATION) {
+			plugin = new ViewHandler(new ContinuouslyConsumeCommand());
+		} else {
+			plugin = new BufferController();
+		}
+		
+		handler = new InitiativeHandler(plugin);
+		
+		publisher = Publisher.getInstance();
+		
+		publisher.subscribe(UpdatedMessage.class, handler);
+		publisher.subscribe(StartMessage.class, handler);
 		
 		publisher = Publisher.getInstance();
 		publisher.subscribe(ProduceMessage.class, model);
 		publisher.subscribe(ConsumeMessage.class, view);
 		publisher.subscribe(DisplayMessage.class, view);
 			
+		publisher.subscribe(StartMessage.class, model);
 		publisher.subscribe(StartMessage.class, manager);
 		publisher.subscribe(StartMessage.class, view);
-		publisher.subscribe(StartMessage.class, model);
 		
 		publisher.subscribe(PauseMessage.class, this);
 		publisher.subscribe(ResumeMessage.class, this);
 		
 		publisher.subscribe(StopMessage.class, manager);
-		
-		IHandler plugin;
-		
-		if (i == State.SIMULATION)
-			plugin = new SimulationHandler(new ContinuouslyProduceCommand());
-		else if (i == State.PRESENTATION)
-			plugin = new ViewHandler(new ContinuouslyConsumeCommand());
-		else
-			plugin = new BufferController();
-		
-		handler = new InitiativeHandler(plugin);
-		
-		publisher.subscribe(UpdatedMessage.class, handler);
-		publisher.subscribe(StartMessage.class, handler);
 			
 		if (simThreaded) {
 			manager.add((IEngine) model);
@@ -147,8 +150,12 @@ public final class EarthSimEngine extends AbstractEngine {
 	public void run() {
 
 		while (!Thread.currentThread().isInterrupted() && !this.stopped) {
-			if (!simThreaded && !viewThreaded) Publisher.getInstance().send(new UpdatedMessage());
 			this.performAction();
+			
+			if (!simThreaded && !viewThreaded || initiative == self) { 
+				System.out.println("Neither are threaded. Going to send UpdatedMessage!");
+				Publisher.getInstance().send(new UpdatedMessage());
+			}
 		}
 	}
 }

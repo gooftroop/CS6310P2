@@ -10,6 +10,7 @@ import common.AbstractEngine;
 import common.Buffer;
 import common.Grid;
 import common.IGrid;
+import common.State;
 
 public final class Earth extends AbstractEngine {
 
@@ -38,8 +39,8 @@ public final class Earth extends AbstractEngine {
 	
 	private STATE state;
 	
-	public Earth(boolean simThreaded) {
-		super(simThreaded);
+	public Earth(boolean simThreaded, State initiative) {
+		super(simThreaded, initiative, State.SIMULATION);
 		
 		state = STATE.READY;
 	}
@@ -74,6 +75,8 @@ public final class Earth extends AbstractEngine {
 	@Override
 	public void start() {
 		
+		System.out.println("\n\n" + this + " IS STARTING!!\n\n");
+		
 		state = STATE.STARTING;
 
 		int x = 0, y = 0;
@@ -99,8 +102,6 @@ public final class Earth extends AbstractEngine {
 			this.createRowCell(curr, next, null, x, y);
 			curr = curr.getLeft();
 		}
-
-
 		
 		// Stitch the grid row together
 		prime.setRight(curr);
@@ -134,23 +135,26 @@ public final class Earth extends AbstractEngine {
 			}
 			curr = curr.getTop();
 		}
+		
 		// Set initial average temperature
 		GridCell.setAvgSuntemp(totaltemp / (width * height));
 		GridCell.setAverageArea(totalarea / (width * height));
 		
 		state = STATE.STARTED;
+		
+		System.out.println("\n\n" + this + " IS DONE STARTING!!\n\n");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void generate() {
 		
-		if (state == STATE.READY || state == STATE.CONFIGURED) return;
+		System.out.println(this + " State: " + state + " Generating Grid...");
 		
 		if (IS_THREADED)
-			while (state == STATE.STARTING) { /* wait */ }
+			while (state == STATE.READY || state == STATE.STARTING || state == STATE.CONFIGURED) { /* wait */ }
 		else
-			if (state == STATE.STARTING) return;
+			if (state == STATE.READY || state == STATE.CONFIGURED || state == STATE.STARTING) return;
 
 		//System.out.println("generating grid...");
 		Queue<EarthCell> bfs = new LinkedList<EarthCell>();

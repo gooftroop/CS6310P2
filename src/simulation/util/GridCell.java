@@ -140,7 +140,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	@Override
 	public float calculateTemp(int sunPosition) {
-		float temp   = this.currTemp + (calTneighbors() - this.currTemp) / 2 + ( calTsun(sunPosition) + calTcool() ) / 5;
+		float temp   = this.currTemp + (calTneighbors() - this.currTemp) / 5 + ( calTsun(sunPosition) + calTcool() ) / 10;
 		this.newTemp = (temp > 0) ? temp : 0;    // avoid negative temperature
 		return this.newTemp; // new temp
 	}
@@ -201,7 +201,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	public float calTsun(int sunPosition) {
 		
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude));
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
 		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
 		attenuation_longi = attenuation_longi > 0 ? attenuation_longi : 0;
@@ -214,7 +214,9 @@ public final class GridCell implements EarthCell<GridCell> {
 		double p  = 1.0 * gs / 360;
 		this.lv   = (float) (Earth.CIRCUMFERENCE * p);
 		this.lb   = (float) (Math.cos(Math.toRadians(latitude)) * this.lv);
-		this.lt   = (float) Math.abs(Math.cos(Math.toRadians(latitude + gs)) * this.lv);
+		this.lb   = this.lb > 0 ? this.lb: 0;
+		this.lt   = (float) (Math.cos(Math.toRadians(latitude + this.gs)) * this.lv);
+		this.lt   = this.lt > 0 ? this.lt: 0;
 		double h  = Math.sqrt(Math.pow(this.lv,2) - 1/4 * Math.pow((this.lb - this.lt), 2));
 
 		this.pm = (float) (this.lt + this.lb + 2 * this.lv);
@@ -233,7 +235,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	public float calTcool() {
 		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
 		//return -1 * beta * avgsuntemp;
-		return -1 * beta * this.currTemp / 288 * avgsuntemp;
+		return -1  * beta * this.currTemp / 288 * avgsuntemp;
 	}
 	
 	public static void setAvgSuntemp(float avg){
@@ -255,16 +257,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	public static float getAverageArea() {
 		return avgArea;
 	}
-	
-//	public float calTneighbors() {
-//
-//		float top_temp = 0, bottom_temp = 0;
-//
-//		if (this.top != null) 	top_temp = this.lt / this.pm * this.top.getTemp();
-//		if (this.bottom != null) 	bottom_temp = this.lb / this.pm * this.bottom.getTemp();
-//
-//		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
-//	}
+
 	public float calTneighbors() {
 
 		float top_temp = 0, bottom_temp = 0;

@@ -1,7 +1,9 @@
 package view;
 
 import messaging.Message;
+import messaging.Publisher;
 import messaging.events.DisplayMessage;
+import messaging.events.UpdatedMessage;
 import common.AbstractEngine;
 import common.Buffer;
 import common.IGrid;
@@ -24,11 +26,15 @@ public class EarthDisplayEngine extends AbstractEngine {
 
 		if (msg instanceof DisplayMessage) {
 			
+			if (!IS_THREADED && initiative == self)
+				Publisher.getInstance().send(new UpdatedMessage());
+			
 			if (grid != null) {
 				System.out.println("Going to update display");
 				earthDisplay.update(grid);
 				grid = null;
 			}
+			
 		} else
 			super.onMessage(msg);
 	}

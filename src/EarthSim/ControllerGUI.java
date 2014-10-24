@@ -93,7 +93,7 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		
 		settingsPanel.add(inputField("Grid Spacing", Integer.toString(Controller.DEFAULT_GRID_SPACING)));
 		settingsPanel.add(inputField("Simulation Time Step",Integer.toString(Controller.DEFAULT_TIME_STEP)));
-		settingsPanel.add(inputField("Presentation Rate",Integer.toString(Controller.DEFAULT_PRESENTATION_RATE)));
+		settingsPanel.add(inputField("Presentation Rate",Float.toString(Controller.DEFAULT_PRESENTATION_RATE)));
 
 		return settingsPanel;
 	}

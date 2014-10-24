@@ -14,10 +14,9 @@ import common.Model;
 
 public class Controller extends ComponentBase {
 	
-	public static final int DEFAULT_GRID_SPACING = 10;
-	public static final int DEFAULT_TIME_STEP = 1;
-	public static final int DEFAULT_BUFFER_SZE = 1;
-	public static final int DEFAULT_PRESENTATION_RATE = 1;
+	public static final int DEFAULT_GRID_SPACING = 2;
+	public static final int DEFAULT_TIME_STEP = 10;
+	public static final float DEFAULT_PRESENTATION_RATE = 0.01f;
 	
 	private Boolean running = false;
 	private Boolean paused = false;
@@ -26,8 +25,6 @@ public class Controller extends ComponentBase {
 	private Boolean viewThreaded;
 	
 	private InitiativeSetting initiative;
-	
-	//private ArrayBlockingQueue<IGrid> q;
 	
 	private Model model;
 	private View view;
@@ -50,19 +47,13 @@ public class Controller extends ComponentBase {
 	}
 	
 	public void start() {
-		start(DEFAULT_GRID_SPACING, DEFAULT_TIME_STEP, DEFAULT_BUFFER_SZE);
+		start(DEFAULT_GRID_SPACING, DEFAULT_TIME_STEP, DEFAULT_PRESENTATION_RATE);
 	}
 	
 	public void start(int gs, int timeStep, float presentationInterval) {
-		// Make GUI changes:
-		// - Disable start button (can't press again until stopped)
-		// - lock sim parameter settings
-		// - enable stop/pause/restart?
-		
-		// Instance model/view
-		//q = new ArrayBlockingQueue<IGrid>(bufferSize);
 		Buffer.getBuffer().create(this.bufferSize);
 		
+		// Instance model/view
 		model = new Model(gs, timeStep);
 		view = new View(gs, timeStep, presentationInterval);
 		

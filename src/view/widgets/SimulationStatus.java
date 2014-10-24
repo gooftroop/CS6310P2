@@ -86,9 +86,9 @@ public class SimulationStatus extends JPanel {
 		this.timeStepStatus.setText("0");
 	}
 	
-	public void update(int sunPosition, int currentTime, int gs, int timeStep) {
+	public void update(float sunPosition, int currentTime, int gs, int timeStep) {
 		
-		this.sunPosStats.setText(Integer.toString(sunPosition));
+		this.sunPosStats.setText(String.format("%.1f", sunPosition));
 		this.currTimeStatus.setText(Integer.toString(currentTime));
 		this.gsStatus.setText(Integer.toString(gs));
 		this.timeStepStatus.setText(Integer.toString(timeStep));

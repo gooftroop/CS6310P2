@@ -3,7 +3,9 @@ package EarthSim;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -67,11 +69,19 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		lowerRightWindow(); // Set window location to lower right (so we don't hide dialogs)
 		setAlwaysOnTop(true);
 		
 		add(settingsAndControls(), BorderLayout.CENTER);
 	}
-
+	
+	private void lowerRightWindow() {
+	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) (dimension.getWidth() - this.getWidth());
+	    int y = (int) (dimension.getHeight() - this.getHeight());
+	    this.setLocation(x, y);
+	}
+	
 	private JPanel settingsAndControls() {
 		
 		JPanel sncPanel = new JPanel();
@@ -200,8 +210,10 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		} catch (NumberFormatException nfe) {
 			JOptionPane.showMessageDialog(null,
 					"Please correct input. All fields need numbers");
+		} catch (IllegalArgumentException ex) {
+			JOptionPane.showMessageDialog(null, "Please correct input. All fields need numbers");
 		}
-		
+				
 		return false;
 	}
 }

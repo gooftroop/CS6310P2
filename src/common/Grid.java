@@ -7,14 +7,16 @@ public class Grid implements IGrid {
 
 	// Used to transport the temps in the buffer
 	private final int sunPosition, time, width, height;
+	private final float sunPositionDeg;
 
 	// We use a TreeMap to not consume a contiguous amount of memory. It's
 	// backed by a Red/Black Tree, so we get pretty decent access times
 	private final Map<Integer, Float> grid;
 
-	public Grid(int sunPosition, int time, int width, int height) {
+	public Grid(int sunPosition, float sunPositionDeg, int time, int width, int height) {
 
 		this.sunPosition = sunPosition;
+		this.sunPositionDeg = sunPositionDeg;
 		this.time = time;
 		this.width = width;
 		this.height = height;
@@ -25,6 +27,7 @@ public class Grid implements IGrid {
 	public Grid(Grid toCopy) {
 		
 		this.sunPosition = toCopy.sunPosition;
+		this.sunPositionDeg = toCopy.sunPositionDeg;
 		this.time = toCopy.time;
 		this.width = toCopy.width;
 		this.height = toCopy.height;
@@ -34,7 +37,7 @@ public class Grid implements IGrid {
 
 	@Override
 	public void setTemperature(int x, int y, float temp) {
-		if (y >= height || x >= width || x < 0 || y < 0)
+		if (y > height || x > width || x < 0 || y < 0)
 			throw new IllegalArgumentException("index (" + x + ", " + y + ") out of bounds");
 		
 		grid.put(y * width + x, temp);
@@ -49,8 +52,8 @@ public class Grid implements IGrid {
 	}
 
 	@Override
-	public int getSunPosition() {
-		return this.sunPosition;
+	public float getSunPositionDeg() {
+		return this.sunPositionDeg;
 	}
 	
 	@Override

@@ -85,7 +85,7 @@ public class EarthDisplay extends JFrame {
 	
 	public void update(IGrid grid) {
 		if (grid != null)
-			simStatus.update(grid.getSunPosition(), grid.getCurrentTime(), this.gs, this.timeStep);
+			simStatus.update(grid.getSunPositionDeg(), grid.getCurrentTime(), this.gs, this.timeStep);
 		else
 			simStatus.update(0, 0, this.gs, this.timeStep);
 		gridDisplay.update(grid);

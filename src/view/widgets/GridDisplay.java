@@ -53,8 +53,6 @@ public class GridDisplay extends JPanel {
 			
 			float cellHeight = (float)h / grid.getGridHeight();
 			float cellWidth = (float)w / grid.getGridWidth();
-//			int cellWidthInt = Math.round((float)Math.ceil(cellWidth));
-//			int cellHeightInt = Math.round((float)Math.ceil(cellHeight));
 
 			for (int y = 0; y < grid.getGridHeight(); y++) {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
@@ -83,6 +81,12 @@ public class GridDisplay extends JPanel {
 				int cellx = Math.round(x * cellWidth);
 				g.drawLine(cellx, 0, cellx, h);
 			}
+			// Draw sun position
+			g.setColor(Color.YELLOW);
+			float pixPerDeg = w/360.0f;
+			float degFromLeft = grid.getSunPositionDeg()+180f;
+			int sunx = Math.round(degFromLeft * pixPerDeg);
+			g.drawLine(sunx, 0, sunx, h);
 
 		}
 	}

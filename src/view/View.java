@@ -1,8 +1,5 @@
 package view;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import common.Buffer;
 import common.ComponentBase;
 import common.IBuffer;

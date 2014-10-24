@@ -3,7 +3,6 @@ package simulation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import simulation.util.GridCell;
 import common.Buffer;
@@ -24,12 +23,12 @@ public final class Earth {
 	private static final int MAX_DEGREES = 180;
 	private static final int MAX_SPEED = 1440;
 
-	private static final int[] increments = { 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
+	private static final int[] increments = { 1,2,3,4,5,6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90, 180 };
 
 	private int currentStep;
 	private int width;
 	private int height;
-	private int sunPosition;
+	private int sunPositionCell;
 
 	private GridCell prime = null;
 	private int timeStep = DEFAULT_SPEED;
@@ -58,10 +57,9 @@ public final class Earth {
 
 		// The following could be done better - if we have time, we should do so
 		if (MAX_DEGREES % gs != 0) {
-			for (int i : increments) {
-				if (i < gs) {
-					this.gs = i;
-					break;
+			for (int i=0; i < increments.length; i++) {
+				if (gs > increments[i]) {
+					this.gs = increments[i];
 				}
 			}
 			
@@ -78,7 +76,7 @@ public final class Earth {
 		height = (MAX_DEGREES / this.gs); // cols
 
 		// do a reset
-		sunPosition = (width / 2) % width;
+		sunPositionCell = (width / 2) % width;
 		currentStep = 0;
 		
 		if (prime != null)
@@ -128,7 +126,7 @@ public final class Earth {
 		for (x = 0; x < height; x++) {
 			GridCell rowgrid = curr.getLeft();
 			for (y = 0; y < width; y++) {
-				totaltemp += rowgrid.calTsun(sunPosition);
+				totaltemp += rowgrid.calTsun(sunPositionCell);
 				totalarea += rowgrid.getSurfarea();
 				rowgrid = rowgrid.getLeft();
 			}
@@ -154,15 +152,20 @@ public final class Earth {
 
 		int t = timeStep * currentStep;
 		int rotationalAngle = 360 - ((t % MAX_SPEED) * 360 / MAX_SPEED);
-		sunPosition = ( (width * rotationalAngle) / 360 + (width / 2) ) % width;
+		sunPositionCell = ( (width * rotationalAngle) / 360 + (width / 2) ) % width;
 
-		IGrid grid = new Grid(sunPosition, t, width, height);
+		float sunPositionDeg = rotationalAngle;
+		if(sunPositionDeg>180) {
+			sunPositionDeg = sunPositionDeg - 360;
+		}
+		
+		IGrid grid = new Grid(sunPositionCell, sunPositionDeg, t, width, height);
 
 		float suntotal = 0;
 		float calcdTemp = 0;
 		
-		calcdTemp = prime.calculateTemp(sunPosition);
-		suntotal = suntotal + prime.calTsun(sunPosition);;
+		calcdTemp = prime.calculateTemp(sunPositionCell);
+		suntotal = suntotal + prime.calTsun(sunPositionCell);;
 		grid.setTemperature(prime.getX(), prime.getY(), calcdTemp);
 		
 		prime.visited(true);
@@ -180,10 +183,10 @@ public final class Earth {
 				
 				child = itr.next();
 				child.visited(true);
-				calcdTemp = child.calculateTemp(sunPosition);
+				calcdTemp = child.calculateTemp(sunPositionCell);
 				grid.setTemperature(child.getX(), child.getY(), calcdTemp);
 				bfs.add(child);
-				suntotal += child.calTsun(sunPosition);
+				suntotal += child.calTsun(sunPositionCell);
 			}
 		}
 

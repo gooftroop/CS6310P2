@@ -22,7 +22,6 @@ public class View extends ComponentBase {
 	
 	private Publisher pub = Publisher.getInstance();
 	
-	//ArrayBlockingQueue<IGrid> q;
 	EarthDisplay display = null;
 
 	// flag used to keep us from requesting more than once before getting response

@@ -49,33 +49,38 @@ public class GridDisplay extends JPanel {
 		super.paintComponent(g);
 		
 		if (grid != null) {
-
-			int height = this.getSize().height / grid.getGridHeight();
-//			System.out.println("height: " + height);
-			int width = this.getSize().width / grid.getGridWidth();
-//			System.out.println("width: " + width);
+			int w = this.getSize().width;
+			int h = this.getSize().height;
 			
-			// We have under sampling here...need to fix
+			float cellHeight = (float)h / grid.getGridHeight();
+			float cellWidth = (float)w / grid.getGridWidth();
+			int cellWidthInt = Math.round((float)Math.ceil(cellWidth));
+			int cellHeightInt = Math.round((float)Math.ceil(cellHeight));
 
 			for (int y = 0; y < grid.getGridHeight(); y++) {
 				for (int x = 0; x < grid.getGridWidth(); x++) {
 					
 					float t = grid.getTemperature(x, y);
 					
-					int celly = (y * height);
-//					System.out.println("celly: " + celly);
-					int cellx = (x * width);
-//					System.out.println("cellx: " + cellx);
-					
-					// paint the "grid edge"
-					g.setColor(Color.DARK_GRAY);
-					g.drawRect(cellx, celly, width, height);
+					int celly = Math.round((float)Math.floor(y * cellHeight));
+					int cellx = Math.round((float)Math.floor(x * cellWidth));
 					
 					// "fill" the rectangle with the temp color
 					g.setColor(visualizer.calculateColor(t));
-					g.fillRect(cellx, celly, width, height);
+					g.fillRect(cellx, celly, cellWidthInt, cellHeightInt);
 				}
 			}
+			// Draw grid lines
+			g.setColor(Color.DARK_GRAY);
+			for (int y = 1; y < grid.getGridHeight()-1; y++) {
+				int celly = Math.round(y * cellHeight);
+				g.drawLine(0, celly, w, celly);
+			}
+			for (int x = 0; x < grid.getGridWidth(); x++) {
+				int cellx = Math.round(x * cellWidth);
+				g.drawLine(cellx, 0, cellx, h);
+			}
+
 		}
 	}
 

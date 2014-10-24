@@ -8,13 +8,18 @@ import messaging.events.ProduceMessage;
 import simulation.Earth;
 
 public class Model extends ComponentBase {
+	
 	private Publisher pub = Publisher.getInstance();
-	Earth model;
+	private Earth model;
 	
 	public Model(int gs, int timeStep) {
 		model = new Earth();
 		model.configure(gs, timeStep);
 		model.start();
+	}
+	
+	public void close() {
+		// destructor when done with class
 	}
 	
 	@Override
@@ -42,10 +47,6 @@ public class Model extends ComponentBase {
 
 	private void process(NeedDisplayDataMessage msg) {
 		generateData();
-	}
-
-	public void close() {
-		// destructor when done with class
 	}
 	
 	private void generateData() {

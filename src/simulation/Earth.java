@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import simulation.util.GridCell;
+import common.Buffer;
 import common.Grid;
 import common.IGrid;
 
@@ -34,11 +35,11 @@ public final class Earth {
 	private int timeStep = DEFAULT_SPEED;
 	private int gs = DEFAULT_DEGREES;
 	
-	private ArrayBlockingQueue<IGrid> q;
+	//private ArrayBlockingQueue<IGrid> q;xa
 	
 	
-	public Earth(ArrayBlockingQueue<IGrid> q) {
-		this.q = q;
+	public Earth() {
+		//this.q = q;
 	}
 
 	public GridCell getGrid() {
@@ -141,7 +142,7 @@ public final class Earth {
 	public void generate() throws InterruptedException {
 		
 		// Don't attempt to generate if output queue is full...
-		if(q.remainingCapacity() == 0) {
+		if(Buffer.getBuffer().getRemainingCapacity() == 0) {
 			return;
 		}
 		
@@ -194,7 +195,7 @@ public final class Earth {
 			c = calcd.poll();
 		}
 
-		q.put(grid);
+		Buffer.getBuffer().add(grid);
 	}
 
 	private void createRow(GridCell curr, GridCell next, GridCell bottom,

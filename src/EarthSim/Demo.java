@@ -6,17 +6,7 @@ import common.State;
 import javax.swing.SwingUtilities;
 
 public class Demo {
-
-	public static void main(String[] args) {
-		Demo demo = new Demo();
-		demo.processArgs(args);
-		demo.run();
-	}
-
-	public Demo() {
-		// empty
-	}
-
+	
 	private boolean ownSimThread = false, ownPresThread = false;
 
 	private State initiative = State.MASTER;
@@ -24,9 +14,19 @@ public class Demo {
 
 	private long bufferSize = 1;
 
+	public static void main(String[] args) {
+		Demo demo = new Demo();
+		demo.processArgs(args);
+		demo.run();
+	}
+
+	private Demo() {
+		// empty
+	}
+
 	// Note: processArgs ignore args that are not s,p,r,t or b as long as you
 	// provide a max of 5 input values.
-	public void processArgs(String[] args) {
+	private void processArgs(String[] args) {
 		
 		if (args.length > 5)
 			usage();
@@ -75,12 +75,12 @@ public class Demo {
 		initiative = rset ? State.PRESENTATION : (tset ? State.SIMULATION : State.MASTER);
 	}
 
-	public void usage() {
+	private void usage() {
 		System.out.println("Usage: java EarthSim.Demo [-s] [-p] [-r|-t] [-b #]");
 		System.exit(-1);
 	}
 
-	public void run() {
+	private void run() {
 		debug("Demo started with settings:");
 		printSettings();
 		createAndShowUI();
@@ -88,8 +88,6 @@ public class Demo {
 	}
 
 	private void createAndShowUI() {
-//		GUI ui = new GUI(ownSimThread, ownPresThread, initiative, bufferSize);
-//		ui.setVisible(true);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

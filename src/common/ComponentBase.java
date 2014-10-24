@@ -8,8 +8,9 @@ import messaging.MessageListener;
 public abstract class ComponentBase implements MessageListener, Runnable {
 
 	private final ConcurrentLinkedQueue<Message> msgQueue = new ConcurrentLinkedQueue<Message>();
-	protected Boolean stopThread = false; // can be set to signal thread run
-											// loop should exit
+	
+	// can be set to signal thread run loop should exit
+	protected Boolean stopThread = false; 
 	protected Boolean paused = false;
 
 	public void onMessage(Message msg) {
@@ -42,6 +43,7 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 	// This method dispatches a message to the appropriate processor
 	public abstract void dispatchMessage(Message msg);
 
+	@Override
 	public void run() {
 
 		try {

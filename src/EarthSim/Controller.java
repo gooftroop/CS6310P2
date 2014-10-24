@@ -1,37 +1,48 @@
 package EarthSim;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
-import simulation.Model;
-import view.View;
-import common.ComponentBase;
-import common.IGrid;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.DisplayMessage;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
+import view.View;
+
+import common.Buffer;
+import common.ComponentBase;
+import common.Model;
 
 public class Controller extends ComponentBase {
+	
+	public static final int DEFAULT_GRID_SPACING = 10;
+	public static final int DEFAULT_TIME_STEP = 1;
+	public static final int DEFAULT_BUFFER_SZE = 1;
+	public static final int DEFAULT_PRESENTATION_RATE = 1;
+	
 	private Boolean running = false;
 	private Boolean paused = false;
+	private boolean debugMode = false;
 	private Boolean simThreaded;
 	private Boolean viewThreaded;
+	
 	private InitiativeSetting initiative;
-	private ArrayBlockingQueue<IGrid> q;
+	
+	//private ArrayBlockingQueue<IGrid> q;
+	
 	private Model model;
 	private View view;
+	
+	private Publisher pub = Publisher.getInstance();
+	
+	private int bufferSize;
+	private int debugCnt = 0;
+	
 	private Thread modelThread;
 	private Thread viewThread;
-	private Publisher pub = Publisher.getInstance();
-	private int bufferSize;
 	private Thread t;
-
-	private int debugCnt = 0;
-	private boolean debugMode = false;
 	
 	public Controller(Boolean simThreaded, Boolean viewThreaded, InitiativeSetting initiative, int bufferSize) {
+		
 		this.simThreaded = simThreaded;
 		this.viewThreaded = viewThreaded;
 		this.initiative = initiative;
@@ -39,7 +50,7 @@ public class Controller extends ComponentBase {
 	}
 	
 	public void start() {
-		start(10, 1, 1);
+		start(DEFAULT_GRID_SPACING, DEFAULT_TIME_STEP, DEFAULT_BUFFER_SZE);
 	}
 	
 	public void start(int gs, int timeStep, float presentationInterval) {
@@ -49,9 +60,11 @@ public class Controller extends ComponentBase {
 		// - enable stop/pause/restart?
 		
 		// Instance model/view
-		q = new ArrayBlockingQueue<IGrid>(bufferSize);
-		model = new Model(q, gs, timeStep);
-		view = new View(q, gs, timeStep, presentationInterval);
+		//q = new ArrayBlockingQueue<IGrid>(bufferSize);
+		Buffer.getBuffer().create(this.bufferSize);
+		
+		model = new Model(gs, timeStep);
+		view = new View(gs, timeStep, presentationInterval);
 		
 		// setup message subscriptions per initiative settings
 		switch (initiative) {
@@ -135,6 +148,7 @@ public class Controller extends ComponentBase {
 	}
 	
 	public void pause() {
+		
 		// make GUI updates
 		// set variable to skip run loop contents
 		paused = true;
@@ -142,7 +156,8 @@ public class Controller extends ComponentBase {
 		view.pause(paused);
 	}
 	
-	public void restart() {
+	public void resume() {
+		
 		// make GUI updates
 		// set variable to NOT skip run loop contents
 		paused = false;
@@ -150,11 +165,15 @@ public class Controller extends ComponentBase {
 		view.pause(paused);
 	}
 	
+	@Override
 	public void run() {
+		
 		Boolean queueEmpty;
 		running = true;
 		paused = false;
+		
 		while (running) {
+			
 			if(debugMode && debugCnt >= 2) {
 				running = false;
 			}
@@ -168,6 +187,7 @@ public class Controller extends ComponentBase {
 					e.printStackTrace();
 				}
 			}
+			
 			if(!viewThreaded) {
 				try {
 					view.runAutomaticActions();
@@ -178,26 +198,17 @@ public class Controller extends ComponentBase {
 			}
 			
 			// Do any orchestration required for current initiative setting
-			//TODO: work this out between here and in message handlers...
-			
-
 			queueEmpty = processMessageQueue();
 			if (queueEmpty || paused) {
 				// yield execution thread if nothing to process (save cpu)
 				Thread.yield();
 			}
 		}
-		
-//		try {
-//			stop();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	
 	@Override
 	public void dispatchMessage(Message msg) {
+		
 		if (msg instanceof DisplayMessage) {
 			process((DisplayMessage) msg);
 		} else {

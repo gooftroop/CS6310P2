@@ -1,21 +1,18 @@
-package simulation;
+package common;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
-import common.ComponentBase;
-import common.IGrid;
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
+import simulation.Earth;
 
 public class Model extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();
 	Earth model;
 	
-	public Model(ArrayBlockingQueue<IGrid> q, int gs, int timeStep) {
-		model = new Earth(q);
+	public Model(int gs, int timeStep) {
+		model = new Earth();
 		model.configure(gs, timeStep);
 		model.start();
 	}

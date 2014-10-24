@@ -7,7 +7,6 @@ import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
 import view.View;
-
 import common.Buffer;
 import common.ComponentBase;
 import common.Model;
@@ -170,7 +169,7 @@ public class Controller extends ComponentBase {
 			}
 			
 			// Allow non-threaded components to process event queues
-			if(!simThreaded) {
+			if(!simThreaded && !paused) {
 				try {
 					model.runAutomaticActions();
 					model.processMessageQueue();
@@ -179,7 +178,7 @@ public class Controller extends ComponentBase {
 				}
 			}
 			
-			if(!viewThreaded) {
+			if(!viewThreaded && !paused) {
 				try {
 					view.runAutomaticActions();
 					view.processMessageQueue();
@@ -191,8 +190,11 @@ public class Controller extends ComponentBase {
 			// Do any orchestration required for current initiative setting
 			queueEmpty = processMessageQueue();
 			if (queueEmpty || paused) {
-				// yield execution thread if nothing to process (save cpu)
-				Thread.yield();
+				try {
+					// yield execution thread if nothing to process (save cpu)
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+				}
 			}
 		}
 	}

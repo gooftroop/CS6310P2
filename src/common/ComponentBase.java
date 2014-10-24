@@ -27,13 +27,12 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	public Boolean processMessageQueue() {
 
-		Boolean queueEmpty = false;
+		Boolean queueEmpty = true;
 		if(!paused) {
 			Message msg = msgQueue.poll();
-			if (msg == null) {
-				queueEmpty = true;
-			} else {
+			if (msg != null) {
 				dispatchMessage(msg);
+				queueEmpty = false;
 			}
 		}
 		
@@ -45,14 +44,21 @@ public abstract class ComponentBase implements MessageListener, Runnable {
 
 	@Override
 	public void run() {
-
+		boolean sleep;
 		try {
 			while (!Thread.currentThread().isInterrupted() && !stopThread) {
+				sleep = false;
 				if(!paused) {
 					runAutomaticActions();
+					if (!processMessageQueue()) {
+						sleep = true;
+					}
 				}
-				if (processMessageQueue()) {
-					Thread.yield();
+				else {
+					sleep = true;
+				}
+				if (sleep) {
+					Thread.sleep(1);
 				}
 			}
 		} catch (InterruptedException e) {

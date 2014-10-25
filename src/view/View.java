@@ -1,14 +1,13 @@
 package view;
 
-import messaging.Message;
-import messaging.Publisher;
-import messaging.events.DisplayMessage;
-import messaging.events.NeedDisplayDataMessage;
-
 import common.Buffer;
 import common.ComponentBase;
 import common.IBuffer;
 import common.IGrid;
+import messaging.Message;
+import messaging.Publisher;
+import messaging.events.DisplayMessage;
+import messaging.events.NeedDisplayDataMessage;
 
 public class View extends ComponentBase {
 
@@ -20,28 +19,28 @@ public class View extends ComponentBase {
 	
 	private Publisher pub = Publisher.getInstance();
 	
-	//ArrayBlockingQueue<IGrid> q;
-	private EarthDisplay display = null;
+	EarthDisplay display = null;
 
 	// flag used to keep us from requesting more than once before getting response
-	private boolean displayRequestPending = false; 
+	boolean displayRequestPending = false; 
 
 	// set to true when initial conditions are overcome
-	private boolean steadyState = false; 
+	boolean steadyState = false; 
 	
 	// Profiling fields
-	private float statInterval = 1.0f;
+	float statInterval = 1.0f;
 		
 	// Steady state assumed when when average equator temperature stabilizes
-	private float lastEquatorAverage = 0.0f;
-	private float presentationInterval;
+	float lastEquatorAverage = 0.0f;
+	float presentationInterval;
 	
 	// used to throttle presentation rate
-	private long lastDisplayTime = 0;
-	private long lastStatTime = 0;
-	private long maxUsedMem = 0;
-	private long startWallTime;
-	private long presentationCnt = 1;
+	long lastDisplayTime = 0;
+	long lastStatTime = 0;
+	long maxUsedMem = 0;
+	long startWallTime;
+	long startCpuTime;
+	long presentationCnt = 1;
 
 	public View(int gs, int timeStep, float presentationInterval) {
 		
@@ -77,7 +76,6 @@ public class View extends ComponentBase {
 		// now but we should ensure it is not later.)
 		// TODO: this will be a problem now and need to be addressed.
 		if (data != null) {
-			
 			if (STATISTIC_MODE) {
 
 				// NOTE: we need to do something here to manage the animation
@@ -111,7 +109,6 @@ public class View extends ComponentBase {
 				}
 				presentationCnt++;
 			}
-			
 			present(data);
 			lastDisplayTime = curTime;
 			displayRequestPending = false;

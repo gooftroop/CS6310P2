@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import simulation.util.GridCell;
-
 import common.Buffer;
 import common.Grid;
 import common.IGrid;

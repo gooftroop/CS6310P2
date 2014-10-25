@@ -72,7 +72,7 @@ public class TestEarthData implements IGrid {
 	}
 
 	@Override
-	public int getSunPosition() {
+	public float getSunPositionDeg() {
 		// TODO Auto-generated method stub
 		return rowOffset;
 	}

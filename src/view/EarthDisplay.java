@@ -11,7 +11,6 @@ import view.util.ThermalVisualizer;
 import view.widgets.EarthImage;
 import view.widgets.GridDisplay;
 import view.widgets.SimulationStatus;
-
 import common.IGrid;
 
 public class EarthDisplay extends JFrame {
@@ -61,12 +60,12 @@ public class EarthDisplay extends JFrame {
 		
 		int w = earthImage.getImageWidth();
 		int h = earthImage.getImageHeight();
-		
+
 		// Add grid
 		gridDisplay = new GridDisplay(new ThermalVisualizer(COLORMAP, Earth.MIN_TEMP, Earth.MAX_TEMP, OPACITY), w, h);
 		display.add(gridDisplay, new Integer(GRID));
 		
-		this.setPreferredSize(new Dimension(w, h + 100));
+		this.setPreferredSize(new Dimension(w, h + 130));
 
 	}
 	
@@ -86,7 +85,7 @@ public class EarthDisplay extends JFrame {
 	
 	public void update(IGrid grid) {
 		if (grid != null)
-			simStatus.update(grid.getSunPosition(), grid.getCurrentTime(), this.gs, this.timeStep);
+			simStatus.update(grid.getSunPositionDeg(), grid.getCurrentTime(), this.gs, this.timeStep);
 		else
 			simStatus.update(0, 0, this.gs, this.timeStep);
 		gridDisplay.update(grid);

@@ -28,6 +28,9 @@ mkdir $PTAG
 if [ "$DVCS" == "git" ] ; then
     echo "USING GIT"
 
+    # set default ok
+    err=0 
+
     # Disallow uncommitted changes
     if ! git diff-files --quiet --
     then

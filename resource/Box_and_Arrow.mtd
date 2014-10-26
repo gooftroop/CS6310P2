@@ -2,7 +2,10 @@
 <AcmeModel>
   <system name="Box_and_Arrow">
     <userdata key="SaveData">
-      <data date="10/24/14 8:15 PM"/>
+      <data date="10/26/14 4:32 PM"/>
+    </userdata>
+    <userdata key="vis-information">
+      <data height="710" rotation="0.0" width="831"/>
     </userdata>
     <userdata key="connection-patterns">
       <data>
@@ -10,6 +13,19 @@
           <association componentType="Component" portName="p" portType="Port" roleName="r" roleType="Role"/>
           <association componentType="Component" portName="p" portType="Port" roleName="r" roleType="Role"/>
         </portConnectionRule>
+      </data>
+    </userdata>
+    <userdata key="acme-legend">
+      <data componentsWidth="93" connectorsWidth="116" height="185" layout="4" name="Box_and_Arrow" othersWidth="47" portsWidth="58" relativeLocation="BELOW" rolesWidth="47" userPos="false" userResize="false" width="476" x="281" y="750" zOrder="0">
+        <item description="Consumer" type="ConsumerProgramCompT"/>
+        <item description="Component" type="Component"/>
+        <item description="Producer" type="ProducerProgramCompT"/>
+        <item description="Connector" type="Connector"/>
+        <item description="Pipe" type="PipeConnT"/>
+        <item description="EventBusConnT" type="EventBusConnT"/>
+        <item description="Port" type="Port"/>
+        <item description="Output" type="ProgramOutputPortT"/>
+        <item description="Role" type="Role"/>
       </data>
     </userdata>
     <component name="Demo">
@@ -58,19 +74,34 @@
       </userdata>
       <port name="recevie_send">
         <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="6" relPosY="-25" rotation="0.0" x="263" y="414"/>
+          <data category="port" componentManaged="false" relPosX="3" relPosY="-12" rotation="0.0" x="260" y="427"/>
         </userdata>
       </port>
       <port name="call">
         <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="4" relPosY="25" rotation="0.0" x="261" y="464"/>
+          <data category="port" componentManaged="false" relPosX="4" relPosY="11" rotation="0.0" x="261" y="450"/>
         </userdata>
       </port>
-      <port name="call2">
+      <port name="fileOutput0">
         <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="50" relPosY="1" rotation="0.0" x="307" y="440"/>
+          <data category="port" componentManaged="false" relPosX="50" relPosY="0" rotation="0.0" x="307" y="439"/>
         </userdata>
+        <design-rule name="matchingTransmissionFormats">
+          <userdata key="RuleInfo">
+            <data errMsg="The transmission formats DO NOT match" label="The transmission formats of all attachments must match the port"/>
+          </userdata>
+        </design-rule>
       </port>
+      <design-rule name="atLeast1portOfTypeProgramOutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Component DOES NOT have at least 1 port of type ProgramOutputPortT." label="Component has at least 1 port of type ProgramOutputPortT."/>
+        </userdata>
+      </design-rule>
+      <design-rule name="atLeastTheseTypesInputPortT_OutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Does not have ports of type InputPortT,OutputPortT" label="Has ports of type InputPortT,OutputPortT"/>
+        </userdata>
+      </design-rule>
     </component>
     <component name="View_">
       <userdata key="vis-information">
@@ -78,19 +109,29 @@
       </userdata>
       <port name="receive_send">
         <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="5" relPosY="25" rotation="0.0" x="598" y="464"/>
-        </userdata>
-      </port>
-      <port name="call">
-        <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="-50" relPosY="1" rotation="0.0" x="543" y="440"/>
+          <data category="port" componentManaged="false" relPosX="6" relPosY="11" rotation="0.0" x="599" y="450"/>
         </userdata>
       </port>
       <port name="call1">
         <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="6" relPosY="-25" rotation="0.0" x="599" y="414"/>
+          <data category="port" componentManaged="false" relPosX="6" relPosY="-11" rotation="0.0" x="599" y="428"/>
         </userdata>
       </port>
+      <port name="ProgramOutputPortT0">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" height="10" relPosX="-50" relPosY="1" rotation="0.0" width="10" x="543" y="440"/>
+        </userdata>
+        <design-rule name="matchingTransmissionFormats">
+          <userdata key="RuleInfo">
+            <data errMsg="The transmission formats DO NOT match" label="The transmission formats of all attachments must match the port"/>
+          </userdata>
+        </design-rule>
+      </port>
+      <design-rule name="atLeastTheseTypesInputPortT_OutputPortT">
+        <userdata key="RuleInfo">
+          <data errMsg="Does not have ports of type InputPortT,OutputPortT" label="Has ports of type InputPortT,OutputPortT"/>
+        </userdata>
+      </design-rule>
     </component>
     <component name="Earth">
       <userdata key="vis-information">
@@ -167,16 +208,6 @@
         </userdata>
       </port>
     </component>
-    <component name="THermalVisualizer">
-      <userdata key="vis-information">
-        <data category="component" height="50" rotation="0.0" width="100" x="781" y="559"/>
-      </userdata>
-      <port name="call">
-        <userdata key="vis-information">
-          <data category="port" componentManaged="false" relPosX="-50" relPosY="0" rotation="0.0" x="731" y="559"/>
-        </userdata>
-      </port>
-    </component>
     <component name="GridCell">
       <userdata key="vis-information">
         <data category="component" height="50" rotation="0.0" width="100" x="262" y="685"/>
@@ -184,6 +215,16 @@
       <port name="call">
         <userdata key="vis-information">
           <data category="port" componentManaged="false" relPosX="0" relPosY="-25" rotation="0.0" x="262" y="660"/>
+        </userdata>
+      </port>
+    </component>
+    <component name="ThermalVisualizer">
+      <userdata key="vis-information">
+        <data category="component" height="50" rotation="0.0" width="100" x="781" y="559"/>
+      </userdata>
+      <port name="call">
+        <userdata key="vis-information">
+          <data category="port" componentManaged="false" relPosX="-50" relPosY="0" rotation="0.0" x="731" y="559"/>
         </userdata>
       </port>
     </component>
@@ -208,7 +249,7 @@
       </userdata>
       <role name="role0">
         <userdata key="vis-information">
-          <data category="role" rotation="0.0" x="599" y="414"/>
+          <data category="role" rotation="0.0" x="599" y="428"/>
         </userdata>
       </role>
       <role name="role1">
@@ -218,7 +259,7 @@
       </role>
       <role name="Role3">
         <userdata key="vis-information">
-          <data category="role" height="12" rotation="0.0" width="12" x="263" y="414"/>
+          <data category="role" height="12" rotation="0.0" width="12" x="260" y="427"/>
         </userdata>
       </role>
     </connector>
@@ -228,12 +269,12 @@
       </userdata>
       <role name="role0">
         <userdata key="vis-information">
-          <data category="role" height="12" rotation="0.0" width="12" x="307" y="440"/>
+          <data category="role" height="12" rotation="0.0" width="12" x="319" y="439"/>
         </userdata>
       </role>
       <role name="role1">
         <userdata key="vis-information">
-          <data category="role" rotation="0.0" x="543" y="440"/>
+          <data category="role" rotation="0.0" x="531" y="441"/>
         </userdata>
       </role>
     </connector>
@@ -258,7 +299,7 @@
       </userdata>
       <role name="role0">
         <userdata key="vis-information">
-          <data category="role" height="12" rotation="0.0" width="12" x="261" y="464"/>
+          <data category="role" height="12" rotation="0.0" width="12" x="261" y="450"/>
         </userdata>
       </role>
       <role name="role1">
@@ -293,7 +334,7 @@
       </role>
       <role name="role1">
         <userdata key="vis-information">
-          <data category="role" rotation="0.0" x="598" y="464"/>
+          <data category="role" rotation="0.0" x="599" y="450"/>
         </userdata>
       </role>
     </connector>

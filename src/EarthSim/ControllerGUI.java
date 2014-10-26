@@ -38,17 +38,18 @@ public class ControllerGUI extends JFrame implements ActionListener {
 		// Remap initiative setting
 		InitiativeSetting init2;
 		switch(initiative) {
-		case PRESENTATION:
-			init2 = InitiativeSetting.VIEW;
-			break;
-		case SIMULATION:
-			init2 = InitiativeSetting.MODEL;
-			break;
-		case MASTER:
-			init2 = InitiativeSetting.THIRD_PARTY;
-			break;
-		default:
-			init2 = null;
+		
+			case PRESENTATION:
+				init2 = InitiativeSetting.VIEW;
+				break;
+			case SIMULATION:
+				init2 = InitiativeSetting.MODEL;
+				break;
+			case MASTER:
+				init2 = InitiativeSetting.THIRD_PARTY;
+				break;
+			default:
+				init2 = null;
 				
 		}
 		

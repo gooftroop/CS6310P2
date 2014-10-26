@@ -37,6 +37,9 @@ public class Controller extends ComponentBase {
 	
 	public Controller(Boolean simThreaded, Boolean viewThreaded, InitiativeSetting initiative, int bufferSize) {
 		
+		if (bufferSize < 1 || bufferSize > Integer.MAX_VALUE) 
+			throw new IllegalArgumentException("Invalid size");
+		
 		this.simThreaded = simThreaded;
 		this.viewThreaded = viewThreaded;
 		this.initiative = initiative;
@@ -48,6 +51,16 @@ public class Controller extends ComponentBase {
 	}
 	
 	public void start(int gs, int timeStep, float presentationInterval) {
+		
+		if (gs < 1 || gs > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("Invalid grid spacing");
+		
+		if (timeStep < 1 || gs > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("Invalid time step");
+		
+		if (presentationInterval < 1 || presentationInterval > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("Invalid presentation interval");
+		
 		Buffer.getBuffer().create(this.bufferSize);
 		
 		// Instance model/view

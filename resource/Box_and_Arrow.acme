@@ -46,26 +46,26 @@ System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, Indirec
         }
 
     }
-    Component Model  = {
+    Component Model : ProducerProgramCompT = new ProducerProgramCompT extended with {
         Port recevie_send  = {
 
         }
         Port call  = {
 
         }
-        Port call2  = {
+        Port fileOutput0 : ProgramOutputPortT = new ProgramOutputPortT extended with {
 
         }
 
     }
-    Component View_  = {
+    Component View_ : ConsumerProgramCompT = new ConsumerProgramCompT extended with {
         Port receive_send  = {
 
         }
-        Port call  = {
+        Port call1  = {
 
         }
-        Port call1  = {
+        Port ProgramOutputPortT0 : ProgramOutputPortT = new ProgramOutputPortT extended with {
 
         }
 
@@ -115,13 +115,13 @@ System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, Indirec
         }
 
     }
-    Component THermalVisualizer  = {
+    Component GridCell  = {
         Port call  = {
 
         }
 
     }
-    Component GridCell  = {
+    Component ThermalVisualizer  = {
         Port call  = {
 
         }
@@ -233,7 +233,7 @@ System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, Indirec
     Attachment View_.receive_send to Procedure_Call3.role1;
     Attachment EarthDisplay.call2 to Procedure_Call3.role0;
     Attachment EarthDisplay.call4 to Procedure_Call6.role1;
-    Attachment THermalVisualizer.call to Procedure_Call6.role0;
+    Attachment ThermalVisualizer.call to Procedure_Call6.role0;
     Attachment EarthDisplay.call3 to Procedure_Call7.role1;
     Attachment GridDisplay.call to Procedure_Call7.role0;
     Attachment SimulationStatus.call to Procedure_Call5.role0;
@@ -243,7 +243,6 @@ System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, Indirec
     Attachment Earth.call1 to Procedure_Call1.role1;
     Attachment Model.call to Procedure_Call1.role0;
     Attachment Earth.call to Procedure_Call2.role0;
-    Attachment View_.call to Stream.role1;
     Attachment Controller.call to Event.role1;
     Attachment Controller.call1 to Procedure_Call.role1;
     Attachment ControllerGUI.call to Procedure_Call.role0;
@@ -251,7 +250,6 @@ System Box_and_Arrow : BatchSequentialFam, EventBasedFam, RepositoryFam, Indirec
     Attachment Demo.call to Procedure_Call0.role0;
     Attachment View_.call1 to Event.role0;
     Attachment GridCell.cal to Procedure_Call2.role1;
-    Attachment Model.call2 to Stream.role0;
     Attachment GridCell.call to Procedure_Call2.role1;
 }
 

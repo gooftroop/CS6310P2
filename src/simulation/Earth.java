@@ -165,7 +165,7 @@ public final class Earth {
 		float calcdTemp = 0;
 		
 		calcdTemp = prime.calculateTemp(sunPositionCell);
-		suntotal = suntotal + prime.calTsun(sunPositionCell);;
+		suntotal = suntotal + prime.calTsun(sunPositionCell);
 		grid.setTemperature(prime.getX(), prime.getY(), calcdTemp);
 		
 		prime.visited(true);

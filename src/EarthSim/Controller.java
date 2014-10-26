@@ -6,10 +6,10 @@ import messaging.events.DisplayMessage;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
+import simulation.Model;
 import view.View;
 import common.Buffer;
 import common.ComponentBase;
-import common.Model;
 
 public class Controller extends ComponentBase {
 	

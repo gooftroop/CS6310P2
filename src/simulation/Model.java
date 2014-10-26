@@ -1,11 +1,12 @@
-package common;
+package simulation;
+
+import common.ComponentBase;
 
 import messaging.Message;
 import messaging.Publisher;
 import messaging.events.NeedDisplayDataMessage;
 import messaging.events.ProduceContinuousMessage;
 import messaging.events.ProduceMessage;
-import simulation.Earth;
 
 public class Model extends ComponentBase {
 	private Publisher pub = Publisher.getInstance();

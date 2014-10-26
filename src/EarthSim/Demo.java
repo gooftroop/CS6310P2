@@ -58,8 +58,11 @@ public class Demo {
 				
 				try {
 					bufferSize = Integer.parseInt(bufSizeString);
+					if(bufferSize <= 0) {
+						throw new NumberFormatException();
+					}
 				} catch (NumberFormatException nfe) {
-					System.out.println("Error reading -b value as an integer. Please retry.");
+					System.out.println("Error reading -b value as a positive integer. Please retry.");
 					usage();
 				}
 				

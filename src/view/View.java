@@ -33,6 +33,7 @@ public class View extends ComponentBase {
 	// Steady state assumed when when average equator temperature stabilizes
 	float lastEquatorAverage = 0.0f;
 	float presentationInterval;
+	int timeStep;
 	
 	// used to throttle presentation rate
 	long lastDisplayTime = 0;
@@ -44,7 +45,7 @@ public class View extends ComponentBase {
 
 	public View(int gs, int timeStep, float presentationInterval) {
 		
-		//this.q = q;
+		this.timeStep = timeStep;
 		this.presentationInterval = presentationInterval;
 		this.display = new EarthDisplay();
 		display.display(gs, timeStep);
@@ -70,20 +71,13 @@ public class View extends ComponentBase {
 		IGrid data = null;
 		data = Buffer.getBuffer().get();
 
-		// NOTE: we need to be careful that we don't do something silly like
-		// spam
-		// a bazillion messages while paused. (don't think this is a problem
-		// now but we should ensure it is not later.)
-		// TODO: this will be a problem now and need to be addressed.
 		if (data != null) {
 			if (STATISTIC_MODE) {
 
-				// NOTE: we need to do something here to manage the animation
-				// update rate...
 				if (!steadyState && steadyStateReached(data)) {
 					steadyState = true;
-					System.out.printf("stable reached: %d\n",
-							data.getCurrentTime());
+					System.out.printf("========STABLE REACHED!========: %d %d\n",
+							data.getCurrentTime(), data.getCurrentTime()/timeStep);
 				}
 
 				// Sample memory usage periodically

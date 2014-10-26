@@ -15,7 +15,7 @@ public class View extends ComponentBase {
 	private final float STABLE_THRESHOLD = 0f;
 	
 	// set true to instrument stats (NOTE: some of these will change execution timing)
-	private final boolean STATISTIC_MODE = true; 
+	private final boolean STATISTIC_MODE = false; 
 	
 	private Publisher pub = Publisher.getInstance();
 	

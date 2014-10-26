@@ -31,16 +31,21 @@ if [ "$DVCS" == "git" ] ; then
     # Disallow uncommitted changes
     if ! git diff-files --quiet --
     then
-        echo "ERROR: uncommitted changes found in work area.  Check in before proceeding!"
-	exit 1
+	err=1;
     fi
 
     # Disallow uncommitted changes
     if ! git diff-index --cached --quiet HEAD --
     then
-        echo "ERROR: uncommitted changes found in work area.  Check in before proceeding!"
-	exit 1
+	err=1;
     fi
+
+    if [ $err = 1 ]
+    then
+        echo "ERROR: uncommitted changes found in work area.  Check in before proceeding!"
+        exit 1
+    fi
+
 
     # Archive files and store rev tag
     git archive HEAD | tar -x -C $PTAG

@@ -17,8 +17,6 @@ public class Controller extends ComponentBase {
 	public static final int DEFAULT_TIME_STEP = 1;
 	public static final float DEFAULT_PRESENTATION_RATE = 0.01f;
 	
-	private Boolean running = false;
-	private Boolean paused = false;
 	private boolean debugMode = false;
 	private Boolean simThreaded;
 	private Boolean viewThreaded;
@@ -101,6 +99,8 @@ public class Controller extends ComponentBase {
 		}
 		
 		// Kick off run loop
+		paused = false;
+		stopThread = false;
 		if(t==null) {
 			t = new Thread(this,"controller");
 			t.start();
@@ -109,7 +109,7 @@ public class Controller extends ComponentBase {
 	
 	public void stop() throws InterruptedException {
 		// End run loop
-		running = false;
+		stopThread = true;
 		paused = false;
 		
 		t.join();
@@ -133,7 +133,6 @@ public class Controller extends ComponentBase {
 		view.close();
 		view = null;
 		
-		// Make GUI changes
 		t = null;
 	}
 	
@@ -156,45 +155,27 @@ public class Controller extends ComponentBase {
 	}
 	
 	@Override
-	public void run() {
+	public void runAutomaticActions() {
+		if(debugMode && debugCnt >= 2) {
+			stopThread = true;
+		}
 		
-		Boolean queueEmpty;
-		running = true;
-		paused = false;
+		// Allow non-threaded components to process event queues
+		if(!simThreaded) {
+			try {
+				model.runAutomaticActions();
+				model.processMessageQueue();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
-		while (running) {
-			
-			if(debugMode && debugCnt >= 2) {
-				running = false;
-			}
-			
-			// Allow non-threaded components to process event queues
-			if(!simThreaded && !paused) {
-				try {
-					model.runAutomaticActions();
-					model.processMessageQueue();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			if(!viewThreaded && !paused) {
-				try {
-					view.runAutomaticActions();
-					view.processMessageQueue();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			// Do any orchestration required for current initiative setting
-			queueEmpty = processMessageQueue();
-			if (queueEmpty || paused) {
-				try {
-					// yield execution thread if nothing to process (save cpu)
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-				}
+		if(!viewThreaded) {
+			try {
+				view.runAutomaticActions();
+				view.processMessageQueue();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

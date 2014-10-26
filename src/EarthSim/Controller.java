@@ -58,7 +58,7 @@ public class Controller extends ComponentBase {
 		if (timeStep < 1 || gs > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Invalid time step");
 		
-		if (presentationInterval < 1 || presentationInterval > Integer.MAX_VALUE)
+		if (presentationInterval < 0)
 			throw new IllegalArgumentException("Invalid presentation interval");
 		
 		Buffer.getBuffer().create(this.bufferSize);

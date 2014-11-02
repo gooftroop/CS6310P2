@@ -43,6 +43,8 @@ public final class GridCell implements EarthCell<GridCell> {
 		this.setBottom(bottom);
 		this.setLeft(left);
 		this.setRight(right);
+		//P2 Heated Planet: Set time of equinox
+		this.setTimeOfEquinox();
 	}
 
 	@Override
@@ -201,12 +203,19 @@ public final class GridCell implements EarthCell<GridCell> {
 	public float calTsun(int sunPosition) {
 		
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
-		float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
+		//float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
+		//P2 - Heated Planet : Find correct attenuation depending on the sun latitude
+		int   sunLatitude      = (int) getSunLatitudeOnEarth(Earth.currentTimeInSimulation);
+		System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
+		float attenuation_lat   = (float) Math.cos(Math.toRadians(Math.abs(sunLatitude - this.latitude)));
 		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
 		attenuation_longi = attenuation_longi > 0 ? attenuation_longi : 0;
 		
-		return 278 * attenuation_lat * attenuation_longi;
+		//return 278 * attenuation_lat * attenuation_longi;
+		//P3 - Heated Planet : Sun's distance from planet, inverse square law
+		return (float) (278 * attenuation_lat * attenuation_longi); 
+		//============ Math.pow(distanceFromPlanet(Earth.currentTimeInSimulation),2));
 	}
 	
 	private void calSurfaceArea(int latitude, int gs) {
@@ -225,15 +234,6 @@ public final class GridCell implements EarthCell<GridCell> {
 
 	// A help function for get the Sun's corresponding location on longitude.
 	private int getSunLocationOnEarth(int sunPosition) {
-		
-		// Grid column under the Sun at sunPosition
-		int cols = 360 / this.gs;
-		int j    = sunPosition;
-		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
-	}
-	
-	//P3 - Heated Planet
-	private int getSunLatitudeOnEarth(int sunPosition) {
 		
 		// Grid column under the Sun at sunPosition
 		int cols = 360 / this.gs;
@@ -278,6 +278,7 @@ public final class GridCell implements EarthCell<GridCell> {
 		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
 	
+	//=================================================
 	//P3 Heated Planet
 	public double getMeanAnamoly(int currentTime) {
 		return (2 * Math.PI * currentTime / Earth.T);
@@ -306,19 +307,54 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	// Method to provide function f(x)
 	public static double functionOfX(double meanAnamoly, double x) {
-	    return (meanAnamoly - x + (Math.E * Math.sin(x)));
+	    return (meanAnamoly - x + (Earth.E * Math.sin(Math.toRadians(x))));
 	}
 
 	// Method to provide the derivative f'(x).
 	public static double derivativeOfX(double x) {
-	    return (-1 + Math.E * Math.cos(x));
+	    return (-1 + Earth.E * Math.cos(Math.toRadians(x)));
 	}	
 	
 	public double trueAnamoly(int currentTime) {
 		double eccentricAnamoly = getEccentricAnamoly(currentTime);
-		double numerator = Math.cos(eccentricAnamoly) - Math.E;
-		double denominator = 1 - (Math.E * Math.cos(eccentricAnamoly));
-		return (Math.acos(numerator/denominator));
+		double numerator = Math.cos(Math.toRadians(eccentricAnamoly)) - Earth.E;
+		double denominator = 1 - (Earth.E * Math.cos(Math.toRadians(eccentricAnamoly)));
+		return (Math.acos(Math.toRadians(numerator/denominator)));
+	}
+	
+	public double distanceFromPlanet(int currentTime) {
+		double numerator = 1 - (Earth.E * Earth.E);
+		double denominator = 1 + (Earth.E * Math.cos(Math.toRadians(trueAnamoly(currentTime))));
+		return (Earth.a * numerator / denominator);
+	}
+	
+	public double getPlanetX(int currentTime) {
+		return ((Earth.a * Earth.E)  + (Earth.a * Math.cos(Math.toRadians(getEccentricAnamoly(currentTime)))));
+	}
+
+	public double getPlanetY(int currentTime) {
+		double b = Earth.a * (Math.sqrt(1-(Earth.E * Earth.E)));
+		return (b * Math.sin(Math.toRadians(getEccentricAnamoly(currentTime))));
+	}
+	
+	public void setTimeOfEquinox() {
+		int t=0;
+		for ( ; Earth.tauAN==0 && t < Earth.T; t++) {
+			double trueAnamoly = trueAnamoly(t);
+			if(Math.abs(Earth.omega - trueAnamoly) <= 10)			//Try 10 as a limit to try first
+				break;
+		}
+		Earth.tauAN = t;
+	}
+	
+	public double getRotationalAngle(int currentTime)
+	{
+		double mod = Math.abs(currentTime - Earth.tauAN) % Earth.T;
+		return (mod * 2 * Math.PI / Earth.T);
+	}
+		
+	public double getSunLatitudeOnEarth(int currentTime) {
+		return (Earth.tilt * Math.sin(Math.toRadians(getRotationalAngle(currentTime))));
 	}
 }
 

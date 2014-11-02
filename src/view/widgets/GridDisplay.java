@@ -87,6 +87,7 @@ public class GridDisplay extends JPanel {
 			float degFromLeft = grid.getSunPositionDeg()+180f;
 			int sunx = Math.round(degFromLeft * pixPerDeg);
 			g.drawLine(sunx, 0, sunx, h);
+			g.drawOval(sunx, h/2, 10, 10);
 
 		}
 	}

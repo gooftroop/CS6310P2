@@ -37,7 +37,14 @@ public final class Earth {
 	//private ArrayBlockingQueue<IGrid> q;xa
 
 	//P3 Heated Planet
-	public static final double T = 525974.4;	//Orbital period of Earth in minutes
+	public static final double T = 525974.4;				//Orbital period of Earth in minutes
+	public static final double E = 0.0167; 					//Eccentricity of the planet earth
+	public static final double a = 1.496 * Math.pow(10, 11);//Length of the semi-major axis of earth IN METERS
+	public static final double omega = 114;					//Argument of periapsis for the Earth:
+	public static final double tilt = 23.44;				//Obliquity(tilt) of the planet
+	public static int tauAN = 0;								//Time of the Equinox
+	public static int currentTimeInSimulation = 0;
+	
 
 	
 	public Earth() {
@@ -82,8 +89,7 @@ public final class Earth {
 		sunPositionCell = (width / 2) % width;
 		currentStep = 0;
 		
-		if (prime != null)
-			prime.setTemp(INITIAL_TEMP);
+		if (prime != null)			prime.setTemp(INITIAL_TEMP);
 		else
 			prime = new GridCell(INITIAL_TEMP, x, y, this.getLatitude(y), this.getLongitude(x), this.gs);
 
@@ -173,6 +179,9 @@ public final class Earth {
 		
 		prime.visited(true);
 		bfs.add(prime);
+		
+		//P3 - Heated Planet
+		Earth.currentTimeInSimulation = currentStep;
 
 		while (!bfs.isEmpty()) {
 

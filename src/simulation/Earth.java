@@ -35,7 +35,10 @@ public final class Earth {
 	private int gs = DEFAULT_DEGREES;
 	
 	//private ArrayBlockingQueue<IGrid> q;xa
-	
+
+	//P3 Heated Planet
+	public static final double T = 525974.4;	//Orbital period of Earth in minutes
+
 	
 	public Earth() {
 		//this.q = q;

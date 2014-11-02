@@ -231,6 +231,15 @@ public final class GridCell implements EarthCell<GridCell> {
 		int j    = sunPosition;
 		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
 	}
+	
+	//P3 - Heated Planet
+	private int getSunLatitudeOnEarth(int sunPosition) {
+		
+		// Grid column under the Sun at sunPosition
+		int cols = 360 / this.gs;
+		int j    = sunPosition;
+		return j < (cols / 2) ? -(j + 1) * this.gs : (360) - (j + 1) * this.gs;
+	}
 
 	public float calTcool() {
 		float beta = (float) (this.surfarea / avgArea);  // actual grid area / average cell area
@@ -268,4 +277,49 @@ public final class GridCell implements EarthCell<GridCell> {
 		//System.out.println(this.lt / this.pm + this.lb / this.pm + this.lv / this.pm * 2);
 		return  top_temp + bottom_temp + this.lv / this.pm * (this.left.getTemp() + this.right.getTemp());
 	}
+	
+	//P3 Heated Planet
+	public double getMeanAnamoly(int currentTime) {
+		return (2 * Math.PI * currentTime / Earth.T);
+	}
+	
+	public double getEccentricAnamoly(int currentTime) {
+		return equationSolverNewton(getMeanAnamoly(currentTime));
+	}
+	
+	public double equationSolverNewton(double meanAnamoly) {
+	    double del = 1e-5,xx = 0 ;
+	    double dx =0, x=Math.PI/2;
+	    int k = 0;
+	    while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
+	      dx = functionOfX(meanAnamoly, x)/derivativeOfX(x);
+	      xx=x;
+	      x =x - dx;
+	      k++;
+	    
+	    //System.out.println("Iteration number: " + k);
+	    //System.out.println("Root obtained: " + x);
+	    //System.out.println("Estimated error: " + Math.abs(xx-x));
+	    }	    
+	    return x;
+	}
+	
+	// Method to provide function f(x)
+	public static double functionOfX(double meanAnamoly, double x) {
+	    return (meanAnamoly - x + (Math.E * Math.sin(x)));
+	}
+
+	// Method to provide the derivative f'(x).
+	public static double derivativeOfX(double x) {
+	    return (-1 + Math.E * Math.cos(x));
+	}	
+	
+	public double trueAnamoly(int currentTime) {
+		double eccentricAnamoly = getEccentricAnamoly(currentTime);
+		double numerator = Math.cos(eccentricAnamoly) - Math.E;
+		double denominator = 1 - (Math.E * Math.cos(eccentricAnamoly));
+		return (Math.acos(numerator/denominator));
+	}
 }
+
+

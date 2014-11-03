@@ -8,6 +8,15 @@ public interface IGrid {
 	
 	public float getSunPositionDeg();
 	
+	public void setSunLatitudeDeg(float lat);
+	
+	public float getSunLatitudeDeg();
+	
+	public void setPlanetX(float x);
+	public void setPlanetY(float y);
+	public float getPlanetX();
+	public float getPlanetY();	
+	
 	public int getCurrentTime();
 	
 	public int getGridWidth();

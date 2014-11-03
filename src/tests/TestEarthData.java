@@ -92,4 +92,40 @@ public class TestEarthData implements IGrid {
 		// TODO Auto-generated method stub
 		return colOffset;
 	}
+
+	@Override
+	public void setSunLatitudeDeg(float lat) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public float getSunLatitudeDeg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setPlanetX(float x) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPlanetY(float y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public float getPlanetX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getPlanetY() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -205,8 +205,8 @@ public final class GridCell implements EarthCell<GridCell> {
 		int   sunLongitude      = getSunLocationOnEarth(sunPosition);
 		//float attenuation_lat   = (float) Math.cos(Math.toRadians(this.latitude  + 1.0 * this.gs / 2));
 		//P2 - Heated Planet : Find correct attenuation depending on the sun latitude
-		int   sunLatitude      = (int) getSunLatitudeOnEarth(Earth.currentTimeInSimulation);
-		System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
+		int   sunLatitude      = (int) getSunLatitudeOnEarth();
+		//System.out.println("\n" + "Sun Latitude is " + sunLatitude + " for Earth.currentTimeInSimulation " + Earth.currentTimeInSimulation);
 		float attenuation_lat   = (float) Math.cos(Math.toRadians(Math.abs(sunLatitude - this.latitude)));
 		//float attenuation_longi = (float) (( (Math.abs(sunLongitude - this.longitude) % 360 ) < 90 ) ? Math.cos(Math.toRadians(sunLongitude - this.longitude)) : 0);
 		float attenuation_longi = (float) Math.cos(Math.toRadians(sunLongitude - this.longitude));
@@ -292,6 +292,7 @@ public final class GridCell implements EarthCell<GridCell> {
 	    double del = 1e-5,xx = 0 ;
 	    double dx =0, x=Math.PI/2;
 	    int k = 0;
+	    //while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
 	    while (Math.abs(xx-x) > del && k<10 && functionOfX(meanAnamoly, x)!=0) {
 	      dx = functionOfX(meanAnamoly, x)/derivativeOfX(x);
 	      xx=x;
@@ -307,54 +308,58 @@ public final class GridCell implements EarthCell<GridCell> {
 	
 	// Method to provide function f(x)
 	public static double functionOfX(double meanAnamoly, double x) {
-	    return (meanAnamoly - x + (Earth.E * Math.sin(Math.toRadians(x))));
+	    return (meanAnamoly - x + (Earth.E * Math.sin((x))));
 	}
 
 	// Method to provide the derivative f'(x).
 	public static double derivativeOfX(double x) {
-	    return (-1 + Earth.E * Math.cos(Math.toRadians(x)));
+	    return (-1 + Earth.E * Math.cos((x)));
 	}	
 	
 	public double trueAnamoly(int currentTime) {
 		double eccentricAnamoly = getEccentricAnamoly(currentTime);
-		double numerator = Math.cos(Math.toRadians(eccentricAnamoly)) - Earth.E;
-		double denominator = 1 - (Earth.E * Math.cos(Math.toRadians(eccentricAnamoly)));
-		return (Math.acos(Math.toRadians(numerator/denominator)));
+		double numerator = Math.cos((eccentricAnamoly)) - Earth.E;
+		double denominator = 1 - (Earth.E * Math.cos((eccentricAnamoly)));
+		return (Math.acos((numerator/denominator)));
 	}
 	
 	public double distanceFromPlanet(int currentTime) {
 		double numerator = 1 - (Earth.E * Earth.E);
-		double denominator = 1 + (Earth.E * Math.cos(Math.toRadians(trueAnamoly(currentTime))));
+		double denominator = 1 + (Earth.E * Math.cos((trueAnamoly(currentTime))));
 		return (Earth.a * numerator / denominator);
 	}
 	
-	public double getPlanetX(int currentTime) {
-		return ((Earth.a * Earth.E)  + (Earth.a * Math.cos(Math.toRadians(getEccentricAnamoly(currentTime)))));
+	public float getPlanetX(int currentTime) {
+		return (float) ((Earth.a * Earth.E)  + (Earth.a * Math.cos((getEccentricAnamoly(currentTime)))));
 	}
 
-	public double getPlanetY(int currentTime) {
+	public float getPlanetY(int currentTime) {
 		double b = Earth.a * (Math.sqrt(1-(Earth.E * Earth.E)));
-		return (b * Math.sin(Math.toRadians(getEccentricAnamoly(currentTime))));
+		return (float) (b * Math.sin((getEccentricAnamoly(currentTime))));
 	}
 	
 	public void setTimeOfEquinox() {
 		int t=0;
 		for ( ; Earth.tauAN==0 && t < Earth.T; t++) {
 			double trueAnamoly = trueAnamoly(t);
-			if(Math.abs(Earth.omega - trueAnamoly) <= 10)			//Try 10 as a limit to try first
+			//System.out.println("\n" + "trueAnamoly " + trueAnamoly);
+			if(Math.abs(Math.toRadians(Earth.omega)- trueAnamoly) <= 0.1)			//Try 10 as a limit to try first
+			{
+				Earth.tauAN = t;
 				break;
+			}
 		}
-		Earth.tauAN = t;
 	}
 	
 	public double getRotationalAngle(int currentTime)
 	{
-		double mod = Math.abs(currentTime - Earth.tauAN) % Earth.T;
+		double mod = (currentTime - Earth.tauAN) % Earth.T;
 		return (mod * 2 * Math.PI / Earth.T);
 	}
 		
-	public double getSunLatitudeOnEarth(int currentTime) {
-		return (Earth.tilt * Math.sin(Math.toRadians(getRotationalAngle(currentTime))));
+	public double getSunLatitudeOnEarth() {
+		//return (Earth.tilt * Math.sin((getRotationalAngle(currentTime))));
+		return (Earth.tilt * Math.sin((getRotationalAngle(Earth.currentTimeInSimulation))));
 	}
 }
 

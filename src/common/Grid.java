@@ -8,6 +8,8 @@ public class Grid implements IGrid {
 	// Used to transport the temps in the buffer
 	private final int sunPosition, time, width, height;
 	private final float sunPositionDeg;
+	private float sunLatitudeDeg=0;
+	private float planetX, planetY;
 
 	// We use a TreeMap to not consume a contiguous amount of memory. It's
 	// backed by a Red/Black Tree, so we get pretty decent access times
@@ -56,6 +58,14 @@ public class Grid implements IGrid {
 		return this.sunPositionDeg;
 	}
 	
+	public float getSunLatitudeDeg() {
+		return this.sunLatitudeDeg;
+	}
+	
+	public void setSunLatitudeDeg(float lat) {
+		this.sunLatitudeDeg = (float) lat;
+	}
+	
 	@Override
 	public int getCurrentTime() {
 		return this.time;
@@ -69,5 +79,25 @@ public class Grid implements IGrid {
 	@Override
 	public int getGridHeight() {
 		return this.height;
+	}
+
+	@Override
+	public void setPlanetX(float x) {
+		this.planetX = x;
+	}
+
+	@Override
+	public void setPlanetY(float y) {
+		this.planetY = y;
+	}
+
+	@Override
+	public float getPlanetX() {
+		return this.planetX;
+	}
+
+	@Override
+	public float getPlanetY() {
+		return this.planetY;
 	}
 }
